@@ -8,19 +8,11 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { getTimeFloat, getTimeStr, getAuthHeader } from "../Utils";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 function isSameDay(checkin, date) {
   const date_month = date.getMonth() + 1;
@@ -28,9 +20,9 @@ function isSameDay(checkin, date) {
   const date_year = date.getFullYear();
 
   const checkin_date = checkin.split("T")[0];
-  const checkin_year = checkin_date.split("-")[0];
-  const checkin_month = checkin_date.split("-")[1];
-  const checkin_day = checkin_date.split("-")[2];
+  const checkin_year = parseInt(checkin_date.split("-")[0]);
+  const checkin_month = parseInt(checkin_date.split("-")[1]);
+  const checkin_day = parseInt(checkin_date.split("-")[2]);
 
   return (
     checkin_day === date_day &&
@@ -61,8 +53,8 @@ function getCheckinDuration(history, date) {
 
 function getDays() {
   // Note that these dates are 0-indexed!!
-  const startDate = new Date(2022, 11, 26);
-  const endDate = new Date(2023, 0, 8);
+  const startDate = new Date(2023, 0, 15);
+  const endDate = new Date(2023, 0, 30);
   const days = [];
   var date = startDate;
   while (date <= endDate) {

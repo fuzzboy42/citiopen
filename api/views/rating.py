@@ -198,8 +198,10 @@ class GetCalibrationParams(generics.RetrieveAPIView):
     serializer_class = CalibrationParamsSerializer
 
     def get_object(self):
-        return CalibrationParams.objects.get(ballkid_id=self.kwargs["pk"])
-
+        try:
+            return CalibrationParams.objects.get(ballkid_id=self.kwargs["pk"])
+        except CalibrationParams.DoesNotExist:
+            pass
 
 class GetAverageCalibrationParams(APIView):
     permission_classes = [IsChairperson]

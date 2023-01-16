@@ -5,6 +5,7 @@ from .models.schedule import *
 # Register your models here.
 
 admin.site.register(Ballkid)
+admin.site.register(Tournament)
 admin.site.register(Schedule)
 admin.site.register(CheckinHistory)
 admin.site.register(TeamHistory)

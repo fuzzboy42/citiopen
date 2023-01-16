@@ -270,7 +270,9 @@ function RatingSection({ ballkid }) {
       headers: getAuthHeader(),
     })
       .then((response) => response.json())
-      .then((data) => setParams(data));
+      .then((data) => {
+        setParams(data);
+      });
 
     fetch("/api/average-calibration-parameters", {
       headers: getAuthHeader(),
@@ -288,7 +290,7 @@ function RatingSection({ ballkid }) {
       {!ballkid.is_captain ? (
         ""
       ) : (
-        <Grid item xs={12} md={7} lg={6}>
+        <Grid item xs={12} md={7} lg={6} sx={{ mx: 1 }}>
           <Button
             size="small"
             variant="outlined"
@@ -300,20 +302,26 @@ function RatingSection({ ballkid }) {
             See ratings submitted by this captain
           </Button>
 
-          <Typography variant="body1">
-            Reviewer scale: {Number(params.reviewer_scale).toFixed(3)}
-          </Typography>
-          <Typography variant="body1">
-            Reviewer offset: {Number(params.reviewer_offset).toFixed(3)}
-          </Typography>
+          {params.reviewer_scale == null ? (
+            ""
+          ) : (
+            <div>
+              <Typography variant="body1">
+                Reviewer scale: {Number(params.reviewer_scale).toFixed(3)}
+              </Typography>
+              <Typography variant="body1">
+                Reviewer offset: {Number(params.reviewer_offset).toFixed(3)}
+              </Typography>
 
-          <RaterParamsChart
-            offset={params.reviewer_offset}
-            scale={params.reviewer_scale}
-            average_offset={average.reviewer_offset__avg}
-            average_scale={average.reviewer_scale__avg}
-            sx={{ mb: 2 }}
-          />
+              <RaterParamsChart
+                offset={params.reviewer_offset}
+                scale={params.reviewer_scale}
+                average_offset={average.reviewer_offset__avg}
+                average_scale={average.reviewer_scale__avg}
+                sx={{ mb: 2 }}
+              />
+            </div>
+          )}
         </Grid>
       )}
 
@@ -328,9 +336,13 @@ function RatingSection({ ballkid }) {
         >
           See ratings received by this ballkid
         </Button>
-        <Typography variant="body1">
-          Improvement: {Number(params.improvement).toFixed(3)}
-        </Typography>
+        {params.improvement == null ? (
+          ""
+        ) : (
+          <Typography variant="body1">
+            Improvement: {Number(params.improvement).toFixed(3)}
+          </Typography>
+        )}
       </Grid>
     </Grid>
   );
