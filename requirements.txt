@@ -9,6 +9,6 @@ pathspec==0.10.3
 platformdirs==2.6.2
 psycopg2==2.9.5
 pytz==2022.7.1
-rcal @ git+https://github.com/jtiosue/rcal@e29060ebc23f7bba43bb57a74b0789983728aa25
+-e git+https://github.com/jtiosue/rcal.git@e29060ebc23f7bba43bb57a74b0789983728aa25#egg=rcal
 sqlparse==0.4.3
 tomli==2.0.1
