@@ -79,7 +79,7 @@ export default function RateByTeamPage(props) {
         Rate by Current Team
       </Typography>
       {assigned.length === 0 ? (
-        ""
+        <Typography>There are currently no teams assigned.</Typography>
       ) : (
         <Grid container spacing={2}>
           {teams.map((team) => (

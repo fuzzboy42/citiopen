@@ -86,22 +86,26 @@ export default function RateByPastTeamPage(props) {
         <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
       </div>
 
-      {Object.keys(pastTeams).map((key) => (
-        <div key={key}>
-          <Typography variant="h5" sx={MARGINS}>
-            {key}
-          </Typography>
+      {Object.keys(pastTeams).length === 0 ? (
+        <Typography>There are no past teams to show.</Typography>
+      ) : (
+        Object.keys(pastTeams).map((key) => (
+          <div key={key}>
+            <Typography variant="h5" sx={MARGINS}>
+              {key}
+            </Typography>
 
-          <Grid container spacing={gridLayout ? 2 : 1}>
-            {pastTeams[key].map((ballkidId) =>
-              renderBallkid(
-                ballkids.find((ballkid) => ballkid.id === ballkidId),
-                gridLayout
-              )
-            )}
-          </Grid>
-        </div>
-      ))}
+            <Grid container spacing={gridLayout ? 2 : 1}>
+              {pastTeams[key].map((ballkidId) =>
+                renderBallkid(
+                  ballkids.find((ballkid) => ballkid.id === ballkidId),
+                  gridLayout
+                )
+              )}
+            </Grid>
+          </div>
+        ))
+      )}
     </div>
   );
 }
