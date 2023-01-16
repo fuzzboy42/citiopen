@@ -15,7 +15,7 @@ import {
   LayoutButtons,
   getAuthHeader,
   getSessionStorage,
-} from "./Utils";
+} from "../Utils";
 
 function renderUnarchiveButton(firstName, lastName, setUpdated) {
   return (
