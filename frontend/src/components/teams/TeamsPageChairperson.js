@@ -51,7 +51,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
   return (
     <div>
       {assigned.map((ballkid) =>
-        ballkid.current_team == teamNum && ballkid.position == position ? (
+        ballkid.current_team === teamNum && ballkid.position === position ? (
           <div key={`ballkid${ballkid.id}`} className="justify">
             {<DraggableBallkidAndIcon ballkid={ballkid} />}
             <div className="sxs">
@@ -66,7 +66,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
                       body: JSON.stringify({
                         first_name: ballkid.first_name,
                         last_name: ballkid.last_name,
-                        position: ballkid.position == "Back" ? "Net" : "Back",
+                        position: ballkid.position === "Back" ? "Net" : "Back",
                       }),
                     })
                       .then((response) => response.json())
@@ -230,7 +230,7 @@ function Unassigned(props) {
     collect: (monitor) => ({ isOver: monitor.isOver() }),
   });
 
-  return props.unassigned.length == 0 ? (
+  return props.unassigned.length === 0 ? (
     ""
   ) : (
     <div>
@@ -348,13 +348,13 @@ export default function TeamsPageChairperson(props) {
         setAssigned(
           data.filter(
             (ballkid) =>
-              ballkid.is_checked_in == true && ballkid.current_team > 0
+              ballkid.is_checked_in === true && ballkid.current_team > 0
           )
         );
         setUnassigned(
           data.filter(
             (ballkid) =>
-              ballkid.is_checked_in == true && ballkid.current_team == 0
+              ballkid.is_checked_in === true && ballkid.current_team === 0
           )
         );
       });

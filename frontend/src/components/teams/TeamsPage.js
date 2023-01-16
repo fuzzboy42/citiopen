@@ -22,8 +22,8 @@ function Team(props) {
               <Divider sx={{ mt: 1, mb: 1 }} />
               <Typography variant="subtitle1">{position}s:</Typography>
               {props.assigned.map((ballkid) =>
-                ballkid.current_team == props.team &&
-                ballkid.position == position ? (
+                ballkid.current_team === props.team &&
+                ballkid.position === position ? (
                   <div className="sxs" key={`ballkid${ballkid.id}`}>
                     <Link variant="body2" href={`ballkid/${ballkid.id}`}>
                       {ballkid.first_name} {ballkid.last_name}
@@ -55,7 +55,7 @@ export default function TeamsPage(props) {
         setAssigned(
           data.filter(
             (ballkid) =>
-              ballkid.is_checked_in == true && ballkid.current_team > 0
+              ballkid.is_checked_in === true && ballkid.current_team > 0
           )
         );
       });

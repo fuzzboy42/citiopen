@@ -9,7 +9,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { SportsTennis, MoreHoriz } from "@mui/icons-material";
+import { SportsTennis } from "@mui/icons-material";
 import { getSessionStorage, setSessionStorage } from "./Utils";
 
 function NavbarItem({ tab }) {
@@ -179,6 +179,8 @@ export default function Navbar(props) {
     case "chairperson":
       tabs = chairpersonTabs;
       break;
+    default:
+      console.log("Unrecognized group: " + group);
   }
 
   return (

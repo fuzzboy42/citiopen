@@ -10,7 +10,7 @@ export default function MyRatingsPage(props) {
     fetch("/api/my-ratings/" + ballkidId, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setRatings(data));
-  }, []);
+  }, [ballkidId]);
 
   return (
     <div className="page">

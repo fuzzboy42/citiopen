@@ -7,7 +7,6 @@ import {
   CardActionArea,
   Grid,
   Box,
-  Button,
 } from "@mui/material";
 import { AspectRatio } from "@mui/joy";
 import {
@@ -76,7 +75,7 @@ export default function RateByPastTeamPage(props) {
     fetch("/api/get-past-teams/" + ballkidId, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setPastTeams(data));
-  }, []);
+  }, [ballkidId]);
 
   return (
     <div className="page">
@@ -96,7 +95,7 @@ export default function RateByPastTeamPage(props) {
           <Grid container spacing={gridLayout ? 2 : 1}>
             {pastTeams[key].map((ballkidId) =>
               renderBallkid(
-                ballkids.find((ballkid) => ballkid.id == ballkidId),
+                ballkids.find((ballkid) => ballkid.id === ballkidId),
                 gridLayout
               )
             )}

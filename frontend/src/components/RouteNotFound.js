@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Typography } from "@mui/material";
 
 export default function RouteNotFound(props) {

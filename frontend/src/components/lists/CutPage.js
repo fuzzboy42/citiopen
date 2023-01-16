@@ -35,6 +35,8 @@ function renderButton(firstName, lastName, newCutStatus, setUpdated) {
       cutString = "Pending";
       color = "warning";
       break;
+    default:
+      console.log("Unrecognized cut status: " + newCutStatus);
   }
 
   return (
@@ -137,7 +139,7 @@ function renderBallkids(ballkids, section, gridLayout, setUpdated) {
     cut: "There are currently no cut ballkids.",
   };
 
-  return ballkids.length == 0 ? (
+  return ballkids.length === 0 ? (
     <Typography variant="body1">{emptyString[section]}</Typography>
   ) : (
     <Grid container spacing={gridLayout ? 2 : 1}>
@@ -177,9 +179,9 @@ export default function CutPage(props) {
     fetch("/api/cut-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
-        setActive(data.filter((ballkid) => ballkid.is_cut == "false"));
-        setCut(data.filter((ballkid) => ballkid.is_cut == "true"));
-        setPending(data.filter((ballkid) => ballkid.is_cut == "pending"));
+        setActive(data.filter((ballkid) => ballkid.is_cut === "false"));
+        setCut(data.filter((ballkid) => ballkid.is_cut === "true"));
+        setPending(data.filter((ballkid) => ballkid.is_cut === "pending"));
       })
       .then(() => setUpdated(false));
   }, [updated]);
@@ -204,7 +206,7 @@ export default function CutPage(props) {
                 &emsp; ({section[1].length})
               </Typography>
             </div>
-            {section[0] == "pending" &&
+            {section[0] === "pending" &&
               section[1].length > 0 &&
               renderCutAllButton(setUpdated)}
           </div>

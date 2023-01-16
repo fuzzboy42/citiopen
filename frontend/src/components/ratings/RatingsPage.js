@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Switch, Link } from "@mui/material";
 import { getAuthHeader, RatingsGrid } from "../Utils";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export default function RatingsPage(props) {
   const [ratings, setRatings] = useState([]);
@@ -10,6 +10,7 @@ export default function RatingsPage(props) {
   const [rateeName, setRateeName] = useState();
   const [raterName, setRaterName] = useState();
 
+  // eslint-disable-next-line no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const ratee_id = searchParams.get("ratee");
   const rater_id = searchParams.get("rater");
@@ -41,7 +42,7 @@ export default function RatingsPage(props) {
     fetch("/api/calibrated-ratings", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setCalibrated(data));
-  }, []);
+  }, [ratee_id, rater_id]);
 
   return (
     <div className="page">

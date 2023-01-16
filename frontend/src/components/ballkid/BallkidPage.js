@@ -15,7 +15,7 @@ export default function BallkidPage(props) {
       .then((response) => response.json())
       .then((data) => setBallkid(data))
       .then(() => setUpdated(false));
-  }, [updated]);
+  }, [updated, pk]);
 
   return ballkid == null ? (
     ""
@@ -25,7 +25,7 @@ export default function BallkidPage(props) {
         <Typography variant="h4">
           {ballkid.first_name} {ballkid.last_name}
         </Typography>
-        {group == "captain" ? <RatingButton ballkid={ballkid} /> : ""}
+        {group === "captain" ? <RatingButton ballkid={ballkid} /> : ""}
       </div>
 
       <Grid container>
@@ -43,7 +43,7 @@ export default function BallkidPage(props) {
             Preferred position: {ballkid.preferred_position}
           </Typography>
           <br />
-          {(ballkid.is_cut == "true") | !ballkid.is_active ? (
+          {(ballkid.is_cut === "true") | !ballkid.is_active ? (
             ""
           ) : (
             <div>
@@ -53,7 +53,7 @@ export default function BallkidPage(props) {
               </Typography>
               <Typography variant="body1">
                 Current Team:{" "}
-                {ballkid.current_team == 0
+                {ballkid.current_team === 0
                   ? "Unassigned"
                   : ballkid.current_team}
               </Typography>

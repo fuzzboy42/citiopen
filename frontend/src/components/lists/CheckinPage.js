@@ -51,7 +51,7 @@ function renderCheckinButton(firstName, lastName, isCheckedIn, setUpdated) {
 }
 
 function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
-  return ballkids.length == 0 ? (
+  return ballkids.length === 0 ? (
     <Typography variant="body1">
       {isCheckedIn
         ? "There are currently no ballkids checked in."
@@ -139,8 +139,10 @@ export default function CheckinPage(props) {
     fetch("/api/list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
-        setCheckedIn(data.filter((ballkid) => ballkid.is_checked_in == true));
-        setCheckedOut(data.filter((ballkid) => ballkid.is_checked_in == false));
+        setCheckedIn(data.filter((ballkid) => ballkid.is_checked_in === true));
+        setCheckedOut(
+          data.filter((ballkid) => ballkid.is_checked_in === false)
+        );
       })
       .then(() => setUpdated(false));
   }, [updated]);

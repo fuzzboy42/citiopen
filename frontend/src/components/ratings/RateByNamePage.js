@@ -7,7 +7,6 @@ import {
   CardActionArea,
   Grid,
   Box,
-  Button,
 } from "@mui/material";
 import { AspectRatio } from "@mui/joy";
 import {
@@ -19,7 +18,7 @@ import {
 } from "../Utils";
 
 function renderBallkids(ballkids, gridLayout) {
-  return ballkids.length == 0 ? (
+  return ballkids.length === 0 ? (
     <Typography variant="body1">There are no ballkids to rate.</Typography>
   ) : (
     <Grid container spacing={gridLayout ? 2 : 1}>

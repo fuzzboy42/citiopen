@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import BallkidList from "./lists/BallkidList";
 import BallkidPage from "./ballkid/BallkidPage";
@@ -90,9 +90,9 @@ export default function HomePage(props) {
   ) : (
     <Router>
       <Navbar isLoggedIn={true} setToken={setToken} />
-      {group == "chairperson"
+      {group === "chairperson"
         ? chairpersonRoutes(setToken)
-        : group == "captain"
+        : group === "captain"
         ? captainRoutes(setToken)
         : ballkidRoutes(setToken)}
     </Router>

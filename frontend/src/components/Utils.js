@@ -25,7 +25,7 @@ export function Icons({ ballkid, margin }) {
   return (
     <Icon sx={{ mb: margin }}>
       {ballkid.is_captain ? <Star sx={{ color: "orange" }} /> : ""}
-      {ballkid.num_years_experience == 0 ? (
+      {ballkid.num_years_experience === 0 ? (
         <Circle sx={{ color: "green" }} />
       ) : (
         ""
@@ -43,7 +43,7 @@ export function LayoutButtons({ gridLayout, setGridLayout }) {
           size="small"
           style={{
             borderRadius: 0,
-            background: isGridButton == gridLayout ? "lightgray" : "",
+            background: isGridButton === gridLayout ? "lightgray" : "",
           }}
           onClick={(e) => {
             setGridLayout(isGridButton);
@@ -59,8 +59,8 @@ export function LayoutButtons({ gridLayout, setGridLayout }) {
 
 export function Alerts(props) {
   return (
-    <Collapse in={props.errorMsg != "" || props.successMsg != ""}>
-      {props.successMsg != "" ? (
+    <Collapse in={props.errorMsg !== "" || props.successMsg !== ""}>
+      {props.successMsg !== "" ? (
         <Alert
           severity="success"
           onClose={() => {
@@ -284,9 +284,9 @@ export function RatingsGrid(props) {
             filterModel: {
               items: [
                 {
-                  columnField: rateeName == "" ? "rater" : "ratee",
+                  columnField: rateeName === "" ? "rater" : "ratee",
                   operatorValue: "contains",
-                  value: rateeName == "" ? raterName : rateeName,
+                  value: rateeName === "" ? raterName : rateeName,
                 },
               ],
             },
@@ -360,7 +360,7 @@ export function getTimeStr(timeStr) {
   var hour = 0;
   var minute = 0;
 
-  if (timeStr != "") {
+  if (timeStr !== "") {
     const hourStr = timeStr.split(":")[0];
 
     if (hourStr.length > 2) {

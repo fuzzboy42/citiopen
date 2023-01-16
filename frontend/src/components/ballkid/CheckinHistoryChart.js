@@ -33,9 +33,9 @@ function isSameDay(checkin, date) {
   const checkin_day = checkin_date.split("-")[2];
 
   return (
-    checkin_day == date_day &&
-    checkin_month == date_month &&
-    checkin_year == date_year
+    checkin_day === date_day &&
+    checkin_month === date_month &&
+    checkin_year === date_year
   );
 }
 
@@ -51,7 +51,7 @@ function getCheckinTime(history, date) {
 function getCheckinDuration(history, date) {
   for (const shift of history) {
     if (isSameDay(shift["checkin"], date)) {
-      if (shift["duration"] != "00:00:00") {
+      if (shift["duration"] !== "00:00:00") {
         return getTimeFloat(shift["duration"]);
       }
     }

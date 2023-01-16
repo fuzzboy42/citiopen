@@ -22,8 +22,8 @@ function Team(props) {
               <Divider sx={{ mt: 1, mb: 1 }} />
               <Typography variant="subtitle1">{position}s:</Typography>
               {props.assigned.map((ballkid) =>
-                ballkid.current_team == props.team &&
-                ballkid.position == position ? (
+                ballkid.current_team === props.team &&
+                ballkid.position === position ? (
                   <div className="justify" key={`ballkid${ballkid.id}`}>
                     <div className="sxs">
                       <Link variant="body2" href={`ballkid/${ballkid.id}`}>
@@ -57,7 +57,7 @@ export default function RateByTeamPage(props) {
         setAssigned(
           data.filter(
             (ballkid) =>
-              ballkid.is_checked_in == true && ballkid.current_team > 0
+              ballkid.is_checked_in === true && ballkid.current_team > 0
           )
         );
       });
@@ -73,14 +73,12 @@ export default function RateByTeamPage(props) {
       });
   }, []);
 
-  const margins = { mt: 2, mb: 1 };
-
   return (
     <div className="page">
       <Typography variant="h4" sx={{ mb: 1 }}>
         Rate by Current Team
       </Typography>
-      {assigned.length == 0 ? (
+      {assigned.length === 0 ? (
         ""
       ) : (
         <Grid container spacing={2}>

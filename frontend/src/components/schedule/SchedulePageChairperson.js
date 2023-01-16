@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDrag, useDrop } from "react-dnd";
 import {
   TextField,
   Typography,
@@ -14,12 +13,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { getAuthHeader, getToday } from "../Utils";
 
 function CreateSchedule(props) {
@@ -129,71 +126,6 @@ function dayHourToStr(day_hour) {
   const suffix = military_hour >= 12 ? "pm" : "am";
   const hour = ((military_hour + 11) % 12) + 1;
   return hour + suffix;
-}
-
-function ScheduleGrid(props) {
-  const shifts = props.shifts;
-  const hours = shifts
-    .map((shift) => dayHourToStr(shift["day_hour"]))
-    .filter((v, i, a) => a.indexOf(v) === i);
-  const courts = shifts
-    .map((shift) => shift["court"])
-    .filter((v, i, a) => a.indexOf(v) === i);
-
-  const hourCourtToTeam = Object.assign(
-    {},
-    ...shifts.map((shift) => ({
-      [dayHourToStr(shift["day_hour"]) + "-" + shift["court"]]: shift["team"],
-    }))
-  );
-
-  const columns = courts.reduce(
-    (prev, court) => [
-      ...prev,
-      { field: court, headerName: court, editable: true },
-    ],
-    [{ field: "hour", headerName: "Time", editable: false }]
-  );
-
-  const rows = hours.reduce(
-    (prev, hour) => [
-      ...prev,
-      courts.reduce(
-        (obj, court) =>
-          Object.assign(obj, { [court]: hourCourtToTeam[hour + "-" + court] }),
-        { id: hour, hour: hour }
-      ),
-    ],
-    []
-  );
-
-  return (
-    <div style={{ height: 500 }}>
-      <DataGrid
-        columns={columns}
-        rows={rows}
-        experimentalFeatures={{ newEditingApi: true }}
-      />
-
-      <IconButton
-        sx={{ mt: 1 }}
-        onClick={(e) => {
-          fetch("/api/add-hour", {
-            method: "POST",
-            headers: getAuthHeader(),
-            body: JSON.stringify({
-              day: props.date,
-              num_courts: courts.length,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => props.setUpdated(true));
-        }}
-      >
-        <Add />
-      </IconButton>
-    </div>
-  );
 }
 
 function ScheduleTable(props) {
@@ -321,7 +253,7 @@ export default function SchedulePageChairperson(props) {
         </LocalizationProvider>
       </Box>
 
-      {shifts.length == 0 ? (
+      {shifts.length === 0 ? (
         <CreateSchedule date={date} setUpdated={setUpdated} />
       ) : (
         <ScheduleTable shifts={shifts} date={date} setUpdated={setUpdated} />

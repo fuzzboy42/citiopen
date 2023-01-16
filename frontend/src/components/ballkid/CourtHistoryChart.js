@@ -14,7 +14,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 function getAnalytic(analytics, court) {
   for (const analytic of analytics) {
-    if (analytic["court"] == court) {
+    if (analytic["court"] === court) {
       return analytic;
     }
   }

@@ -18,9 +18,6 @@ import {
   TableHead,
   Table,
   Link,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@mui/material";
 import {
   MoreVert,
@@ -50,13 +47,13 @@ function renderHeader(ballkid, setUpdated) {
         &ensp;
         <Icons ballkid={ballkid} margin={0} />
         &ensp;
-        {(ballkid.is_cut == "true") | !ballkid.is_active ? (
+        {(ballkid.is_cut === "true") | !ballkid.is_active ? (
           <InactiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
         ) : (
           <ActiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
         )}
       </div>
-      {ballkid.is_cut == "true" ? (
+      {ballkid.is_cut === "true" ? (
         <Typography variant="h5" color="error">
           Cut
         </Typography>
@@ -143,12 +140,12 @@ function renderPreferredPosition(ballkid, setUpdated) {
 }
 
 function renderPosition(ballkid, setUpdated) {
-  const newPosition = ballkid.position == "Back" ? "Net" : "Back";
+  const newPosition = ballkid.position === "Back" ? "Net" : "Back";
 
   return (
     <div className="justify">
       <Typography variant="body1">Position: {ballkid.position}</Typography>
-      {ballkid.current_team == 0 ? (
+      {ballkid.current_team === 0 ? (
         ""
       ) : (
         <div className="sxs">
@@ -210,7 +207,7 @@ function renderTeam(ballkid, teams, setUpdated) {
     <div className="justify">
       <Typography variant="body1">
         Current Team:{" "}
-        {ballkid.current_team == 0 ? "Unassigned" : ballkid.current_team}
+        {ballkid.current_team === 0 ? "Unassigned" : ballkid.current_team}
       </Typography>
       {!ballkid.is_checked_in ? (
         ""
@@ -218,12 +215,12 @@ function renderTeam(ballkid, teams, setUpdated) {
         <div className="sxs">
           <Typography variant="body1">Change to: &emsp;</Typography>
           {teams.map((team) =>
-            team == ballkid.current_team
+            team === ballkid.current_team
               ? ""
               : renderTeamButton(ballkid, team, team, setUpdated)
           )}
           {renderTeamButton(ballkid, "New Team", teams.length + 1, setUpdated)}
-          {ballkid.current_team == 0
+          {ballkid.current_team === 0
             ? ""
             : renderTeamButton(ballkid, "Unassign", 0, setUpdated)}
         </div>
@@ -280,7 +277,7 @@ function RatingSection({ ballkid }) {
     })
       .then((response) => response.json())
       .then((data) => setAverage(data));
-  }, []);
+  }, [ballkid.id]);
 
   return (
     <Grid container>
@@ -359,7 +356,7 @@ function InactiveOverflowMenu(props) {
           setAnchorEl(null);
         }}
       >
-        {ballkid.is_cut == "true" ? (
+        {ballkid.is_cut === "true" ? (
           <MenuItem
             onClick={(e) => {
               setAnchorEl(null);
@@ -592,7 +589,7 @@ export default function BallkidPageChairperson(props) {
       .then((response) => response.json())
       .then((data) =>
         setTeams(
-          data["num_teams"] == 0
+          data["num_teams"] === 0
             ? []
             : [...Array(data["num_teams"]).keys()].map((v) => v + 1)
         )
@@ -614,7 +611,7 @@ export default function BallkidPageChairperson(props) {
       .then((response) => response.json())
       .then((data) => setCheckins(data))
       .then(() => setUpdated(false));
-  }, [updated]);
+  }, [updated, pk]);
 
   return ballkid == null ? (
     ""
@@ -636,7 +633,7 @@ export default function BallkidPageChairperson(props) {
           {renderPreferredPosition(ballkid, setUpdated)}
           <br />
 
-          {(ballkid.is_cut == "true") | !ballkid.is_active ? (
+          {(ballkid.is_cut === "true") | !ballkid.is_active ? (
             ""
           ) : (
             <div>

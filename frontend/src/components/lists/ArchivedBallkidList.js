@@ -56,7 +56,7 @@ export default function ArchivedBallkidList(props) {
     fetch("/api/archived-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
-        setArchived(data.filter((ballkid) => ballkid.is_active == false));
+        setArchived(data.filter((ballkid) => ballkid.is_active === false));
       })
       .then(() => setUpdated(false));
   }, [updated]);
@@ -70,7 +70,7 @@ export default function ArchivedBallkidList(props) {
         <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
       </div>
 
-      {archived.length == 0 ? (
+      {archived.length === 0 ? (
         <Typography variant="body1">There are no ballkids to show.</Typography>
       ) : (
         <Grid container spacing={gridLayout ? 2 : 1}>

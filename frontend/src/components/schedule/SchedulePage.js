@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { getAuthHeader, getToday } from "../Utils";
 
@@ -106,7 +105,7 @@ export default function SchedulePage(props) {
         </LocalizationProvider>
       </Box>
 
-      {shifts.length == 0 ? (
+      {shifts.length === 0 ? (
         <Typography variant="body1">No schedule found.</Typography>
       ) : (
         <ScheduleTable shifts={shifts} date={date} setUpdated={setUpdated} />

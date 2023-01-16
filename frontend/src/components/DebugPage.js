@@ -7,7 +7,6 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  Rating,
   Select,
   MenuItem,
 } from "@mui/material";
@@ -731,7 +730,7 @@ export default function DebugPage(props) {
         setCaptains(
           data.filter(
             (ballkid) =>
-              ballkid.is_captain == true || ballkid.is_chairperson == true
+              ballkid.is_captain === true || ballkid.is_chairperson === true
           )
         );
       });
