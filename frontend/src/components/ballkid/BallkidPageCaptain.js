@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Grid, Box } from "@mui/material";
-import { getAuthHeader } from "../Utils";
+import { Typography, Grid, Box, Button, Link } from "@mui/material";
+import { Shortcut } from "@mui/icons-material";
+import { getAuthHeader, RatingButton } from "../Utils";
 
-export default function BallkidPage(props) {
+export default function BallkidPageCaptain(props) {
   const [ballkid, setBallkid] = useState(null);
   const [updated, setUpdated] = useState(false);
 
@@ -20,9 +21,24 @@ export default function BallkidPage(props) {
     ""
   ) : (
     <div className="page">
-      <Typography variant="h4">
-        {ballkid.first_name} {ballkid.last_name}
-      </Typography>
+      <div className="justify">
+        <Typography variant="h4">
+          {ballkid.first_name} {ballkid.last_name}
+        </Typography>
+        <div style={{ alignItems: "right" }}>
+          <RatingButton ballkid={ballkid} />
+          <Button
+            size="small"
+            variant="outlined"
+            component={Link}
+            href={`/ratings?rater=${ballkid.id}`}
+            endIcon={<Shortcut />}
+            sx={{ my: 1 }}
+          >
+            View my ratings submitted for this ballkid
+          </Button>
+        </div>
+      </div>
 
       <Grid container>
         <Grid item xs={4} md={3} lg={2}>

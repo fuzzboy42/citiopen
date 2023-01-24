@@ -23,6 +23,7 @@ import RateByPastTeamPage from "./ratings/RateByPastTeamPage";
 import RouteNotFound from "./RouteNotFound";
 
 import { useToken, getSessionStorage } from "./Utils";
+import BallkidPageCaptain from "./ballkid/BallkidPageCaptain";
 
 function chairpersonRoutes(setToken) {
   return (
@@ -55,7 +56,7 @@ function captainRoutes(setToken) {
       <Route path="/rate-by-team" element={<RateByTeamPage />} />
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/my-ratings" element={<MyRatingsPage />} />
-      <Route path="/ballkid/:pk" element={<BallkidPage />} />
+      <Route path="/ballkid/:pk" element={<BallkidPageCaptain />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/teams" element={<TeamsPage />} />
       <Route path="/finals-teams" element={<FinalsTeamsPage />} />

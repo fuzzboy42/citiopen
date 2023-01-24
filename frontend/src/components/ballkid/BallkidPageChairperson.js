@@ -299,7 +299,7 @@ function RatingSection({ ballkid }) {
             endIcon={<Shortcut />}
             sx={{ my: 1 }}
           >
-            See ratings submitted by this captain
+            View ratings submitted by this captain
           </Button>
 
           {params.reviewer_scale == null ? (
@@ -334,7 +334,7 @@ function RatingSection({ ballkid }) {
           endIcon={<Shortcut />}
           sx={{ my: 1 }}
         >
-          See ratings received by this ballkid
+          View ratings received by this ballkid
         </Button>
         {params.improvement == null ? (
           ""
