@@ -13,12 +13,15 @@ from pprint import pprint
 
 def save_calibration_parameters(cp):
     improvements = cp.improvement_rates()
+    ballkid_offsets = cp.person_offsets()
+
     scales = cp.reviewer_scales()
     offsets = cp.reviewer_offsets()
     keys = set().union(improvements, scales)
 
     for name in keys:
         improvement = improvements.get(name)
+        ballkid_offset = ballkid_offsets.get(name)
         scale = scales.get(name)
         offset = offsets.get(name)
 
@@ -29,7 +32,8 @@ def save_calibration_parameters(cp):
         cp, created = CalibrationParams.objects.update_or_create(
             ballkid=ballkid,
             defaults={
-                "improvement": improvement,
+                "ballkid_improvement": improvement,
+                "ballkid_offset": ballkid_offset,
                 "reviewer_scale": scale,
                 "reviewer_offset": offset,
             },
