@@ -12,7 +12,6 @@ function handleSubmit(email, navigate, setErrorMsg) {
     if (response.ok) {
       navigate("/reset-email-sent");
     } else {
-      console.log(response);
       setErrorMsg(
         "Email not found to be associated with an account! Please enter another email."
       );
