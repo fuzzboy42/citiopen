@@ -96,18 +96,22 @@ class Ballkid(models.Model):
         and non-captain) that have had this ballkid as captain
         )
         """
+
         if now is None:
             now = datetime.now()
 
         for updateAsCaptain in [True, False]:
+            # If ballkid is not a captain, then don't update as captain
             if updateAsCaptain and not self.is_captain:
                 continue
 
             durations = {}
             counts = {}
 
+            # If updating as captain, then treat self as the captain
             if updateAsCaptain:
                 histories = CaptainHistory.objects.filter(captain=self)
+            # If not updating as captain, then treat self as the ballkid
             else:
                 histories = CaptainHistory.objects.filter(ballkid=self)
 
@@ -182,6 +186,11 @@ class Ballkid(models.Model):
             analytic.duration = times[court]
             analytic.save()
 
+    def recalc_analytics(self, now=None):
+        self.recalc_checkin_analytics(now)
+        self.recalc_captain_analytics(now)
+        self.recalc_court_analytics(now)
+
     def handle_checkin_history(self, value, now=None):
         """
         Handle logic for saving checkin history and recalculating total amount of time the
@@ -216,9 +225,6 @@ class Ballkid(models.Model):
                     )
                 history.duration = history.checkout - history.checkin
                 history.save()
-
-        # Recalculate total checked in time and update in Analytics table
-        self.recalc_checkin_analytics()
 
     def handle_team_history(self, value, now=None):
         """
@@ -330,7 +336,7 @@ class Ballkid(models.Model):
 
                     # If this most recent entry has empty end, then log end and duration
                     if history.end is None:
-                        history.end = time
+                        history.end = now
 
                         if history.end < history.start:
                             raise Exception(
@@ -349,11 +355,30 @@ class Ballkid(models.Model):
                     history = CaptainHistory(ballkid=ballkid, captain=self, start=now)
                     history.save()
 
-        # Recalculate total time with each captain and update in CaptainAnalytics table
-        self.recalc_captain_analytics()
+    def handle_captain_history_captain(self, value, now=None):
+        if now is None:
+            now = datetime.now()
 
-    def handle_captain_history_captain(self, value, time=None):
-        pass
+        # If ballkid is unassigned, then do nothing because promotion/demotion doesn't
+        # matter and will be handled when the ballkid is assigned to a team
+        if self.current_team == 0:
+            return
+
+        ballkids = (
+            Ballkid.objects.all()
+            .filter(current_team=self.current_team)
+            .exclude(id=self.id)
+        )
+        for ballkid in ballkids:
+            # If getting promoted to be a captain, create a CaptainHistory entry
+            # for each ballkid on the team
+            if value:
+                CaptainHistory.objects.create(ballkid=ballkid, captain=self, start=now)
+            # If getting demoted from a captain, add end for all CaptainHistory entries
+            else:
+                history = CaptainHistory.objects.get(ballkid=ballkid, captain=self)
+                history.end = now
+                history.save()
 
     def set_field(self, field, value):
         """
@@ -388,6 +413,7 @@ class Ballkid(models.Model):
         elif field == "is_cut":
             self.is_cut = value
         elif field == "is_captain":
+            self.handle_captain_history_captain(value)
             self.is_captain = value
         elif field == "comments":
             self.comments = value
@@ -395,6 +421,7 @@ class Ballkid(models.Model):
             raise Exception(f"Unrecognized field {field}")
 
         self.save()
+        self.recalc_analytics()
 
     def get_name(self):
         """
