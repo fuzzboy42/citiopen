@@ -87,50 +87,50 @@ class TestUtils(TestCase):
         delta = None
         self.assertEqual("0 hrs 0 mins", timedelta_to_str(delta))
 
-    def test_input_str_to_datetime_none(self):
+    def test_datetime_str_to_datetime_none(self):
         input_str = None
-        self.assertIsNone(input_str_to_datetime(input_str))
+        self.assertIsNone(datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_empty(self):
+    def test_datetime_str_to_datetime_empty(self):
         input_str = ""
-        self.assertIsNone(input_str_to_datetime(input_str))
+        self.assertIsNone(datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_nonzero(self):
+    def test_datetime_str_to_datetime_nonzero(self):
         input_str = "2022-12-22T07:12:15.23984"
         obj = datetime(year=2022, month=12, day=22, hour=7, minute=12, second=15)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_missing_milliseconds(self):
+    def test_datetime_str_to_datetime_missing_milliseconds(self):
         input_str = "2022-12-22T07:12:15"
         obj = datetime(year=2022, month=12, day=22, hour=7, minute=12, second=15)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_greater_than_12_hour(self):
+    def test_datetime_str_to_datetime_greater_than_12_hour(self):
         input_str = "2022-12-22T15:12:15.23984"
         obj = datetime(year=2022, month=12, day=22, hour=15, minute=12, second=15)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_format_str(self):
+    def test_datetime_str_to_datetime_format_str(self):
         input_str = "12/22/2022T07:12:15.23984"
         format_str = "%m/%d/%Y %H:%M:%S"
         obj = datetime(year=2022, month=12, day=22, hour=7, minute=12, second=15)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str, format_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str, format_str))
 
-    def test_input_str_to_datetime_zero_padded(self):
+    def test_datetime_str_to_datetime_zero_padded(self):
         input_str = "2022-09-04T03:05:07.23984"
         obj = datetime(year=2022, month=9, day=4, hour=3, minute=5, second=7)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str))
 
-    def test_input_str_to_datetime_non_zero_padded(self):
+    def test_datetime_str_to_datetime_non_zero_padded(self):
         input_str = "2022-9-4T3:5:7.23984"
         obj = datetime(year=2022, month=9, day=4, hour=3, minute=5, second=7)
 
-        self.assertEqual(obj, input_str_to_datetime(input_str))
+        self.assertEqual(obj, datetime_str_to_datetime(input_str))
 
     def test_dict_to_rcal_empty(self):
         ratings = Rating.objects.all()
