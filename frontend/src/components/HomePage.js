@@ -4,7 +4,6 @@ import BallkidList from "./lists/BallkidList";
 import BallkidPage from "./ballkid/BallkidPage";
 import TeamsPage from "./teams/TeamsPage";
 import TeamsPageChairperson from "./teams/TeamsPageChairperson";
-import CutPage from "./lists/CutPage";
 import CutPageTiered from "./lists/CutPageTiered";
 import Navbar from "./Navbar";
 import CheckinPage from "./lists/CheckinPage";

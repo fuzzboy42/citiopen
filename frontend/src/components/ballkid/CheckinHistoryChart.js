@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Typography } from "@mui/material";
 import {
   Chart as ChartJS,
@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { getTimeFloat, getTimeStr, getAuthHeader, getDays } from "../Utils";
+import { getTimeFloat, getTimeStr, getDays } from "../Utils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -50,15 +50,12 @@ function getCheckinDuration(history, date) {
   return 0.1;
 }
 
-export function CheckinHistoryChart(props) {
+export function CheckinHistoryChart({ histories, totalTime }) {
   // Note that this only plots the first shift a ballkid is checked in for the day.
   // TODO: modify to capture if ballkid checks in, then out, then in, then out
   //
   // Also note that this only plots if the ballkid checks in before midnight.
   // TODO: modify to capture if ballkid checks in after midnight
-
-  const [totalTime, setTotalTime] = useState("");
-  const pk = props.pk ?? "";
 
   const days = getDays();
   const labels = days.map((day) => day.toDateString());
@@ -99,24 +96,17 @@ export function CheckinHistoryChart(props) {
     datasets: [
       {
         label: "Check-in Time",
-        data: days.map((day) => getCheckinTime(props.histories, day)),
+        data: days.map((day) => getCheckinTime(histories, day)),
         backgroundColor: "rgb(0, 0, 0, 0)",
       },
 
       {
         label: "Hours Checked In",
-        data: days.map((day) => getCheckinDuration(props.histories, day)),
+        data: days.map((day) => getCheckinDuration(histories, day)),
         backgroundColor: "rgb(75, 192, 192)",
       },
     ],
   };
-
-  useEffect(() => {
-    fetch("/api/get-checkin-time/" + pk, { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) => setTotalTime(data["duration"]))
-      .then(() => props.setUpdated(false));
-  }, [props.updated]);
 
   return (
     <div>

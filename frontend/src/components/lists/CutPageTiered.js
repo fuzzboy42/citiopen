@@ -21,8 +21,6 @@ import { Clear, Dangerous, ReportOff } from "@mui/icons-material";
 import { getAuthHeader, Icons } from "../Utils";
 import { CUT_STATUSES } from "../Consts";
 
-function getColor(section) {}
-
 function DraggableBallkidAndIcon({ ballkid }) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "ballkid",

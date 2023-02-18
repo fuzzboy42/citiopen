@@ -613,6 +613,8 @@ export default function BallkidPageChairperson(props) {
   const [captains, setCaptains] = useState([]);
   const [courts, setCourts] = useState([]);
 
+  const [totalTime, setTotalTime] = useState("");
+
   const { pk } = useParams();
 
   useEffect(() => {
@@ -644,7 +646,11 @@ export default function BallkidPageChairperson(props) {
 
     fetch("/api/get-checkins/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setCheckins(data))
+      .then((data) => setCheckins(data));
+
+    fetch("/api/get-checkin-time/" + pk, { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setTotalTime(data["duration"]))
       .then(() => setUpdated(false));
   }, [updated, pk]);
 
@@ -699,12 +705,7 @@ export default function BallkidPageChairperson(props) {
           </Grid>
 
           <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-            <CheckinHistoryChart
-              histories={checkins}
-              pk={pk}
-              updated={updated}
-              setUpdated={setUpdated}
-            />
+            <CheckinHistoryChart histories={checkins} totalTime={totalTime} />
           </Grid>
 
           <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
