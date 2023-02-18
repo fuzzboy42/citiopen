@@ -5,6 +5,7 @@ import BallkidPage from "./ballkid/BallkidPage";
 import TeamsPage from "./teams/TeamsPage";
 import TeamsPageChairperson from "./teams/TeamsPageChairperson";
 import CutPage from "./lists/CutPage";
+import CutPageTiered from "./lists/CutPageTiered";
 import Navbar from "./Navbar";
 import CheckinPage from "./lists/CheckinPage";
 import ArchivedBallkidList from "./lists/ArchivedBallkidList";
@@ -25,10 +26,10 @@ import RateByNamePage from "./ratings/RateByNamePage";
 import RateByTeamPage from "./ratings/RateByTeamPage";
 import RateByPastTeamPage from "./ratings/RateByPastTeamPage";
 import RouteNotFound from "./RouteNotFound";
-
-import { useToken, getSessionStorage } from "./Utils";
 import BallkidPageCaptain from "./ballkid/BallkidPageCaptain";
 import MyProfile from "./ballkid/MyProfile";
+
+import { useToken, getSessionStorage } from "./Utils";
 
 function chairpersonRoutes(setToken) {
   return (
@@ -37,7 +38,7 @@ function chairpersonRoutes(setToken) {
       <Route path="/archive" element={<ArchivedBallkidList />} />
       <Route path="/ballkid/:pk" element={<BallkidPageChairperson />} />
       <Route path="/checkin" element={<CheckinPage />} />
-      <Route path="/cut" element={<CutPage />} />
+      <Route path="/cut" element={<CutPageTiered />} />
       <Route path="/debug" element={<DebugPage />} />
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />
