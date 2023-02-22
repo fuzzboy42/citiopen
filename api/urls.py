@@ -44,6 +44,7 @@ analytics_urls = [
         name="get-finals-history",
     ),
     path("get-cut-history/<int:pk>", GetCutHistory.as_view(), name="get-cut-history"),
+    path("get-checkin-times", GetCheckinTimes.as_view(), name="get-checkin-times"),
 ]
 
 # Tournament URLs

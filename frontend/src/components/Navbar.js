@@ -185,9 +185,9 @@ export default function Navbar(props) {
       label: "Analytics",
       url: "/schedule",
       subtabs: [
+        { label: "Checkin", url: "/analytics-checkin" },
         { label: "Court", url: "/schedule" },
         { label: "Match", url: "/schedule" },
-        { label: "Leaderboards", url: "/schedule" },
       ],
     },
   ];

@@ -8,7 +8,6 @@ from api.permissions import *
 from api.utils import *
 from api.models.ballkid import *
 from datetime import datetime
-from pprint import pprint
 
 
 def save_calibration_parameters(cp):

@@ -29,11 +29,13 @@ import BallkidPageCaptain from "./ballkid/BallkidPageCaptain";
 import MyProfile from "./ballkid/MyProfile";
 
 import { useToken, getSessionStorage } from "./Utils";
+import CheckinTimeAnalyticsPage from "./analytics/CheckinTimeAnalyticsPage";
 
 function chairpersonRoutes(setToken) {
   return (
     <Routes>
       <Route exact path="/" element={<BallkidList />} />
+      <Route path="/analytics-checkin" element={<CheckinTimeAnalyticsPage />} />
       <Route path="/archive" element={<ArchivedBallkidList />} />
       <Route path="/ballkid/:pk" element={<BallkidPageChairperson />} />
       <Route path="/checkin" element={<CheckinPage />} />

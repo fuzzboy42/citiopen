@@ -2,11 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import Max, Value, Count
+from django.db.models.functions import Concat, TruncDay
 from api.serializers import *
 from api.models.ballkid import *
-from django.db.models import Max
-from django.db.models.functions import TruncDay
 from api.utils import *
 from api.permissions import *
 from accounts.views import UpdateCaptainStatus
@@ -297,6 +297,16 @@ class GetCheckinAnalytics(APIView):
         ballkid.recalc_checkin_analytics()
         analytic = CheckinAnalytics.objects.get(ballkid_id=pk)
         return Response(CheckinAnalyticsSerializer(analytic).data)
+
+
+class GetCheckinTimes(generics.ListAPIView):
+    permission_classes = [IsChairperson]
+    serializer_class = CheckinAnalyticsSerializer
+
+    def get_queryset(self):
+        return CheckinAnalytics.objects.order_by("-duration").annotate(
+            ballkid_name=Concat("ballkid__first_name", Value(" "), "ballkid__last_name"),
+        )
 
 
 class GetCheckinHistory(APIView):
