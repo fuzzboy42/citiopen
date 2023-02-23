@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import { getAuthHeader, getTimeStr } from "../Utils";
 
-export default function CheckinTimeAnalyticsPage(props) {
+export default function RatingsLeaderboard(props) {
   const [checkinTimes, setCheckinTimes] = useState([]);
 
   useEffect(() => {
@@ -14,6 +14,12 @@ export default function CheckinTimeAnalyticsPage(props) {
   }, []);
 
   const columns = [
+    {
+      field: "rank",
+      headerName: "Rank",
+      width: 75,
+      valueGetter: (rowData) => rowData.row.rank,
+    },
     {
       field: "name",
       headerName: "Ballkid",
@@ -26,14 +32,27 @@ export default function CheckinTimeAnalyticsPage(props) {
     },
     {
       field: "time",
-      headerName: "Total Checkin Time",
+      headerName: "Total Time",
       width: 300,
       renderCell: (rowData) => getTimeStr(rowData.row.time),
     },
+    {
+      field: "days",
+      headerName: "# of Days",
+      width: 200,
+      valueGetter: (rowData) => rowData.row.days,
+    },
+    {
+      field: "timePerDay",
+      headerName: "Average Time Per Day",
+      width: 200,
+      valueGetter: (rowData) => rowData.row.timePerDay,
+    },
   ];
 
-  const rows = checkinTimes.map((analytic) => ({
+  const rows = checkinTimes.map((analytic, index) => ({
     id: analytic.id,
+    rank: index + 1,
     ballkid_id: analytic.ballkid,
     ballkid_name: analytic.ballkid_name,
     time: analytic.duration,
@@ -42,7 +61,7 @@ export default function CheckinTimeAnalyticsPage(props) {
   return (
     <div className="page">
       <Typography variant="h4" sx={{ mb: 2 }}>
-        Checkin Time Leaderboard
+        Ratings Leaderboard
       </Typography>
 
       <div style={{ height: 500 }}>

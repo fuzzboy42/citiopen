@@ -27,20 +27,28 @@ import RateByPastTeamPage from "./ratings/RateByPastTeamPage";
 import RouteNotFound from "./RouteNotFound";
 import BallkidPageCaptain from "./ballkid/BallkidPageCaptain";
 import MyProfile from "./ballkid/MyProfile";
+import Leaderboards from "./leaderboards/Leaderboards";
+import CheckinLeaderboard from "./leaderboards/CheckinLeaderboard";
+import RatingsLeaderboard from "./leaderboards/RatingsLeaderboard";
+import CourtLeaderboard from "./leaderboards/CourtLeaderboard";
+import MatchLeaderboard from "./leaderboards/MatchLeaderboard";
 
 import { useToken, getSessionStorage } from "./Utils";
-import CheckinTimeAnalyticsPage from "./analytics/CheckinTimeAnalyticsPage";
 
 function chairpersonRoutes(setToken) {
   return (
     <Routes>
       <Route exact path="/" element={<BallkidList />} />
-      <Route path="/analytics-checkin" element={<CheckinTimeAnalyticsPage />} />
       <Route path="/archive" element={<ArchivedBallkidList />} />
       <Route path="/ballkid/:pk" element={<BallkidPageChairperson />} />
       <Route path="/checkin" element={<CheckinPage />} />
       <Route path="/cut" element={<CutPageTiered />} />
       <Route path="/debug" element={<DebugPage />} />
+      <Route path="/leaderboards" element={<Leaderboards />} />
+      <Route path="/leaderboards/checkin" element={<CheckinLeaderboard />} />
+      <Route path="/leaderboards/ratings" element={<RatingsLeaderboard />} />
+      <Route path="/leaderboards/court" element={<CourtLeaderboard />} />
+      <Route path="/leaderboards/match" element={<MatchLeaderboard />} />
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />
       <Route path="/my-ratings" element={<MyRatingsPage />} />

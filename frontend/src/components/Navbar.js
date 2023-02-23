@@ -182,12 +182,13 @@ export default function Navbar(props) {
       ],
     },
     {
-      label: "Analytics",
-      url: "/schedule",
+      label: "Leaderboards",
+      url: "/leaderboards",
       subtabs: [
-        { label: "Checkin", url: "/analytics-checkin" },
-        { label: "Court", url: "/schedule" },
-        { label: "Match", url: "/schedule" },
+        { label: "Check-in", url: "/leaderboards/checkin" },
+        { label: "Ratings", url: "/leaderboards/ratings" },
+        { label: "Court", url: "/leaderboards/court" },
+        { label: "Match", url: "/leaderboards/match" },
       ],
     },
   ];
