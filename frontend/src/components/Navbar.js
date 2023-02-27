@@ -187,8 +187,8 @@ export default function Navbar(props) {
       subtabs: [
         { label: "Check-in", url: "/leaderboards/checkin" },
         { label: "Ratings", url: "/leaderboards/ratings" },
-        { label: "Court", url: "/leaderboards/court" },
-        { label: "Match", url: "/leaderboards/match" },
+        { label: "Court Time", url: "/leaderboards/court" },
+        { label: "Match Type", url: "/leaderboards/match" },
       ],
     },
   ];

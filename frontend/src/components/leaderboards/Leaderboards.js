@@ -26,14 +26,14 @@ export default function Leaderboards(props) {
       <div className="sxs">
         <Place color="primary" /> &emsp;
         <Typography variant="h6" component={Link} href="/leaderboards/court">
-          Court
+          Court Time
         </Typography>
       </div>
 
       <div className="sxs">
         <Wc color="primary" /> &emsp;
         <Typography variant="h6" component={Link} href="/leaderboards/match">
-          Match
+          Match Type
         </Typography>
       </div>
     </div>

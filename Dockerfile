@@ -1,12 +1,9 @@
-ARG PYTHON_VERSION=3.10-slim-buster
+ARG PYTHON_VERSION=3.10-buster
 
 FROM python:${PYTHON_VERSION}
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN brew install git
 
 RUN --mount=type=secret,id=SECRET_KEY \
     SECRET_KEY=LirzoeF1HXFgBvUwNOVU_7Ug_kS7qAiIXRMF2b322Qw
@@ -17,10 +14,13 @@ WORKDIR /code
 
 COPY requirements.txt /tmp/requirements.txt
 
+RUN apt-get update && apt-get install -y git
+
 RUN set -ex && \
     pip install --upgrade pip && \
     pip install -r /tmp/requirements.txt && \
-    rm -rf /root/.cache/
+    rm -rf /root/.cache/ && \
+    pip install -e git+https://github.com/jtiosue/rcal.git#egg=rcal
 
 COPY . /code/
 
