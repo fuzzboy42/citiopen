@@ -8,7 +8,7 @@ export default function CheckinLeaderboard(props) {
   const [checkinTimes, setCheckinTimes] = useState([]);
 
   useEffect(() => {
-    fetch("/api/get-checkin-analytics", { headers: getAuthHeader() })
+    fetch("/api/get-checkin-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setCheckinTimes(data));
     // .then((data) => console.log(data));

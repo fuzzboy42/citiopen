@@ -289,17 +289,30 @@ class GetPastTeams(APIView):
         return Response(date_to_ballkids, status=status.HTTP_200_OK)
 
 
-class GetCheckinAnalytic(APIView):
+# TODO: figure out a way to just filter GetCheckinAnalytics instead of
+# recalculating separately
+# class GetCheckinDuration(APIView):
+#     permission_classes = [IsChairpersonOrSelf]
+
+#     def get(self, request, pk):
+#         ballkid = get_object_or_404(Ballkid, id=pk)
+#         ballkid.recalc_checkin_analytics()
+#         analytic = CheckinAnalytics.objects.get(ballkid_id=pk)
+#         return Response(CheckinAnalyticsSerializer(analytic).data)
+
+
+class GetCheckinDuration(APIView):
     permission_classes = [IsChairpersonOrSelf]
 
     def get(self, request, pk):
-        ballkid = get_object_or_404(Ballkid, id=pk)
-        ballkid.recalc_checkin_analytics()
-        analytic = CheckinAnalytics.objects.get(ballkid_id=pk)
-        return Response(CheckinAnalyticsSerializer(analytic).data)
+        ballkid = Ballkid.objects.filter(id=pk).annotate(
+            total_checkin_duration=Sum("checkinhistory__duration"),
+            total_checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
+        )[0]
+        return Response(BallkidSerializer(ballkid).data)
 
 
-class GetCheckinAnalytics(generics.ListAPIView):
+class GetCheckinLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
 

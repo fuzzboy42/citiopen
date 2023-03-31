@@ -30,9 +30,9 @@ schedule_urls = [
 # Analytics URLs
 analytics_urls = [
     path(
-        "get-checkin-analytic/<int:pk>",
-        GetCheckinAnalytic.as_view(),
-        name="get-checkin-analytic",
+        "get-checkin-duration/<int:pk>",
+        GetCheckinDuration.as_view(),
+        name="get-checkin-duration",
     ),
     path(
         "get-checkins/<int:pk>", GetBallkidCheckinHistory.as_view(), name="get-checkins"
@@ -47,9 +47,9 @@ analytics_urls = [
     ),
     path("get-cut-history/<int:pk>", GetCutHistory.as_view(), name="get-cut-history"),
     path(
-        "get-checkin-analytics",
-        GetCheckinAnalytics.as_view(),
-        name="get-checkin-analytics",
+        "get-checkin-leaderboard",
+        GetCheckinLeaderboard.as_view(),
+        name="get-checkin-leaderboard",
     ),
 ]
 

@@ -648,9 +648,9 @@ export default function BallkidPageChairperson(props) {
       .then((response) => response.json())
       .then((data) => setCheckins(data));
 
-    fetch("/api/get-checkin-analytic/" + pk, { headers: getAuthHeader() })
+    fetch("/api/get-checkin-duration/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setTotalTime(data["duration"]))
+      .then((data) => setTotalTime(data["total_checkin_duration"]))
       .then(() => setUpdated(false));
   }, [updated, pk]);
 

@@ -111,7 +111,7 @@ export function CheckinHistoryChart({ histories, totalTime }) {
   return (
     <div>
       <Typography variant="body1">
-        Total time checked in: {getTimeStr(totalTime)}
+        Total time checked in: {getTimeStr(getTimeFloat(totalTime))}
       </Typography>
 
       <Bar options={options} data={data} />
