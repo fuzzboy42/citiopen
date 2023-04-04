@@ -71,11 +71,10 @@ export default function CourtLeaderboard(props) {
     },
   ];
 
-  const rows = checkinTimes.map((analytic, index) => ({
-    id: analytic.id,
-    ballkid_id: analytic.ballkid,
-    ballkid_name: analytic.ballkid_name,
-    time: analytic.duration,
+  const rows = checkinTimes.map((ballkid) => ({
+    ballkid: ballkid,
+    ballkid_name: ballkid.ballkid_name,
+    time: ballkid.duration,
   }));
 
   return (

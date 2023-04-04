@@ -6,12 +6,12 @@ import { getAuthHeader } from "../Utils";
 import { EventSeat } from "@mui/icons-material";
 
 export default function RatingsLeaderboard(props) {
-  const [leaderboard, setLeaderboard] = useState([]);
+  const [ballkids, setBallkids] = useState([]);
 
   useEffect(() => {
     fetch("/api/get-ratings-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setLeaderboard(data));
+      .then((data) => setBallkids(data));
   }, []);
 
   const columns = [
@@ -29,9 +29,9 @@ export default function RatingsLeaderboard(props) {
       renderCell: (rowData) => (
         <div className="sxs">
           <Link href={`/ballkid/${rowData.row.id}`}>
-            {rowData.row.ballkidName}
+            {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
           </Link>
-          {rowData.row.isChairperson ? (
+          {rowData.row.ballkid.is_chairperson ? (
             <EventSeat sx={{ color: "purple", ml: 1 }} />
           ) : (
             ""
@@ -43,47 +43,41 @@ export default function RatingsLeaderboard(props) {
       field: "numRatings",
       headerName: "# of Ratings",
       width: 100,
-      valueGetter: (rowData) => rowData.row.numRatings,
+      valueGetter: (rowData) => rowData.row.ballkid.num_ratings,
     },
     {
       field: "avgRating",
       headerName: "Average",
       width: 150,
-      valueGetter: (rowData) => rowData.row.avgRating,
+      valueGetter: (rowData) => rowData.row.ballkid.avg_rating,
       valueFormatter: (obj) => Number(obj.value.toFixed(3)),
     },
     {
       field: "stdevRating",
       headerName: "Standard Deviation",
       width: 150,
-      valueGetter: (rowData) => rowData.row.stdevRating,
+      valueGetter: (rowData) => rowData.row.ballkid.stdev_rating,
       valueFormatter: (obj) => Number(obj.value.toFixed(3)),
     },
     {
       field: "scale",
       headerName: "Calibration Scale",
       width: 150,
-      valueGetter: (rowData) => rowData.row.scale,
+      valueGetter: (rowData) => rowData.row.ballkid.scale,
       valueFormatter: (obj) => Number(obj.value.toFixed(3)),
     },
     {
       field: "offset",
       headerName: "Calibration Offset",
       width: 150,
-      valueGetter: (rowData) => rowData.row.offset,
+      valueGetter: (rowData) => rowData.row.ballkid.offset,
       valueFormatter: (obj) => Number(obj.value.toFixed(3)),
     },
   ];
 
-  const rows = leaderboard.map((ballkid) => ({
+  const rows = ballkids.map((ballkid) => ({
     id: ballkid.id,
-    ballkidName: ballkid.ballkid_name,
-    isChairperson: ballkid.is_chairperson,
-    numRatings: ballkid.num_ratings,
-    avgRating: ballkid.avg_rating,
-    stdevRating: ballkid.stdev_rating,
-    scale: ballkid.scale,
-    offset: ballkid.offset,
+    ballkid: ballkid,
   }));
 
   return (

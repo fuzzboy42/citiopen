@@ -5,12 +5,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { getAuthHeader, getTimeStr, getTimeFloat, Icons } from "../Utils";
 
 export default function CheckinLeaderboard(props) {
-  const [checkinTimes, setCheckinTimes] = useState([]);
+  const [ballkids, setBallkids] = useState([]);
 
   useEffect(() => {
     fetch("/api/get-checkin-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setCheckinTimes(data));
+      .then((data) => setBallkids(data));
   }, []);
 
   const columns = [
@@ -28,7 +28,7 @@ export default function CheckinLeaderboard(props) {
       renderCell: (rowData) => (
         <div className="sxs">
           <Link href={`/ballkid/${rowData.row.id}`}>
-            {rowData.row.ballkid_name}
+            {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
           </Link>
           &thinsp;
           <Icons ballkid={rowData.row.ballkid} margin={0} />
@@ -58,10 +58,9 @@ export default function CheckinLeaderboard(props) {
     },
   ];
 
-  const rows = checkinTimes.map((ballkid) => ({
+  const rows = ballkids.map((ballkid) => ({
     id: ballkid.id,
     ballkid: ballkid,
-    ballkid_name: ballkid.ballkid_name,
     days: ballkid.total_checkin_days,
     time: ballkid.total_checkin_duration,
   }));
