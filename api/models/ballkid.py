@@ -577,10 +577,10 @@ class CheckinHistory(models.Model):
 
 class CaptainHistory(models.Model):
     captain = models.ForeignKey(
-        Ballkid, on_delete=models.CASCADE, related_name="history_captain"
+        Ballkid, on_delete=models.CASCADE, related_name="captainhistory_captain"
     )
     ballkid = models.ForeignKey(
-        Ballkid, on_delete=models.CASCADE, related_name="history_ballkid"
+        Ballkid, on_delete=models.CASCADE, related_name="captainhistory_ballkid"
     )
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True)
@@ -592,10 +592,10 @@ class CaptainHistory(models.Model):
 
 class CaptainAnalytics(models.Model):
     ballkid = models.ForeignKey(
-        Ballkid, on_delete=models.CASCADE, related_name="analytics_ballkid"
+        Ballkid, on_delete=models.CASCADE, related_name="captainanalytics_ballkid"
     )
     captain = models.ForeignKey(
-        Ballkid, on_delete=models.CASCADE, related_name="analytics_captain"
+        Ballkid, on_delete=models.CASCADE, related_name="captainanalytics_captain"
     )
     count = models.IntegerField(default=0)
     duration = models.DurationField(default=timedelta)

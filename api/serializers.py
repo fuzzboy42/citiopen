@@ -6,13 +6,22 @@ from api.models.rating import *
 
 class BallkidSerializer(serializers.ModelSerializer):
     ballkid_name = serializers.CharField(max_length=60, required=False)
-    total_checkin_duration = serializers.DurationField(required=False)
-    total_checkin_days = serializers.IntegerField(required=False)
+    # Checkin leaderboard fields
+    checkin_duration = serializers.DurationField(required=False)
+    checkin_days = serializers.IntegerField(required=False)
+    # Rating leaderboard fields
     num_ratings = serializers.IntegerField(required=False)
     avg_rating = serializers.FloatField(required=False)
     stdev_rating = serializers.FloatField(required=False)
     scale = serializers.FloatField(required=False)
     offset = serializers.FloatField(required=False)
+    # Court leaderboard fields
+    court_duration = serializers.DurationField(required=False)
+    stadium_duration = serializers.DurationField(required=False)
+    harris_duration = serializers.DurationField(required=False)
+    grandstand_duration = serializers.DurationField(required=False)
+    four_duration = serializers.DurationField(required=False)
+    five_duration = serializers.DurationField(required=False)
 
     class Meta:
         model = Ballkid

@@ -56,6 +56,11 @@ analytics_urls = [
         GetRatingsLeaderboard.as_view(),
         name="get-ratings-leaderboard",
     ),
+    path(
+        "get-court-leaderboard",
+        GetCourtLeaderboard.as_view(),
+        name="get-court-leaderboard",
+    ),
 ]
 
 # Tournament URLs

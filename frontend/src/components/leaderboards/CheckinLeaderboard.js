@@ -61,8 +61,8 @@ export default function CheckinLeaderboard(props) {
   const rows = ballkids.map((ballkid) => ({
     id: ballkid.id,
     ballkid: ballkid,
-    days: ballkid.total_checkin_days,
-    time: ballkid.total_checkin_duration,
+    days: ballkid.checkin_days,
+    time: ballkid.checkin_duration,
   }));
 
   return (

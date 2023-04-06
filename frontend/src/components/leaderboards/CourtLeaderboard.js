@@ -5,15 +5,16 @@ import { DataGrid } from "@mui/x-data-grid";
 import { getAuthHeader, getTimeStr } from "../Utils";
 
 export default function CourtLeaderboard(props) {
-  const [checkinTimes, setCheckinTimes] = useState([]);
+  const [ballkids, setBallkids] = useState([]);
   const [showAdjusted, setShowAdjusted] = useState(false);
 
   const timeColWidth = 150;
 
   useEffect(() => {
-    fetch("/api/get-checkin-times", { headers: getAuthHeader() })
+    fetch("/api/get-court-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setCheckinTimes(data));
+      .then((data) => console.log(data));
+    // .then((data) => setBallkids(data));
   }, []);
 
   const columns = [
@@ -22,8 +23,8 @@ export default function CourtLeaderboard(props) {
       headerName: "Ballkid",
       width: 200,
       renderCell: (rowData) => (
-        <Link href={`/ballkid/${rowData.row.ballkid_id}`}>
-          {rowData.row.ballkid_name}
+        <Link href={`/ballkid/${rowData.row.ballkid.id}`}>
+          {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
         </Link>
       ),
     },
@@ -71,7 +72,7 @@ export default function CourtLeaderboard(props) {
     },
   ];
 
-  const rows = checkinTimes.map((ballkid) => ({
+  const rows = ballkids.map((ballkid) => ({
     ballkid: ballkid,
     ballkid_name: ballkid.ballkid_name,
     time: ballkid.duration,

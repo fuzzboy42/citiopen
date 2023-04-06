@@ -3,11 +3,13 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Max, Value, Count, Sum, Q, Avg, OuterRef, Subquery
+from django.db.models import Max, Value, Count, Sum, F, Q, Avg, OuterRef, Subquery
 from django.db.models.aggregates import StdDev
 from django.db.models.functions import Concat, TruncDay, TruncDate
 from api.serializers import *
 from api.models.ballkid import *
+from api.models.rating import *
+from api.models.schedule import Court
 from api.utils import *
 from api.permissions import *
 from accounts.views import UpdateCaptainStatus
@@ -290,25 +292,15 @@ class GetPastTeams(APIView):
         return Response(date_to_ballkids, status=status.HTTP_200_OK)
 
 
-# TODO: figure out a way to just filter GetCheckinAnalytics instead of
+# TODO: figure out a way to just filter GetCheckinLeaderboard instead of
 # recalculating separately
-# class GetCheckinDuration(APIView):
-#     permission_classes = [IsChairpersonOrSelf]
-
-#     def get(self, request, pk):
-#         ballkid = get_object_or_404(Ballkid, id=pk)
-#         ballkid.recalc_checkin_analytics()
-#         analytic = CheckinAnalytics.objects.get(ballkid_id=pk)
-#         return Response(CheckinAnalyticsSerializer(analytic).data)
-
-
 class GetCheckinDuration(APIView):
     permission_classes = [IsChairpersonOrSelf]
 
     def get(self, request, pk):
         ballkid = Ballkid.objects.filter(id=pk).annotate(
-            total_checkin_duration=Sum("checkinhistory__duration"),
-            total_checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
+            checkin_duration=Sum("checkinhistory__duration"),
+            checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
         )[0]
         return Response(BallkidSerializer(ballkid).data)
 
@@ -321,13 +313,10 @@ class GetCheckinLeaderboard(generics.ListAPIView):
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                ballkid_name=Concat("first_name", Value(" "), "last_name"),
-                total_checkin_duration=Sum("checkinhistory__duration"),
-                total_checkin_days=Count(
-                    TruncDate("checkinhistory__checkin"), distinct=True
-                ),
+                checkin_duration=Sum("checkinhistory__duration"),
+                checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
             )
-            .order_by("-total_checkin_duration")
+            .order_by("-checkin_duration")
         )
 
 
@@ -340,22 +329,32 @@ class GetRatingsLeaderboard(generics.ListAPIView):
             Ballkid.objects.filter(is_active=True)
             .filter(Q(is_captain=True) | Q(is_chairperson=True))
             .annotate(
-                ballkid_name=Concat("first_name", Value(" "), "last_name"),
                 num_ratings=Count("rater"),
                 avg_rating=Avg("rater__rating"),
                 stdev_rating=StdDev("rater__rating"),
-                scale=Subquery(
-                    CalibrationParams.objects.filter(ballkid_id=OuterRef("id")).values(
-                        "reviewer_scale"
-                    )
-                ),
-                offset=Subquery(
-                    CalibrationParams.objects.filter(ballkid_id=OuterRef("id")).values(
-                        "reviewer_offset"
-                    )
-                ),
+                scale=F("calibrationparams__reviewer_scale"),
+                offset=F("calibrationparams__reviewer_offset"),
             )
             .order_by("-num_ratings")
+        )
+
+
+class GetCourtLeaderboard(generics.ListAPIView):
+    permission_classes = [IsChairperson]
+    serializer_class = BallkidSerializer
+
+    def get_queryset(self):
+        return (
+            Ballkid.objects.filter(is_active=True)
+            .annotate(
+                court_duration=Sum("courtanalytics__duration"),
+                checkin_duration=Sum("checkinhistory__duration"),
+                stadium_duration=Sum(
+                    "courtanalytics__duration",
+                    filter=Q(courtanalytics__court=Court.STADIUM),
+                ),
+            )
+            .order_by("-court_duration")
         )
 
 

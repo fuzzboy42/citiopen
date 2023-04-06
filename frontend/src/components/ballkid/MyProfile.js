@@ -109,7 +109,7 @@ export default function MyProfile(props) {
 
     fetch("/api/get-checkin-duration/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setTotalTime(data["total_checkin_duration"]))
+      .then((data) => setTotalTime(data["checkin_duration"]))
       .then(() => setUpdated(false));
   }, [updated, pk]);
 
