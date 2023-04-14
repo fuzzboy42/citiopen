@@ -293,8 +293,6 @@ class GetPastTeams(APIView):
         return Response(date_to_ballkids, status=status.HTTP_200_OK)
 
 
-# TODO: figure out a way to just filter GetCheckinLeaderboard instead of
-# recalculating separately
 class GetCheckinDuration(APIView):
     permission_classes = [IsChairpersonOrSelf]
 

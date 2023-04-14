@@ -464,10 +464,46 @@ class TestBallkidModelAnalytics(TestCase):
         self.assertIsNone(history2.end)
 
     def test_handle_captain_history_team_unassign_ballkid(self):
-        pass
+        start = datetime(2023, 1, 1, 8, 30, 10)
+        end = datetime(2023, 1, 1, 10, 30, 10)
+
+        self.captain.current_team = 1
+        self.captain.save()
+
+        self.ballkid.handle_captain_history_team(1, now=start)
+        self.ballkid.current_team = 1
+        self.ballkid.save()
+
+        self.ballkid.handle_captain_history_team(0, now=end)
+        self.ballkid.current_team = 0
+        self.ballkid.save()
+        self.assertEqual(1, len(CaptainHistory.objects.all()))
+
+        history = CaptainHistory.objects.get(ballkid=self.ballkid, captain=self.captain)
+
+        self.assertEqual(start, history.start)
+        self.assertEqual(end, history.end)
 
     def test_handle_captain_history_team_unassign_captain(self):
-        pass
+        start = datetime(2023, 1, 1, 8, 30, 10)
+        end = datetime(2023, 1, 1, 10, 30, 10)
+
+        self.captain.current_team = 1
+        self.captain.save()
+
+        self.ballkid.handle_captain_history_team(1, now=start)
+        self.ballkid.current_team = 1
+        self.ballkid.save()
+
+        self.captain.handle_captain_history_team(0, now=end)
+        self.captain.current_team = 0
+        self.captain.save()
+        self.assertEqual(1, len(CaptainHistory.objects.all()))
+
+        history = CaptainHistory.objects.get(ballkid=self.ballkid, captain=self.captain)
+
+        self.assertEqual(start, history.start)
+        self.assertEqual(end, history.end)
 
     def test_handle_captain_history_captain_promote_to_captain(self):
         self.ballkid.set_field("current_team", 1)
@@ -1122,3 +1158,32 @@ class TestBallkidModelAnalytics(TestCase):
         self.assertEqual(self.ballkid, analytic.ballkid)
         self.assertEqual(1, analytic.count)
         self.assertEqual(timedelta(hours=1), analytic.duration)
+
+    def test_recalc_court_analytics_one_team_one_shift_not_yet_occurred(self):
+        TeamHistory.objects.create(
+            ballkid=self.ballkid,
+            team=1,
+            start=datetime(2022, 1, 1, 8, 30),
+            end=datetime(2022, 1, 1, 9, 30),
+        )
+        Schedule.objects.create(
+            team=1, court=Court.STADIUM, day_hour=datetime(2022, 1, 1, 10, 00)
+        )
+        self.ballkid.recalc_court_analytics()
+
+        analytics = CourtAnalytics.objects.all()
+        self.assertEqual(0, len(analytics))
+
+    def test_recalc_court_analytics_one_team_one_shift_not_yet_occurred_empty_end(self):
+        TeamHistory.objects.create(
+            ballkid=self.ballkid,
+            team=1,
+            start=datetime(2022, 1, 1, 8, 30),
+        )
+        Schedule.objects.create(
+            team=1, court=Court.STADIUM, day_hour=datetime(2022, 1, 1, 10, 00)
+        )
+        self.ballkid.recalc_court_analytics(now=datetime(2022, 1, 1, 9, 30))
+
+        analytics = CourtAnalytics.objects.all()
+        self.assertEqual(0, len(analytics))
