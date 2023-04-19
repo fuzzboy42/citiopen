@@ -1,16 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Link } from "@mui/material";
+import {
+  Typography,
+  Link,
+  Table,
+  TableContainer,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 import { getAuthHeader, getTimeStr, getTimeFloat, Icons } from "../Utils";
 
+function renderAverages(averages) {
+  return (
+    <TableContainer sx={{ mt: 1, mb: 3 }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell align="center"></TableCell>
+            <TableCell align="center">Total Time</TableCell>
+            <TableCell align="center"># of Days</TableCell>
+            <TableCell align="center">Average Time Per Day</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell align="center" width="22%">
+              Average
+            </TableCell>
+            <TableCell align="center">
+              {getTimeStr(parseFloat(averages["checkin_avg"]) / 3600)}
+            </TableCell>
+            <TableCell align="center">
+              {Number(averages["days_avg"]).toFixed(1)}
+            </TableCell>
+            <TableCell align="center">
+              {getTimeStr(
+                parseFloat(averages["checkin_avg"] / averages["days_avg"]) /
+                  3600
+              )}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
 export default function CheckinLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
+  const [averages, setAverages] = useState();
 
   useEffect(() => {
     fetch("/api/get-checkin-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setBallkids(data));
+
+    fetch("/api/get-average-checkin-leaderboard", { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setAverages(data));
   }, []);
 
   const columns = [
@@ -70,6 +120,8 @@ export default function CheckinLeaderboard(props) {
       <Typography variant="h4" sx={{ mb: 2 }}>
         Check-in Leaderboard
       </Typography>
+
+      {averages !== undefined ? renderAverages(averages) : ""}
 
       <div style={{ height: 500 }}>
         <DataGrid

@@ -52,6 +52,11 @@ analytics_urls = [
         name="get-checkin-leaderboard",
     ),
     path(
+        "get-average-checkin-leaderboard",
+        GetAverageCheckinLeaderboard.as_view(),
+        name="get-average-checkin-leaderboard",
+    ),
+    path(
         "get-ratings-leaderboard",
         GetRatingsLeaderboard.as_view(),
         name="get-ratings-leaderboard",

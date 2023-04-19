@@ -317,6 +317,24 @@ class GetCheckinLeaderboard(generics.ListAPIView):
             .order_by("-checkin_duration")
         )
 
+class GetAverageCheckinLeaderboard(APIView):
+    permission_classes = [IsChairperson]
+
+    def get(self, request):
+        averages = (
+            Ballkid.objects.filter(is_active=True)
+            .annotate(
+                checkin_duration=Sum("checkinhistory__duration"),
+                checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
+            )
+            .aggregate(
+                checkin_avg=Avg("checkin_duration"),
+                days_avg=Avg("checkin_days"),
+            )
+        )
+
+        return Response(averages, status=status.HTTP_200_OK)
+
 
 class GetRatingsLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
@@ -395,7 +413,7 @@ class GetAverageCourtLeaderboard(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request):
-        agg = (
+        averages = (
             Ballkid.objects.filter(is_active=True)
             .annotate(
                 checkin_duration=Subquery(
@@ -436,7 +454,7 @@ class GetAverageCourtLeaderboard(APIView):
             )
         )
 
-        return Response(agg, status=status.HTTP_200_OK)
+        return Response(averages, status=status.HTTP_200_OK)
 
 
 class GetBallkidCheckinHistory(APIView):
