@@ -6,8 +6,12 @@ from api.views.rating import *
 # Ballkid URLs
 ballkid_urls = [
     path("list", BallkidsList.as_view(), name="list"),
+    path("list/<int:pk>", BallkidsList.as_view(), name="list-ratings"),
     path("all-list", AllBallkidsList.as_view(), name="all-list"),
     path("sorted-list", BallkidsSortedList.as_view(), name="sorted-list"),
+    path(
+        "sorted-list/<int:pk>", BallkidsSortedList.as_view(), name="sorted-list-ratings"
+    ),
     path("archived-list", BallkidsArchivedList.as_view(), name="archived-list"),
     path("create-ballkid", CreateBallkid.as_view(), name="create-ballkid"),
     path("get-ballkid/<int:pk>", GetBallkid.as_view(), name="get-ballkid"),
@@ -83,7 +87,6 @@ tournament_urls = [
 rating_urls = [
     path("create-rating", CreateRating.as_view(), name="create-rating"),
     path("ratings", AllRatings.as_view(), name="ratings"),
-    path("num-ratings/<int:pk>", GetBallkidNumRatings.as_view(), name="num-ratings"),
     path("calibrated-ratings", CalibratedRatings.as_view(), name="calibrated-ratings"),
     path("my-ratings/<int:pk>", MyRatings.as_view(), name="my-ratings"),
     path(

@@ -311,23 +311,3 @@ class GetAverageCalibrationParams(APIView):
             Avg("rater_offset"), Avg("rater_scale")
         )
         return Response(avg_offset)
-
-
-class GetBallkidNumRatings(generics.ListAPIView):
-    permission_classes = [IsChairperson]
-    serializer_class = BallkidSerializer
-
-    def get_queryset(self):
-        rater_pk = self.kwargs.get("pk")
-
-        ballkids = (
-            Ballkid.objects.filter(is_active=True, is_cut=False)
-            .annotate(
-                num_ratings=Count("ratee"),
-                have_rated=Exists(
-                    Rating.objects.filter(rater_id=rater_pk, ratee_id=OuterRef("id"))
-                ),
-            )
-            .order_by("last_name", "first_name")
-        )
-        return ballkids

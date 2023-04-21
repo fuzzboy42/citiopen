@@ -13,14 +13,12 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
 import {
   Star,
   Circle,
   GridView,
   List,
   EventSeat,
-  CheckBox,
   Check,
 } from "@mui/icons-material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -378,6 +376,7 @@ export function RatingButton({ ballkid }) {
           setOpen(true);
         }}
         endIcon={ballkid.have_rated ? <Check /> : ""}
+        sx={{ my: 0.2 }}
       >
         Give rating
       </Button>

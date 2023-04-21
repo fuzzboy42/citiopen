@@ -81,7 +81,7 @@ export default function RateByNamePage(props) {
   );
 
   useEffect(() => {
-    fetch("/api/num-ratings/" + getSessionStorage("ballkid_id"), {
+    fetch("/api/list/" + getSessionStorage("ballkid_id"), {
       headers: getAuthHeader(),
     })
       .then((response) => response.json())

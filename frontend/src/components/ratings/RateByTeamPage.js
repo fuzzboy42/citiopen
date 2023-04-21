@@ -7,7 +7,12 @@ import {
   Divider,
   Link,
 } from "@mui/material";
-import { Icons, getAuthHeader, RatingButton } from "../Utils";
+import {
+  Icons,
+  getAuthHeader,
+  RatingButton,
+  getSessionStorage,
+} from "../Utils";
 
 function Team(props) {
   const positions = ["Back", "Net"];
@@ -49,9 +54,10 @@ function Team(props) {
 export default function RateByTeamPage(props) {
   const [assigned, setAssigned] = useState([]);
   const [teams, setTeams] = useState([]);
+  const pk = getSessionStorage("ballkid_id");
 
   useEffect(() => {
-    fetch("/api/sorted-list", { headers: getAuthHeader() })
+    fetch("/api/sorted-list/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
         setAssigned(
@@ -65,7 +71,7 @@ export default function RateByTeamPage(props) {
     fetch("/api/calc-num-teams", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setTeams(data["teams"]));
-  }, []);
+  }, [pk]);
 
   return (
     <div className="page">

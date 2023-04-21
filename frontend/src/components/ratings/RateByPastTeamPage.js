@@ -65,17 +65,17 @@ export default function RateByPastTeamPage(props) {
     getSessionStorage("gridLayout") ?? true
   );
 
-  const ballkidId = getSessionStorage("ballkid_id");
+  const pk = getSessionStorage("ballkid_id");
 
   useEffect(() => {
-    fetch("/api/list", { headers: getAuthHeader() })
+    fetch("/api/list/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setBallkids(data));
 
-    fetch("/api/get-past-teams/" + ballkidId, { headers: getAuthHeader() })
+    fetch("/api/get-past-teams/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setPastTeams(data));
-  }, [ballkidId]);
+  }, [pk]);
 
   return (
     <div className="page">

@@ -3,7 +3,18 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Max, Count, Sum, F, Q, Avg, Subquery, OuterRef, StdDev
+from django.db.models import (
+    Max,
+    Count,
+    Sum,
+    F,
+    Q,
+    Avg,
+    Subquery,
+    OuterRef,
+    StdDev,
+    Exists,
+)
 from django.db.models.functions import TruncDay, TruncDate, Coalesce
 from api.serializers import *
 from api.models.ballkid import *
@@ -20,8 +31,19 @@ class BallkidsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
+        pk = self.kwargs.get("pk")
+        ballkids = Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
             "last_name", "first_name"
+        )
+
+        if not pk:
+            return ballkids 
+        
+        return ballkids.annotate(
+            num_ratings=Count("ratee"),
+            have_rated=Exists(
+                Rating.objects.filter(rater_id=pk, ratee_id=OuterRef("id"))
+            ),
         )
 
 
@@ -42,13 +64,24 @@ class BallkidsSortedList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return (
+        pk = self.kwargs.get("pk")
+        ballkids = (
             Ballkid.objects.all()
             .filter(is_active=True, is_cut=False)
             .order_by(
                 "-is_captain",
                 "-num_years_experience",
             )
+        )
+
+        if not pk:
+            return ballkids 
+        
+        return ballkids.annotate(
+            num_ratings=Count("ratee"),
+            have_rated=Exists(
+                Rating.objects.filter(rater_id=pk, ratee_id=OuterRef("id"))
+            ),
         )
 
 
