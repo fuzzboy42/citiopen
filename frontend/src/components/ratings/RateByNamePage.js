@@ -55,6 +55,14 @@ function renderBallkids(ballkids, gridLayout) {
                   </div>
                   <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
                     <RatingButton ballkid={ballkid} />
+                    {getSessionStorage("group") === "chairperson" &&
+                    gridLayout ? (
+                      <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                        Total ratings: {ballkid.num_ratings}
+                      </Typography>
+                    ) : (
+                      ""
+                    )}
                   </Box>
                 </div>
               </CardContent>
@@ -73,7 +81,9 @@ export default function RateByNamePage(props) {
   );
 
   useEffect(() => {
-    fetch("/api/list", { headers: getAuthHeader() })
+    fetch("/api/num-ratings/" + getSessionStorage("ballkid_id"), {
+      headers: getAuthHeader(),
+    })
       .then((response) => response.json())
       .then((data) => setBallkids(data));
   }, []);

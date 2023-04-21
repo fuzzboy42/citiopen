@@ -189,10 +189,12 @@ class CalcNumTeams(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        num_teams = 0
-        ballkids = Ballkid.objects.filter(is_active=True, is_checked_in=True)
-        if len(ballkids) > 0:
-            num_teams = ballkids.aggregate(num_teams=Max("current_team"))["num_teams"]
+        num_teams = (
+            Ballkid.objects.filter(is_active=True, is_checked_in=True).aggregate(
+                num_teams=Max("current_team")
+            )["num_teams"]
+            or 0
+        )
 
         return Response(
             {"teams": [team + 1 for team in range(num_teams)]},

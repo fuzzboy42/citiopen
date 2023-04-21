@@ -13,7 +13,16 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { Star, Circle, GridView, List, EventSeat } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
+import {
+  Star,
+  Circle,
+  GridView,
+  List,
+  EventSeat,
+  CheckBox,
+  Check,
+} from "@mui/icons-material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import RatingDialog from "./ratings/RatingDialog";
 import { END_DATE, START_DATE } from "./Consts";
@@ -358,7 +367,8 @@ export function RatingButton({ ballkid }) {
       <RatingDialog open={open} setOpen={setOpen} ballkid={ballkid} />
 
       <Button
-        variant="outlined"
+        variant={ballkid.have_rated ? "outlined" : "contained"}
+        disableElevation
         color="primary"
         size="small"
         onMouseDown={(e) => e.stopPropagation()}
@@ -367,8 +377,9 @@ export function RatingButton({ ballkid }) {
           e.preventDefault();
           setOpen(true);
         }}
+        endIcon={ballkid.have_rated ? <Check /> : ""}
       >
-        Give Rating
+        Give rating
       </Button>
     </div>
   );

@@ -141,9 +141,9 @@ export default function Navbar(props) {
     { label: "Schedule", url: "/schedule" },
     {
       label: "Ratings",
-      url: "/rate",
+      url: "/rate-by-name",
       subtabs: [
-        { label: "Rate By Name", url: "/rate" },
+        { label: "Rate By Name", url: "/rate-by-name" },
         { label: "Rate By Past Teams", url: "/rate-by-past-team" },
         { label: "View My Ratings", url: "/my-ratings" },
       ],
@@ -172,9 +172,9 @@ export default function Navbar(props) {
     { label: "Schedule", url: "/schedule" },
     {
       label: "Ratings",
-      url: "/rate",
+      url: "/rate-by-name",
       subtabs: [
-        { label: "Rate By Name", url: "/rate" },
+        { label: "Rate By Name", url: "/rate-by-name" },
         { label: "Rate By Current Team", url: "/rate-by-team" },
         { label: "Rate By Past Team", url: "/rate-by-past-team" },
         { label: "View Ratings", url: "/ratings" },

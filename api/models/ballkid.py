@@ -253,7 +253,7 @@ class Ballkid(models.Model):
         # If checking out, update most recent checkin history row
         else:
             histories = CheckinHistory.objects.filter(ballkid=self)
-            if len(histories) > 0:
+            if histories.count() > 0:
                 history = histories.order_by("-checkin").first()
                 history.checkout = now
                 if history.checkout < history.checkin:
@@ -284,7 +284,7 @@ class Ballkid(models.Model):
         # of whether the ballkid is being assigned to a new team or unassigned. If the
         # ballkid was previously unassigned, skip
         histories = TeamHistory.objects.filter(ballkid=self)
-        if self.current_team != 0 and len(histories) > 0:
+        if self.current_team != 0 and histories.count() > 0:
             history = histories.order_by("-start").first()
             # Note: this might silently break if history.end if already filled in for whatever reason!
             history.end = now
@@ -334,7 +334,7 @@ class Ballkid(models.Model):
                 captain_histories = CaptainHistory.objects.filter(
                     ballkid=self, captain=captain, team=self.current_team
                 )
-                if len(captain_histories) == 0:
+                if captain_histories.count() == 0:
                     continue
                 history = captain_histories.order_by("-start").first()
 
@@ -374,7 +374,7 @@ class Ballkid(models.Model):
                     ballkid_histories = CaptainHistory.objects.filter(
                         captain=self, ballkid=ballkid, team=self.current_team
                     )
-                    if len(ballkid_histories) == 0:
+                    if ballkid_histories.count() == 0:
                         continue
                     history = ballkid_histories.order_by("-start").first()
 
@@ -441,7 +441,7 @@ class Ballkid(models.Model):
                 histories = CaptainHistory.objects.filter(
                     ballkid=ballkid, captain=self, team=self.current_team
                 )
-                if len(histories) == 0:
+                if histories.count() == 0:
                     continue
 
                 history = histories.order_by("-start").first()

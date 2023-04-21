@@ -52,7 +52,7 @@ function chairpersonRoutes(setToken) {
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />
       <Route path="/my-ratings" element={<MyRatingsPage />} />
-      <Route path="/rate" element={<RateByNamePage />} />
+      <Route path="/rate-by-name" element={<RateByNamePage />} />
       <Route path="/rate-by-team" element={<RateByTeamPage />} />
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/ratings" element={<RatingsPage />} />
@@ -73,7 +73,7 @@ function captainRoutes(setToken) {
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />
       <Route path="/my-ratings" element={<MyRatingsPage />} />
-      <Route path="/rate" element={<RateByNamePage />} />
+      <Route path="/rate-by-name" element={<RateByNamePage />} />
       <Route path="/rate-by-team" element={<RateByTeamPage />} />
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/schedule" element={<SchedulePage />} />

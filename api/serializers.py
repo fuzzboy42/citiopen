@@ -21,6 +21,8 @@ class BallkidSerializer(serializers.ModelSerializer):
     grandstand_duration = serializers.DurationField(required=False)
     four_duration = serializers.DurationField(required=False)
     five_duration = serializers.DurationField(required=False)
+    # Other fields
+    have_rated = serializers.IntegerField(required=False)
 
     class Meta:
         model = Ballkid

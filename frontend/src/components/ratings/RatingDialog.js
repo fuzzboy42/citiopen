@@ -39,6 +39,7 @@ export default function RatingDialog({ open, setOpen, ballkid }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // TODO: pass this in so that it doesn't result in an api call for every single button
   const [ballkids, setBallkids] = useState([]);
   useEffect(() => {
     fetch("/api/list", { headers: getAuthHeader() })

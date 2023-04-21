@@ -83,6 +83,7 @@ tournament_urls = [
 rating_urls = [
     path("create-rating", CreateRating.as_view(), name="create-rating"),
     path("ratings", AllRatings.as_view(), name="ratings"),
+    path("num-ratings/<int:pk>", GetBallkidNumRatings.as_view(), name="num-ratings"),
     path("calibrated-ratings", CalibratedRatings.as_view(), name="calibrated-ratings"),
     path("my-ratings/<int:pk>", MyRatings.as_view(), name="my-ratings"),
     path(

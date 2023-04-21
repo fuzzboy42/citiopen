@@ -1,4 +1,4 @@
-from django.db.models import Value, Avg, Count, Q
+from django.db.models import Value, Avg, Count, Q, Subquery, OuterRef, Exists
 from django.db.models.functions import Concat, Extract
 from rest_framework import generics, status
 from rest_framework.views import APIView
@@ -318,11 +318,16 @@ class GetBallkidNumRatings(generics.ListAPIView):
     serializer_class = BallkidSerializer
 
     def get_queryset(self):
-        pk = self.kwargs.get("pk")
-        return Ballkid.objects.annotate(
-            num_ratings=Count("ratee"),
-            num_my_ratings=Count(
-                "ratee",
-                filter=Q(rater_id=pk),
-            ),
+        rater_pk = self.kwargs.get("pk")
+
+        ballkids = (
+            Ballkid.objects.filter(is_active=True, is_cut=False)
+            .annotate(
+                num_ratings=Count("ratee"),
+                have_rated=Exists(
+                    Rating.objects.filter(rater_id=rater_pk, ratee_id=OuterRef("id"))
+                ),
+            )
+            .order_by("last_name", "first_name")
         )
+        return ballkids
