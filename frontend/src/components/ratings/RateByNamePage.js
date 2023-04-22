@@ -5,6 +5,7 @@ import {
   CardMedia,
   Typography,
   CardActionArea,
+  Switch,
   Grid,
   Box,
 } from "@mui/material";
@@ -86,20 +87,28 @@ function renderBallkids(ballkids, gridLayout, setUpdated) {
 
 export default function RateByNamePage(props) {
   const [ballkids, setBallkids] = useState([]);
+  const [unratedBallkids, setUnratedBallkids] = useState([]);
+  const [showAll, setShowAll] = useState(true);
   const [updated, setUpdated] = useState(false);
 
   const [gridLayout, setGridLayout] = useState(
     getSessionStorage("gridLayout") ?? true
   );
+  const pk = getSessionStorage("ballkid_id");
 
   useEffect(() => {
-    fetch("/api/list/" + getSessionStorage("ballkid_id"), {
+    fetch("/api/list/" + pk, {
       headers: getAuthHeader(),
     })
       .then((response) => response.json())
-      .then((data) => setBallkids(data))
+      .then((data) => {
+        setBallkids(data);
+        setUnratedBallkids(
+          data.filter((ballkid) => !ballkid.have_rated && ballkid.id !== pk)
+        );
+      })
       .then(() => setUpdated(false));
-  }, [updated]);
+  }, [pk, updated]);
 
   return (
     <div className="page">
@@ -109,7 +118,19 @@ export default function RateByNamePage(props) {
         </Typography>
         <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
       </div>
-      {renderBallkids(ballkids, gridLayout, setUpdated)}
+
+      <div className="sxs">
+        <Typography variant="body1">Show All Ballkids</Typography>
+        <Switch
+          checked={!showAll}
+          onClick={(e) => setShowAll(!e.target.checked)}
+        />
+        <Typography variant="body1">Show Ballkids to Rate</Typography>
+      </div>
+
+      {showAll
+        ? renderBallkids(ballkids, gridLayout, setUpdated)
+        : renderBallkids(unratedBallkids, gridLayout, setUpdated)}
     </div>
   );
 }
