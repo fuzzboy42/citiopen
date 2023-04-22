@@ -1,7 +1,8 @@
-from django.urls import path, include
+from django.urls import path
 from api.views.ballkid import *
 from api.views.schedule import *
 from api.views.rating import *
+from api.views.debug import *
 
 # Ballkid URLs
 ballkid_urls = [
@@ -29,6 +30,7 @@ schedule_urls = [
     path("create-schedule", CreateSchedule.as_view(), name="create-schedule"),
     path("add-hour", AddHour.as_view(), name="add-hour"),
     path("update-schedule", UpdateSchedule.as_view(), name="update-schedule"),
+    path("update-shift", UpdateShift.as_view(), name="update-shift"),
 ]
 
 # Analytics URLs

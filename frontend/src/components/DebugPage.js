@@ -1002,6 +1002,137 @@ function CreateCutHistory({ ballkidsList }) {
   );
 }
 
+function UpdateShift() {
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
+  const [court, setCourt] = useState(null);
+
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const courtsList = [
+    "Stadium",
+    "Harris",
+    "Grandstand",
+    "Court 4",
+    "Court 5",
+  ].map((court, index) => ({
+    label: court,
+    id: index,
+  }));
+
+  return (
+    <Grid
+      container
+      sx={{ mt: 7 }}
+      spacing={2}
+      alignItems="center"
+      direction="column"
+      justifyContent="center"
+    >
+      <Grid item xs={12}>
+        <Alerts
+          successMsg={successMsg}
+          errorMsg={errorMsg}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography component="h4" variant="h4">
+          Update Shift
+        </Typography>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Autocomplete
+          disablePortal
+          openOnFocus
+          sx={{ width: 300 }}
+          options={courtsList}
+          value={court}
+          onChange={(e, newVal) => {
+            setCourt(newVal);
+          }}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderInput={(params) => (
+            <TextField {...params} variant="standard" label="Court" required />
+          )}
+        />
+      </Grid>
+      <Grid item xs={12} className="sxs">
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                sx={{ mx: 2 }}
+                variant="standard"
+                required={true}
+                {...props}
+              />
+            )}
+            label="Shift Start Time"
+            value={start}
+            // disableMaskedInput
+            mask={"__/__/____ __:__:__"}
+            onChange={(newValue) => {
+              setStart(newValue);
+            }}
+          />
+        </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                sx={{ mx: 2 }}
+                variant="standard"
+                required
+                {...props}
+              />
+            )}
+            label="Shift End Time"
+            value={end}
+            // disableMaskedInput
+            mask={"__/__/____ __:__:__"}
+            onChange={(newValue) => {
+              setEnd(newValue);
+            }}
+          />
+        </LocalizationProvider>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={(e) => {
+            fetch("/api/update-shift", {
+              method: "PATCH",
+              headers: getAuthHeader(),
+              body: JSON.stringify({
+                start: start,
+                end: end,
+                court: court.label,
+              }),
+            }).then((response) => {
+              if (response.ok) {
+                setSuccessMsg("Shift updated!");
+                setStart(null);
+                setEnd(null);
+                setCourt(null);
+              } else {
+                setErrorMsg("Error updating shift.");
+              }
+            });
+          }}
+        >
+          Update Shift
+        </Button>
+      </Grid>
+    </Grid>
+  );
+}
+
 export default function DebugPage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [captains, setCaptains] = useState([]);
@@ -1043,6 +1174,8 @@ export default function DebugPage(props) {
         <CreateFinalsHistory ballkidsList={ballkidsList} />
         <CreateCutHistory ballkidsList={ballkidsList} />
         <CreateRating ballkidsList={ballkidsList} captainsList={captainsList} />
+
+        <UpdateShift />
       </div>
     </div>
   );

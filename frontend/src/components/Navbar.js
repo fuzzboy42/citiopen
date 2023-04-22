@@ -206,9 +206,9 @@ export default function Navbar(props) {
     url: "/me",
     subtabs: [
       { label: "My Profile", url: "/me" },
-      { label: "Debug", url: "/debug" },
       { label: "Tournament Settings", url: "/tournament-settings" },
       { label: "Account Settings", url: "/settings" },
+      { label: "Debug", url: "/debug" },
       { label: "Logout", url: "/login" },
     ],
   };
