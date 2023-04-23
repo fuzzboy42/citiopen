@@ -9,7 +9,7 @@ import Navbar from "./Navbar";
 import CheckinPage from "./lists/CheckinPage";
 import ArchivedBallkidList from "./lists/ArchivedBallkidList";
 import SchedulePage from "./schedule/SchedulePage";
-import DebugPage from "./DebugPage";
+import DebugPage from "./settings/DebugPage";
 import LoginPage from "./auth/LoginPage";
 import ForgotPasswordPage from "./auth/ForgotPasswordPage";
 import ResetPasswordComplete from "./auth/ResetPasswordComplete";
@@ -33,6 +33,7 @@ import RatingsLeaderboard from "./leaderboards/RatingsLeaderboard";
 import CourtLeaderboard from "./leaderboards/CourtLeaderboard";
 
 import { useToken, getSessionStorage } from "./Utils";
+import TournamentSettings from "./settings/TournamentSettings";
 
 function chairpersonRoutes(setToken) {
   return (
@@ -57,6 +58,7 @@ function chairpersonRoutes(setToken) {
       <Route path="/schedule" element={<SchedulePageChairperson />} />
       <Route path="/teams" element={<TeamsPageChairperson />} />
       <Route path="/finals-teams" element={<FinalsTeamsPageChairperson />} />
+      <Route path="/tournament-settings" element={<TournamentSettings />} />
       <Route path="*" element={<RouteNotFound />} />
     </Routes>
   );
