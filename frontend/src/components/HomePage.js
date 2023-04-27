@@ -29,11 +29,12 @@ import BallkidPageCaptain from "./ballkid/BallkidPageCaptain";
 import MyProfile from "./ballkid/MyProfile";
 import Leaderboards from "./leaderboards/Leaderboards";
 import CheckinLeaderboard from "./leaderboards/CheckinLeaderboard";
-import RatingsLeaderboard from "./leaderboards/RatingsLeaderboard";
+import CaptainLeaderboard from "./leaderboards/CaptainLeaderboard";
 import CourtLeaderboard from "./leaderboards/CourtLeaderboard";
+import BallkidLeaderboard from "./leaderboards/BallkidLeaderboard";
+import TournamentSettings from "./settings/TournamentSettings";
 
 import { useToken, getSessionStorage } from "./Utils";
-import TournamentSettings from "./settings/TournamentSettings";
 
 function chairpersonRoutes(setToken) {
   return (
@@ -46,7 +47,8 @@ function chairpersonRoutes(setToken) {
       <Route path="/debug" element={<DebugPage />} />
       <Route path="/leaderboards" element={<Leaderboards />} />
       <Route path="/leaderboards/checkin" element={<CheckinLeaderboard />} />
-      <Route path="/leaderboards/ratings" element={<RatingsLeaderboard />} />
+      <Route path="/leaderboards/captain" element={<CaptainLeaderboard />} />
+      <Route path="/leaderboards/ballkid" element={<BallkidLeaderboard />} />
       <Route path="/leaderboards/court" element={<CourtLeaderboard />} />
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />

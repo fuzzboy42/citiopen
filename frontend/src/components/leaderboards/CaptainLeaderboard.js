@@ -5,7 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { getAuthHeader } from "../Utils";
 import { EventSeat } from "@mui/icons-material";
 
-export default function RatingsLeaderboard(props) {
+export default function CaptainLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function RatingsLeaderboard(props) {
   return (
     <div className="page">
       <Typography variant="h4" sx={{ mb: 2 }}>
-        Ratings Leaderboard
+        Ratings Leaderboard - Captain
       </Typography>
 
       <div style={{ height: 500 }}>

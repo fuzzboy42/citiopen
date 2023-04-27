@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, Link } from "@mui/material";
-import { Beenhere, Place, RateReview } from "@mui/icons-material";
+import { Beenhere, Place, RateReview, ThumbsUpDown } from "@mui/icons-material";
 
 export default function Leaderboards(props) {
   return (
@@ -17,16 +17,23 @@ export default function Leaderboards(props) {
       </div>
 
       <div className="sxs">
-        <RateReview color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/ratings">
-          Ratings
+        <Place color="primary" /> &emsp;
+        <Typography variant="h6" component={Link} href="/leaderboards/court">
+          Court Time
         </Typography>
       </div>
 
       <div className="sxs">
-        <Place color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/court">
-          Court Time
+        <ThumbsUpDown color="primary" /> &emsp;
+        <Typography variant="h6" component={Link} href="/leaderboards/ballkid">
+          Ratings - Ballkid
+        </Typography>
+      </div>
+
+      <div className="sxs">
+        <RateReview color="primary" /> &emsp;
+        <Typography variant="h6" component={Link} href="/leaderboards/captain">
+          Ratings - Captain
         </Typography>
       </div>
     </div>
