@@ -63,9 +63,14 @@ analytics_urls = [
         name="get-average-checkin-leaderboard",
     ),
     path(
-        "get-ratings-leaderboard",
-        GetRatingsLeaderboard.as_view(),
-        name="get-ratings-leaderboard",
+        "get-captain-leaderboard",
+        GetCaptainLeaderboard.as_view(),
+        name="get-captain-leaderboard",
+    ),
+    path(
+        "get-ballkid-leaderboard",
+        GetBallkidLeaderboard.as_view(),
+        name="get-ballkid-leaderboard",
     ),
     path(
         "get-court-leaderboard",

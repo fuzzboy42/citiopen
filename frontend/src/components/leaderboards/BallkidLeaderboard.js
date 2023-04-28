@@ -9,7 +9,7 @@ export default function BallkidLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
 
   useEffect(() => {
-    fetch("/api/get-ratings-leaderboard", { headers: getAuthHeader() })
+    fetch("/api/get-ballkid-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setBallkids(data));
   }, []);
@@ -24,7 +24,7 @@ export default function BallkidLeaderboard(props) {
     },
     {
       field: "name",
-      headerName: "Captain / Chairperson",
+      headerName: "Ballkid",
       width: 200,
       renderCell: (rowData) => (
         <div className="sxs">
@@ -45,33 +45,38 @@ export default function BallkidLeaderboard(props) {
       width: 100,
       valueGetter: (rowData) => rowData.row.ballkid.num_ratings,
     },
+
     {
       field: "avgRating",
       headerName: "Average",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.avg_rating,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
     {
       field: "stdevRating",
       headerName: "Standard Deviation",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.stdev_rating,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
-    },
-    {
-      field: "scale",
-      headerName: "Calibration Scale",
-      width: 150,
-      valueGetter: (rowData) => rowData.row.ballkid.scale,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
     {
       field: "offset",
       headerName: "Calibration Offset",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.offset,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
+    },
+    {
+      field: "improvement",
+      headerName: "Calibration Improvement",
+      width: 150,
+      valueGetter: (rowData) => rowData.row.ballkid.improvement,
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
   ];
 
@@ -94,20 +99,6 @@ export default function BallkidLeaderboard(props) {
           density="compact"
         />
       </div>
-
-      <Typography variant="body1" mt={2}>
-        Note: Average is the average of all the ratings submitted (NOT received)
-        by this captain/chairperson. Likewise for standard deviation.
-        Calibration scale and offset are calculated for each rater by the
-        calibration method described{" "}
-        <Link
-          target="_blank"
-          href="https://github.com/jtiosue/rcal/blob/master/report/review_calibration.pdf"
-        >
-          here
-        </Link>
-        .
-      </Typography>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export default function CaptainLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
 
   useEffect(() => {
-    fetch("/api/get-ratings-leaderboard", { headers: getAuthHeader() })
+    fetch("/api/get-captain-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setBallkids(data));
   }, []);
@@ -50,28 +50,32 @@ export default function CaptainLeaderboard(props) {
       headerName: "Average",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.avg_rating,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
     {
       field: "stdevRating",
       headerName: "Standard Deviation",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.stdev_rating,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
     {
       field: "scale",
       headerName: "Calibration Scale",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.scale,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
     {
       field: "offset",
       headerName: "Calibration Offset",
       width: 150,
       valueGetter: (rowData) => rowData.row.ballkid.offset,
-      valueFormatter: (obj) => Number(obj.value.toFixed(3)),
+      valueFormatter: (obj) =>
+        obj.value === null ? "" : Number(obj.value.toFixed(3)),
     },
   ];
 

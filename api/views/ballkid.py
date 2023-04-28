@@ -393,7 +393,7 @@ class GetAverageCheckinLeaderboard(APIView):
         return Response(averages, status=status.HTTP_200_OK)
 
 
-class GetRatingsLeaderboard(generics.ListAPIView):
+class GetCaptainLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
 
@@ -409,6 +409,24 @@ class GetRatingsLeaderboard(generics.ListAPIView):
                 offset=F("calibrationparams__rater_offset"),
             )
             .order_by("-num_ratings")
+        )
+
+
+class GetBallkidLeaderboard(generics.ListAPIView):
+    permission_classes = [IsChairperson]
+    serializer_class = BallkidSerializer
+
+    def get_queryset(self):
+        return (
+            Ballkid.objects.filter(is_active=True)
+            .annotate(
+                num_ratings=Count("ratee"),
+                avg_rating=Avg("ratee__rating"),
+                stdev_rating=StdDev("ratee__rating"),
+                offset=F("calibrationparams__ratee_offset"),
+                improvement=F("calibrationparams__ratee_improvement"),
+            )
+            .order_by("last_name", "first_name")
         )
 
 
