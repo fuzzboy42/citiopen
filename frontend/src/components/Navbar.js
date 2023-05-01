@@ -107,6 +107,7 @@ const chairpersonTabs = [
 
 const nonchairpersonAccountTab = {
   icon: <AccountCircle />,
+  label: "Account",
   url: "/me",
   subtabs: [
     { label: "My Profile", url: "/me" },
@@ -117,6 +118,7 @@ const nonchairpersonAccountTab = {
 
 const chairpersonAccountTab = {
   icon: <AccountCircle />,
+  label: "Account",
   url: "/me",
   subtabs: [
     { label: "My Profile", url: "/me" },
@@ -295,6 +297,10 @@ function MobileNavbar({ tabs, accountTab }) {
           {tabs.map((tab) => (
             <MobileSubtab key={tab.label} tab={tab} setOpen={setOpen} />
           ))}
+
+          <Divider sx={{ my: 1 }} />
+
+          <MobileSubtab tab={accountTab} setOpen={setOpen} />
         </Box>
       </Drawer>
     </div>
