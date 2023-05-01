@@ -16,9 +16,10 @@ import {
   getAuthHeader,
   RatingButton,
   getSessionStorage,
+  useIsMobile,
 } from "../Utils";
 
-function renderBallkids(ballkids, gridLayout, setUpdated) {
+function renderBallkids(ballkids, gridLayout, setUpdated, isMobile) {
   const isChairperson = getSessionStorage("group") === "chairperson";
 
   return ballkids.length === 0 ? (
@@ -61,7 +62,11 @@ function renderBallkids(ballkids, gridLayout, setUpdated) {
                     {ballkid.id === getSessionStorage("ballkid_id") ? (
                       ""
                     ) : (
-                      <RatingButton ballkid={ballkid} setUpdated={setUpdated} />
+                      <RatingButton
+                        ballkid={ballkid}
+                        setUpdated={setUpdated}
+                        isMobile={isMobile}
+                      />
                     )}
 
                     {isChairperson ? (
@@ -94,6 +99,7 @@ export default function RateByNamePage(props) {
   const [gridLayout, setGridLayout] = useState(
     getSessionStorage("gridLayout") ?? true
   );
+  const isMobile = useIsMobile();
   const pk = getSessionStorage("ballkid_id");
 
   useEffect(() => {
@@ -129,8 +135,8 @@ export default function RateByNamePage(props) {
       </div>
 
       {showAll
-        ? renderBallkids(ballkids, gridLayout, setUpdated)
-        : renderBallkids(unratedBallkids, gridLayout, setUpdated)}
+        ? renderBallkids(ballkids, gridLayout, setUpdated, isMobile)
+        : renderBallkids(unratedBallkids, gridLayout, setUpdated, isMobile)}
     </div>
   );
 }

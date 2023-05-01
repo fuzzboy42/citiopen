@@ -13,33 +13,31 @@ import {
   TableBody,
 } from "@mui/material";
 import { Shortcut } from "@mui/icons-material";
-import { getAuthHeader, getSessionStorage } from "../Utils";
+import { getAuthHeader, getSessionStorage, useIsMobile } from "../Utils";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
 
 function RatingSection({ ballkid }) {
-  return (
+  return !ballkid.is_captain ? (
+    ""
+  ) : (
     <Grid container>
       <Grid item xs={12}>
         <Typography variant="h6">Ratings:</Typography>
       </Grid>
-      {!ballkid.is_captain ? (
-        ""
-      ) : (
-        <Grid item xs={12} md={7} lg={6} sx={{ mx: 1 }}>
-          <Button
-            size="small"
-            variant="outlined"
-            component={Link}
-            href={`/ratings?rater=${ballkid.id}`}
-            endIcon={<Shortcut />}
-            sx={{ my: 1 }}
-          >
-            View ratings submitted by me
-          </Button>
-        </Grid>
-      )}
+      <Grid item xs={12} md={7} lg={6} sx={{ mx: 1 }}>
+        <Button
+          size="small"
+          variant="outlined"
+          component={Link}
+          href={`/ratings?rater=${ballkid.id}`}
+          endIcon={<Shortcut />}
+          sx={{ my: 1 }}
+        >
+          View ratings submitted by me
+        </Button>
+      </Grid>
     </Grid>
   );
 }
@@ -83,6 +81,7 @@ export default function MyProfile(props) {
 
   const [updated, setUpdated] = useState(false);
 
+  const isMobile = useIsMobile();
   const pk = getSessionStorage("ballkid_id");
 
   useEffect(() => {
@@ -122,11 +121,11 @@ export default function MyProfile(props) {
       </Typography>
 
       <Grid container>
-        <Grid item xs={4} md={3} lg={2}>
+        <Grid item xs={12} sm={4} md={3} lg={2}>
           <Box width="95%" component="img" src={"../" + ballkid.image} />
         </Grid>
 
-        <Grid item xs={8} md={9} lg={10}>
+        <Grid item xs={12} sm={8} md={9} lg={10}>
           <Typography variant="h6"> Info:</Typography>
           <Typography variant="body1"> Age: {ballkid.age} </Typography>
           <Typography variant="body1">
@@ -171,14 +170,20 @@ export default function MyProfile(props) {
               <CheckinHistoryChart histories={checkins} totalTime={totalTime} />
             </Grid>
 
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CourtHistoryChart histories={courts} />
-            </Grid>
-
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CaptainHistoryChart histories={captains} />
-            </Grid>
-            {/* <MatchHistoryChart histories={matches} /> */}
+            {isMobile ? (
+              ""
+            ) : (
+              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+                <CourtHistoryChart histories={courts} />
+              </Grid>
+            )}
+            {isMobile ? (
+              ""
+            ) : (
+              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+                <CaptainHistoryChart histories={captains} />
+              </Grid>
+            )}
           </Grid>
         )}
       </Grid>

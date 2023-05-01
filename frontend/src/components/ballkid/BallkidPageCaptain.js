@@ -7,12 +7,14 @@ import {
   getAuthHeader,
   RatingButton,
   getSessionStorage,
+  useIsMobile,
 } from "../Utils";
 
 export default function BallkidPageCaptain(props) {
   const [ballkid, setBallkid] = useState(null);
   const [updated, setUpdated] = useState(false);
 
+  const isMobile = useIsMobile();
   const { pk } = useParams();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function BallkidPageCaptain(props) {
     ""
   ) : (
     <div className="page">
-      <div className="justify">
+      <div className={isMobile ? "" : "justify"}>
         <div className="sxs">
           <Typography variant="h4">
             {ballkid.first_name} {ballkid.last_name}
@@ -38,16 +40,20 @@ export default function BallkidPageCaptain(props) {
         {ballkid.id === getSessionStorage("ballkid_id") ? (
           ""
         ) : (
-          <RatingButton ballkid={ballkid} setUpdated={setUpdated} />
+          <RatingButton
+            ballkid={ballkid}
+            setUpdated={setUpdated}
+            isMobile={isMobile}
+          />
         )}
       </div>
 
       <Grid container>
-        <Grid item xs={4} md={3} lg={2}>
+        <Grid item xs={12} sm={4} md={3} lg={2}>
           <Box width="95%" component="img" src={"../" + ballkid.image} />
         </Grid>
 
-        <Grid item xs={8} md={9} lg={10}>
+        <Grid item xs={12} sm={8} md={9} lg={10}>
           <Typography variant="h6"> Info:</Typography>
           <Typography variant="body1"> Age: {ballkid.age} </Typography>
           <Typography variant="body1">

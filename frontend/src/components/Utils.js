@@ -79,7 +79,7 @@ export function Alerts(props) {
   );
 }
 
-export function RatingButton({ ballkid, setUpdated }) {
+export function RatingButton({ ballkid, setUpdated, isMobile }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -103,7 +103,7 @@ export function RatingButton({ ballkid, setUpdated }) {
           setOpen(true);
         }}
         endIcon={ballkid.have_rated ? <Check /> : ""}
-        sx={{ my: 0.2 }}
+        sx={{ my: isMobile ? 1 : 0.2 }}
       >
         Give rating
       </Button>
