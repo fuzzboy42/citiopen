@@ -23,12 +23,17 @@ def dict_to_rcal(data, min_date, rating_name="overall", returnAveraged=True):
     NOTE THAT RATINGS OF 0 ARE CONSIDERED EMPTY AND ARE NOT INCLUDED
     """
 
+    # Number of days per date bucketing for calibration. A larger number results in
+    # more likely to succeed (but theoretically less accurate) calibration
+    days_per_bucket = 4
+
     rcal_dict = {}
     for rating in data:
+        mapped_date = days_per_bucket * ((rating.date - min_date).days // days_per_bucket)
         key = (
             rating.rater.get_name(),
             rating.ratee.get_name(),
-            (rating.date - min_date).days,
+            mapped_date,
         )
 
         if rating_name == "overall":
@@ -315,17 +320,14 @@ class CalibratedRatings(APIView):
             ),
         )
 
-        if "overall" in all_warnings: 
+        if "overall" in all_warnings:
             s = status.HTTP_204_NO_CONTENT
-        elif excluded['overall']: 
+        elif excluded["overall"]:
             s = status.HTTP_206_PARTIAL_CONTENT
-        else: 
+        else:
             s = status.HTTP_200_OK
 
-        return Response(
-            RatingSerializer(postprocessed, many=True).data,
-            status=s
-            )
+        return Response(RatingSerializer(postprocessed, many=True).data, status=s)
 
 
 class GetCalibrationParams(generics.RetrieveAPIView):

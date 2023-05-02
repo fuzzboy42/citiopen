@@ -17,6 +17,8 @@ class TestViewsRating(TestCase):
         self.rater1.save()
         self.rater2.save()
 
+        self.days_per_bucket = 4
+
     def test_dict_to_rcal_empty(self):
         ratings = Rating.objects.all()
         min_date = date.today() - timedelta(days=1)
@@ -56,7 +58,7 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): 3.5,
+            ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Andrea Iosue", 0): 5,
         }
 
@@ -77,7 +79,28 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): 3.5,
+            ("Captain Iosue", "Lacy Iosue", 0): 3.5,
+            ("Captain Iosue", "Andrea Iosue", 0): 5,
+        }
+
+        self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date))
+
+    def test_dict_to_rcal_multiple_ratings_per_rater_across_buckets(self):
+        rating1 = Rating.objects.create(
+            ratee=self.ratee1, rater=self.rater1, date=date.today(), rating=3.5
+        )
+        rating2 = Rating.objects.create(
+            ratee=self.ratee2,
+            rater=self.rater1,
+            date=date.today() - timedelta(days=5),
+            rating=5,
+        )
+
+        ratings = Rating.objects.all()
+        min_date = date.today() - timedelta(days=5)
+
+        rcal_dict = {
+            ("Captain Iosue", "Lacy Iosue", self.days_per_bucket): 3.5,
             ("Captain Iosue", "Andrea Iosue", 0): 5,
         }
 
@@ -98,29 +121,8 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): 3.5,
+            ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Lacy Iosue", 0): 5,
-        }
-
-        self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date))
-
-    def test_dict_to_rcal_multiple_ratings_per_rater_per_ratee(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1, rater=self.rater1, date=date.today(), rating=3
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today() - timedelta(days=1),
-            rating=5,
-        )
-
-        ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
-        rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): 3,
-            ("Captain Iosue", "Lacy Iosue", 0): 5,
         }
 
         self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date))
@@ -140,7 +142,7 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): 4,
+            ("Captain Iosue", "Lacy Iosue", 0): 4,
         }
 
         self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date))
@@ -160,7 +162,7 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): [3, 5],
+            ("Captain Iosue", "Lacy Iosue", 0): [3, 5],
         }
 
         self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date, returnAveraged=False))
@@ -180,7 +182,7 @@ class TestViewsRating(TestCase):
         min_date = date.today() - timedelta(days=1)
 
         rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 1): [5, 3],
+            ("Captain Iosue", "Lacy Iosue", 0): [5, 3],
         }
 
         self.assertEqual(rcal_dict, dict_to_rcal(ratings, min_date, returnAveraged=False))
