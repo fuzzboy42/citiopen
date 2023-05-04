@@ -76,6 +76,27 @@ class AccountsTest(APITestCase):
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(len(response.data["username"]), 1)
 
+    def test_create_user_with_inferred_username(self):
+        data = {
+            "first_name": "Lacy",
+            "last_name": "Iosue",
+            "email": "foobarbaz@example.com",
+            "password": "foobarfoo",
+            "password2": "foobarfoo",
+        }
+        response = self.client.post(reverse("register"), data, format="json")
+        user = User.objects.latest("id")
+        print(User.objects.all())
+
+        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual("lacy.iosue", user.username)
+        self.assertEqual("foobarbaz@example.com", user.email)
+        self.assertFalse("password" in response.data)
+
+        token = Token.objects.get(user=user)
+        self.assertEqual(response.data["token"], token.key)
+
     def test_create_user_with_preexisting_username(self):
         data = {
             "username": "testuser",
