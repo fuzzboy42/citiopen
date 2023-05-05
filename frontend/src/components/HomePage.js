@@ -35,6 +35,7 @@ import BallkidLeaderboard from "./leaderboards/BallkidLeaderboard";
 import TournamentSettings from "./settings/TournamentSettings";
 
 import { useToken, getSessionStorage } from "./Utils";
+import GamePage from "./settings/GamePage";
 
 function chairpersonRoutes(setToken) {
   return (
@@ -61,6 +62,7 @@ function chairpersonRoutes(setToken) {
       <Route path="/teams" element={<TeamsPageChairperson />} />
       <Route path="/finals-teams" element={<FinalsTeamsPageChairperson />} />
       <Route path="/tournament-settings" element={<TournamentSettings />} />
+      <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />
     </Routes>
   );
@@ -80,6 +82,7 @@ function captainRoutes(setToken) {
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/teams" element={<TeamsPage />} />
+      <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />
     </Routes>
   );
@@ -95,6 +98,7 @@ function ballkidRoutes(setToken) {
       <Route path="/me" element={<MyProfile />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/teams" element={<TeamsPage />} />
+      <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />
     </Routes>
   );
