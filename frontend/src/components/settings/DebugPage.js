@@ -9,6 +9,7 @@ import {
   Tabs,
   Tab,
   Box,
+  Select,
 } from "@mui/material";
 import { TaskAlt, UploadFile } from "@mui/icons-material";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
@@ -1236,6 +1237,9 @@ export default function DebugPage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [captains, setCaptains] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [mobileSelection, setMobileSelection] = useState();
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetch("/api/list", { headers: getAuthHeader() })
@@ -1289,33 +1293,51 @@ export default function DebugPage(props) {
 
   return (
     <div className="page">
-      <Box
-        sx={{
-          flexGrow: 1,
-          bgcolor: "background.paper",
-          display: "flex",
-          height: 400,
-          width: "95%",
-        }}
-      >
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={tabIndex}
-          onChange={(e, newVal) => setTabIndex(newVal)}
-          sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
+      {isMobile ? (
+        <div>
+          <Select
+            native
+            value={mobileSelection}
+            sx={{ mb: 1 }}
+            onChange={(e) => setMobileSelection(e.target.value)}
+          >
+            {Object.keys(mapped).map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Select>
+          {mapped[mobileSelection]}
+        </div>
+      ) : (
+        <Box
+          sx={{
+            flexGrow: 1,
+            bgcolor: "background.paper",
+            display: "flex",
+            height: 400,
+            width: "95%",
+          }}
         >
-          {Object.keys(mapped).map((label, index) => (
-            <Tab key={index} label={label} />
-          ))}
-        </Tabs>
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={tabIndex}
+            onChange={(e, newVal) => setTabIndex(newVal)}
+            sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
+          >
+            {Object.keys(mapped).map((label, index) => (
+              <Tab key={index} label={label} />
+            ))}
+          </Tabs>
 
-        {Object.keys(mapped).map((label, index) => (
-          <div key={index} hidden={tabIndex !== index}>
-            {tabIndex === index && mapped[label]}
-          </div>
-        ))}
-      </Box>
+          {Object.keys(mapped).map((label, index) => (
+            <div key={index} hidden={tabIndex !== index}>
+              {tabIndex === index && mapped[label]}
+            </div>
+          ))}
+        </Box>
+      )}
     </div>
   );
 }
