@@ -367,7 +367,7 @@ class GetCheckinLeaderboard(generics.ListAPIView):
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_duration=Sum("checkinhistory__duration"),
+                checkin_duration=Coalesce(Sum("checkinhistory__duration"), timedelta()),
                 checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
             )
             .order_by("-checkin_duration")
