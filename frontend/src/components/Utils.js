@@ -1,6 +1,20 @@
 import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { Icon, IconButton, Alert, Collapse, Button } from "@mui/material";
+import {
+  Icon,
+  IconButton,
+  Alert,
+  Collapse,
+  Button,
+  TableContainer,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableHead,
+  Table,
+  Typography,
+  Grid,
+} from "@mui/material";
 import {
   Star,
   Circle,
@@ -104,6 +118,71 @@ export function RatingButton({ ballkid, setUpdated, isMobile }) {
         Give rating
       </Button>
     </div>
+  );
+}
+
+export function renderBallkidFinalsHistory(finals) {
+  return (
+    <Grid item xs={12} sm={6} md={4} sx={{ my: 1, px: 2 }}>
+      {/* <Accordion>
+        <AccordionSummary expandIcon={<ExpandMore />}> */}
+      <Typography variant="h6">Previous Years' Finals:</Typography>
+      {/* </AccordionSummary>
+        <AccordionDetails> */}
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Match Type</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {finals.map((final) => (
+              <TableRow key={final.id}>
+                <TableCell align="center">{final.year}</TableCell>
+                <TableCell align="center">{final.match_type}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {/* </AccordionDetails>
+      </Accordion> */}
+    </Grid>
+  );
+}
+
+export function renderBallkidCutHistory(cuts) {
+  return (
+    <Grid item xs={12} sm={6} md={4} sx={{ my: 1, px: 2 }}>
+      {" "}
+      <Typography variant="h6">Cut History:</Typography>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Furthest Day</TableCell>
+              <TableCell align="center">Self-cut?</TableCell>
+              <TableCell align="center"># Years Experience</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cuts.map((cut) => (
+              <TableRow key={cut.id}>
+                <TableCell align="center">{cut.year}</TableCell>
+                <TableCell align="center">{cut.furthest_day}</TableCell>
+                <TableCell align="center">
+                  {cut.self_cut ? "Yes" : "No"}
+                </TableCell>
+                <TableCell align="center">{cut.num_years_experience}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
   );
 }
 

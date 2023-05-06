@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  Typography,
-  Grid,
-  Box,
-  Button,
-  Link,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableContainer,
-  Table,
-  TableBody,
-} from "@mui/material";
+import { Typography, Grid, Box, Button, Link } from "@mui/material";
 import { Shortcut } from "@mui/icons-material";
-import { getAuthHeader, getSessionStorage, useIsMobile, Icons } from "../Utils";
+import {
+  getAuthHeader,
+  getSessionStorage,
+  useIsMobile,
+  Icons,
+  renderBallkidCutHistory,
+  renderBallkidFinalsHistory,
+} from "../Utils";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
@@ -42,37 +37,11 @@ function RatingSection({ ballkid }) {
   );
 }
 
-function renderPreviousFinals(finals) {
-  return (
-    <Grid item sx={{ mt: 2 }}>
-      <Typography variant="h6">Previous Years' Finals:</Typography>
-
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Year</TableCell>
-              <TableCell align="center">Match Type</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {finals.map((final) => (
-              <TableRow key={final.id}>
-                <TableCell align="center">{final.year}</TableCell>
-                <TableCell align="center">{final.match_type}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
-  );
-}
-
 export default function MyProfile(props) {
   const [ballkid, setBallkid] = useState(null);
 
   const [finals, setFinals] = useState([]);
+  const [cuts, setCuts] = useState([]);
   const [checkins, setCheckins] = useState([]);
   const [captains, setCaptains] = useState([]);
   const [courts, setCourts] = useState([]);
@@ -93,6 +62,10 @@ export default function MyProfile(props) {
     fetch("/api/get-finals-history/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setFinals(data));
+
+    fetch("/api/get-cut-history/" + pk, { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setCuts(data));
 
     fetch("/api/get-captains/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -123,7 +96,6 @@ export default function MyProfile(props) {
         &ensp;
         <Icons ballkid={ballkid} margin={0} />
       </div>
-
       <Grid container>
         <Grid item xs={12} sm={4} md={3} lg={2}>
           <Box width="95%" component="img" src={"../" + ballkid.image} />
@@ -191,7 +163,10 @@ export default function MyProfile(props) {
           </Grid>
         )}
       </Grid>
-      <Grid container>{renderPreviousFinals(finals)}</Grid>
+      <Grid container>
+        {renderBallkidFinalsHistory(finals)}
+        {renderBallkidCutHistory(cuts)}
+      </Grid>
     </div>
   );
 }

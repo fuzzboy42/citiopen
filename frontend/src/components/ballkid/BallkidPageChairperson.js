@@ -11,12 +11,6 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
-  TableContainer,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableHead,
-  Table,
   Link,
 } from "@mui/material";
 import { AspectRatio } from "@mui/joy";
@@ -32,7 +26,14 @@ import {
   Shortcut,
 } from "@mui/icons-material";
 import RatingDialog from "../ratings/RatingDialog";
-import { Icons, getAuthHeader, getSessionStorage, useIsMobile } from "../Utils";
+import {
+  Icons,
+  getAuthHeader,
+  getSessionStorage,
+  renderBallkidCutHistory,
+  renderBallkidFinalsHistory,
+  useIsMobile,
+} from "../Utils";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
@@ -244,70 +245,6 @@ function renderTeam(ballkid, teams, setUpdated, isMobile) {
         </div>
       )}
     </div>
-  );
-}
-
-function renderFinalsHistory(finals) {
-  return (
-    <Grid item sx={{ mt: 2 }}>
-      {/* <Accordion>
-        <AccordionSummary expandIcon={<ExpandMore />}> */}
-      <Typography variant="h6">Previous Years' Finals:</Typography>
-      {/* </AccordionSummary>
-        <AccordionDetails> */}
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Year</TableCell>
-              <TableCell align="center">Match Type</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {finals.map((final) => (
-              <TableRow key={final.id}>
-                <TableCell align="center">{final.year}</TableCell>
-                <TableCell align="center">{final.match_type}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {/* </AccordionDetails>
-      </Accordion> */}
-    </Grid>
-  );
-}
-
-function renderCutHistory(cuts) {
-  return (
-    <Grid item sx={{ mt: 2 }}>
-      <Typography variant="h6">Cut History:</Typography>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Year</TableCell>
-              <TableCell align="center">Furthest Day</TableCell>
-              <TableCell align="center">Self-cut?</TableCell>
-              <TableCell align="center"># Years Experience</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cuts.map((cut) => (
-              <TableRow key={cut.id}>
-                <TableCell align="center">{cut.year}</TableCell>
-                <TableCell align="center">{cut.furthest_day}</TableCell>
-                <TableCell align="center">
-                  {cut.self_cut ? "Yes" : "No"}
-                </TableCell>
-                <TableCell align="center">{cut.num_years_experience}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
   );
 }
 
@@ -801,12 +738,8 @@ export default function BallkidPageChairperson(props) {
       )}
 
       <Grid container>
-        <Grid item xs={12} sm={6} md={4} sx={{ my: 1, px: 2 }}>
-          {renderFinalsHistory(finals)}
-        </Grid>
-        <Grid item xs={12} sm={9} md={8} sx={{ my: 1, px: 2 }}>
-          {renderCutHistory(cuts)}
-        </Grid>
+        {renderBallkidFinalsHistory(finals)}
+        {renderBallkidCutHistory(cuts)}
       </Grid>
     </div>
   );
