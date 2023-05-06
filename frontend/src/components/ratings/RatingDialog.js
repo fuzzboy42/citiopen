@@ -176,6 +176,14 @@ export default function RatingDialog({ open, setOpen, ballkid, setUpdated }) {
               multiline
             />
           </Grid>
+
+          <Grid item xs={12} sx={{ mt: 3 }}>
+            <Typography variant="body1">
+              Note: Ratings are required to be between 0.5 and 5 stars. Zero
+              star ratings are considered empty. Overall rating is required. All
+              other rating categories are optional.
+            </Typography>
+          </Grid>
         </Grid>
       </DialogContent>
 
