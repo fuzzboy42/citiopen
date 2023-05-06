@@ -67,12 +67,12 @@ analytics_urls = [
     ),
     path(
         "get-captain-leaderboard",
-        GetCaptainLeaderboard.as_view(),
+        GetRatingsCaptainLeaderboard.as_view(),
         name="get-captain-leaderboard",
     ),
     path(
         "get-ballkid-leaderboard",
-        GetBallkidLeaderboard.as_view(),
+        GetRatingsBallkidLeaderboard.as_view(),
         name="get-ballkid-leaderboard",
     ),
     path(

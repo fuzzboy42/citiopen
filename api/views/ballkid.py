@@ -367,27 +367,20 @@ class GetCheckinDuration(APIView):
         analytic = CheckinAnalytics.objects.filter(ballkid_id=pk).first()
         return Response(CheckinAnalyticsSerializer(analytic).data)
 
-        # ballkid = (
-        #     Ballkid.objects.filter(id=pk)
-        #     .annotate(
-        #         checkin_duration=Sum("checkinhistory__duration"),
-        #         checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
-        #     )
-        #     .first()
-        # )
-        # return Response(BallkidSerializer(ballkid).data)
-
 
 class GetCheckinLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
 
     def get_queryset(self):
+        for ballkid in Ballkid.objects.filter(is_active=True):
+            ballkid.recalc_checkin_analytics()
+
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_duration=Coalesce(Sum("checkinhistory__duration"), timedelta()),
-                checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
+                checkin_duration=F("checkinanalytics__duration"),
+                checkin_days=F("checkinanalytics__num_days"),
             )
             .order_by("-checkin_duration")
         )
@@ -397,22 +390,18 @@ class GetAverageCheckinLeaderboard(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request):
-        averages = (
-            Ballkid.objects.filter(is_active=True)
-            .annotate(
-                checkin_duration=Sum("checkinhistory__duration"),
-                checkin_days=Count(TruncDate("checkinhistory__checkin"), distinct=True),
-            )
-            .aggregate(
-                checkin_avg=Avg("checkin_duration"),
-                days_avg=Avg("checkin_days"),
-            )
+        for ballkid in Ballkid.objects.filter(is_active=True):
+            ballkid.recalc_checkin_analytics()
+
+        averages = Ballkid.objects.filter(is_active=True).aggregate(
+            checkin_avg=Avg("checkinanalytics__duration"),
+            days_avg=Avg("checkinanalytics__num_days"),
         )
 
         return Response(averages, status=status.HTTP_200_OK)
 
 
-class GetCaptainLeaderboard(generics.ListAPIView):
+class GetRatingsCaptainLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
 
@@ -431,7 +420,7 @@ class GetCaptainLeaderboard(generics.ListAPIView):
         )
 
 
-class GetBallkidLeaderboard(generics.ListAPIView):
+class GetRatingsBallkidLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
 
@@ -439,13 +428,17 @@ class GetBallkidLeaderboard(generics.ListAPIView):
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                num_ratings=Count("ratee"),
-                raw_avg=Avg("ratee__rating"),
-                raw_stdev=StdDev("ratee__rating"),
-                calibrated_avg=F("calibrationparams__ratee_calibrated_avg"),
-                calibrated_stdev=F("calibrationparams__ratee_calibrated_stdev"),
+                num_ratings=Coalesce(Count("ratee"), 0),
+                raw_avg=Coalesce(Avg("ratee__rating"), 0.0),
+                raw_stdev=Coalesce(StdDev("ratee__rating"), 0.0),
+                calibrated_avg=Coalesce(
+                    F("calibrationparams__ratee_calibrated_avg"), 0.0
+                ),
+                calibrated_stdev=Coalesce(
+                    F("calibrationparams__ratee_calibrated_stdev"), 0.0
+                ),
             )
-            .order_by("last_name", "first_name")
+            .order_by("-calibrated_avg")
         )
 
 
@@ -454,14 +447,13 @@ class GetCourtLeaderboard(generics.ListAPIView):
     serializer_class = BallkidSerializer
 
     def get_queryset(self):
+        for ballkid in Ballkid.objects.filter(is_active=True):
+            ballkid.recalc_court_analytics()
+
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_duration=Subquery(
-                    Ballkid.objects.filter(id=OuterRef("id"))
-                    .annotate(Sum("checkinhistory__duration"))
-                    .values("checkinhistory__duration__sum"),
-                ),
+                checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
                 court_duration=Coalesce(Sum("courtanalytics__duration"), timedelta()),
                 stadium_duration=Coalesce(
                     Sum(
@@ -507,14 +499,13 @@ class GetAverageCourtLeaderboard(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request):
+        for ballkid in Ballkid.objects.filter(is_active=True):
+            ballkid.recalc_court_analytics()
+
         averages = (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_duration=Subquery(
-                    Ballkid.objects.filter(id=OuterRef("id"))
-                    .annotate(Sum("checkinhistory__duration"))
-                    .values("checkinhistory__duration__sum"),
-                ),
+                checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
                 court_duration=Sum("courtanalytics__duration"),
                 stadium_duration=Sum(
                     "courtanalytics__duration",

@@ -241,6 +241,10 @@ class Ballkid(models.Model):
             analytic.duration = times[court]
             analytic.save()
 
+            logger.info(
+                f"[recalc-court-analytics] For ballkid {self.id}, created {created} analytic {analytic}"
+            )
+
     def recalc_analytics(self, now=None):
         self.recalc_checkin_analytics(now)
         self.recalc_captain_analytics(now)
@@ -604,6 +608,12 @@ class FinalsHistory(models.Model):
     match_type = models.CharField(max_length=20, choices=MATCH_TYPE.choices)
     num_years_experience = models.IntegerField(default=0)
 
+    class Meta:
+        unique_together = (
+            "ballkid",
+            "year",
+        )
+
     def __str__(self):
         return f"{self.ballkid.get_name()} worked {self.match_type} for finals in {self.year}"
 
@@ -617,17 +627,14 @@ class CutHistory(models.Model):
     num_years_experience = models.IntegerField(default=0)
     self_cut = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = (
+            "ballkid",
+            "year",
+        )
+
     def __str__(self):
         return f"{self.ballkid.get_name()} made it to {self.furthest_day} in {self.year} (self-cut: {self.self_cut})"
-
-
-class CheckinAnalytics(models.Model):
-    ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE)
-    duration = models.DurationField(default=timedelta)
-    num_days = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.ballkid.get_name()} with total checkin time {self.duration} and total checkin days {self.num_days}"
 
 
 class CheckinHistory(models.Model):
@@ -639,6 +646,15 @@ class CheckinHistory(models.Model):
     def __str__(self):
         return f"{self.ballkid.get_name()} checked in at {self.checkin} and checked out at \
             {self.checkout} (total duration: {self.duration})"
+
+
+class CheckinAnalytics(models.Model):
+    ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE, unique=True)
+    duration = models.DurationField(default=timedelta)
+    num_days = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.ballkid.get_name()} with total checkin time {self.duration} and total checkin days {self.num_days}"
 
 
 class CaptainHistory(models.Model):
@@ -667,6 +683,12 @@ class CaptainAnalytics(models.Model):
     count = models.IntegerField(default=0)
     duration = models.DurationField(default=timedelta)
 
+    class Meta:
+        unique_together = (
+            "ballkid",
+            "captain",
+        )
+
     def __str__(self):
         return f"{self.ballkid.get_name()} has had captain {self.captain.get_name()} {self.count} times with a total time of {self.duration}"
 
@@ -687,6 +709,12 @@ class CourtAnalytics(models.Model):
     court = models.CharField(max_length=10, choices=Court.choices)
     count = models.IntegerField(default=0)
     duration = models.DurationField(default=timedelta)
+
+    class Meta:
+        unique_together = (
+            "ballkid",
+            "court",
+        )
 
     def __str__(self):
         return f"{self.ballkid.get_name()} has been on {self.court} {self.count} times with a total time of {self.duration}"
