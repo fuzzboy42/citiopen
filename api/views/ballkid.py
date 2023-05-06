@@ -323,8 +323,13 @@ class GetFinalsHistory(generics.ListAPIView):
         return FinalsHistory.objects.filter(ballkid_id=pk).order_by("-year")
 
 
-class GetCutHistory(APIView):
-    pass
+class GetCutHistory(generics.ListAPIView):
+    serializer_class = CutHistorySerializer
+    permission_classes = [IsChairpersonOrSelf]
+
+    def get_queryset(self):
+        pk = self.kwargs.get("pk")
+        return CutHistory.objects.filter(ballkid_id=pk).order_by("-year")
 
 
 class GetPastTeams(APIView):
@@ -358,6 +363,14 @@ class GetPastTeams(APIView):
         return Response(date_to_ballkids, status=status.HTTP_200_OK)
 
 
+class GetBallkidCheckinHistory(APIView):
+    permission_classes = [IsChairpersonOrSelf]
+
+    def get(self, request, pk):
+        histories = CheckinHistory.objects.filter(ballkid_id=pk).order_by("checkin")
+        return Response(CheckinHistorySerializer(histories, many=True).data)
+
+
 class GetCheckinDuration(APIView):
     permission_classes = [IsChairpersonOrSelf]
 
@@ -366,6 +379,26 @@ class GetCheckinDuration(APIView):
         ballkid.recalc_checkin_analytics()
         analytic = CheckinAnalytics.objects.filter(ballkid_id=pk).first()
         return Response(CheckinAnalyticsSerializer(analytic).data)
+
+
+class GetCaptainAnalytics(APIView):
+    permission_classes = [IsChairpersonOrSelf]
+
+    def get(self, request, pk):
+        ballkid = get_object_or_404(Ballkid, id=pk)
+        ballkid.recalc_captain_analytics()
+        analytics = CaptainAnalytics.objects.filter(ballkid_id=pk).order_by("-duration")
+        return Response(CaptainAnalyticsSerializer(analytics, many=True).data)
+
+
+class GetCourtAnalytics(APIView):
+    permission_classes = [IsChairpersonOrSelf]
+
+    def get(self, request, pk):
+        ballkid = get_object_or_404(Ballkid, id=pk)
+        ballkid.recalc_court_analytics()
+        analytics = CourtAnalytics.objects.all().filter(ballkid_id=pk)
+        return Response(CourtAnalyticsSerializer(analytics, many=True).data)
 
 
 class GetCheckinLeaderboard(generics.ListAPIView):
@@ -540,31 +573,3 @@ class GetAverageCourtLeaderboard(APIView):
         )
 
         return Response(averages, status=status.HTTP_200_OK)
-
-
-class GetBallkidCheckinHistory(APIView):
-    permission_classes = [IsChairpersonOrSelf]
-
-    def get(self, request, pk):
-        histories = CheckinHistory.objects.filter(ballkid_id=pk).order_by("checkin")
-        return Response(CheckinHistorySerializer(histories, many=True).data)
-
-
-class GetCaptainAnalytics(APIView):
-    permission_classes = [IsChairpersonOrSelf]
-
-    def get(self, request, pk):
-        ballkid = get_object_or_404(Ballkid, id=pk)
-        ballkid.recalc_captain_analytics()
-        analytics = CaptainAnalytics.objects.filter(ballkid_id=pk).order_by("-duration")
-        return Response(CaptainAnalyticsSerializer(analytics, many=True).data)
-
-
-class GetCourtAnalytics(APIView):
-    permission_classes = [IsChairpersonOrSelf]
-
-    def get(self, request, pk):
-        ballkid = get_object_or_404(Ballkid, id=pk)
-        ballkid.recalc_court_analytics()
-        analytics = CourtAnalytics.objects.all().filter(ballkid_id=pk)
-        return Response(CourtAnalyticsSerializer(analytics, many=True).data)

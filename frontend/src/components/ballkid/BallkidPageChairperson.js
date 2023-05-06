@@ -247,7 +247,7 @@ function renderTeam(ballkid, teams, setUpdated, isMobile) {
   );
 }
 
-function renderPreviousFinals(finals) {
+function renderFinalsHistory(finals) {
   return (
     <Grid item sx={{ mt: 2 }}>
       {/* <Accordion>
@@ -275,6 +275,38 @@ function renderPreviousFinals(finals) {
       </TableContainer>
       {/* </AccordionDetails>
       </Accordion> */}
+    </Grid>
+  );
+}
+
+function renderCutHistory(cuts) {
+  return (
+    <Grid item sx={{ mt: 2 }}>
+      <Typography variant="h6">Cut History:</Typography>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Furthest Day</TableCell>
+              <TableCell align="center">Self-cut?</TableCell>
+              <TableCell align="center"># Years Experience</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cuts.map((cut) => (
+              <TableRow key={cut.id}>
+                <TableCell align="center">{cut.year}</TableCell>
+                <TableCell align="center">{cut.furthest_day}</TableCell>
+                <TableCell align="center">
+                  {cut.self_cut ? "Yes" : "No"}
+                </TableCell>
+                <TableCell align="center">{cut.num_years_experience}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Grid>
   );
 }
@@ -642,6 +674,7 @@ export default function BallkidPageChairperson(props) {
   const [teams, setTeams] = useState([]);
 
   const [finals, setFinals] = useState([]);
+  const [cuts, setCuts] = useState([]);
   const [checkins, setCheckins] = useState([]);
   const [captains, setCaptains] = useState([]);
   const [courts, setCourts] = useState([]);
@@ -663,6 +696,10 @@ export default function BallkidPageChairperson(props) {
     fetch("/api/get-finals-history/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setFinals(data));
+
+    fetch("/api/get-cut-history/" + pk, { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setCuts(data));
 
     fetch("/api/get-captains/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -763,7 +800,14 @@ export default function BallkidPageChairperson(props) {
         </Grid>
       )}
 
-      <Grid container>{renderPreviousFinals(finals)}</Grid>
+      <Grid container>
+        <Grid item xs={12} sm={6} md={4} sx={{ my: 1, px: 2 }}>
+          {renderFinalsHistory(finals)}
+        </Grid>
+        <Grid item xs={12} sm={9} md={8} sx={{ my: 1, px: 2 }}>
+          {renderCutHistory(cuts)}
+        </Grid>
+      </Grid>
     </div>
   );
 }

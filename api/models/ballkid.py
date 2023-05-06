@@ -620,12 +620,11 @@ class FinalsHistory(models.Model):
 
 class CutHistory(models.Model):
     ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE)
-    time = models.DateTimeField(default=datetime.now)
     year = models.IntegerField()
     furthest_day = models.CharField(max_length=10, choices=DAY_OF_WEEK.choices)
-    is_cut = models.BooleanField(default=True)
-    num_years_experience = models.IntegerField(default=0)
+    furthest_date = models.DateField(null=True)
     self_cut = models.BooleanField(default=False)
+    num_years_experience = models.IntegerField(default=0)
 
     class Meta:
         unique_together = (
