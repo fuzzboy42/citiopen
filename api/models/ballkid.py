@@ -470,7 +470,7 @@ class Ballkid(models.Model):
                 history.end = now
                 history.save()
 
-    def handle_cut_history(self, value, now=None):
+    def handle_cut_history(self, value, self_cut=False, now=None):
         """
         Handle logic for saving cut history.
 
@@ -492,9 +492,10 @@ class Ballkid(models.Model):
         history = CutHistory.objects.create(
             ballkid=self,
             year=now.year,
-            time=now,
+            furthest_date=now.strftime("%Y-%m-%d"),
             furthest_day=now.strftime("%A"),
             is_cut=value,
+            self_cut=self_cut,
         )
         history.save()
 
@@ -618,15 +619,10 @@ class FinalsHistory(models.Model):
 class CutHistory(models.Model):
     ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE)
     year = models.IntegerField()
+    is_cut = models.BooleanField(default=False)
     furthest_day = models.CharField(max_length=10, choices=DAY_OF_WEEK.choices)
     furthest_date = models.DateField(null=True)
     self_cut = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = (
-            "ballkid",
-            "year",
-        )
 
     def __str__(self):
         return f"{self.ballkid.get_name()} made it to {self.furthest_day} in {self.year} (self-cut: {self.self_cut})"

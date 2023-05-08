@@ -48,18 +48,17 @@ function renderHeader(ballkid, setUpdated, isMobile) {
       <ActiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
     );
 
-  const headerStatus =
-    ballkid.is_cut === "true" ? (
-      <Typography variant="h5" color="error">
-        Cut
-      </Typography>
-    ) : !ballkid.is_active ? (
-      <Typography variant="h5" color="error">
-        Inactive
-      </Typography>
-    ) : (
-      renderCheckin(ballkid, setUpdated, isMobile)
-    );
+  const headerStatus = ballkid.is_cut ? (
+    <Typography variant="h5" color="error">
+      Cut
+    </Typography>
+  ) : !ballkid.is_active ? (
+    <Typography variant="h5" color="error">
+      Inactive
+    </Typography>
+  ) : (
+    renderCheckin(ballkid, setUpdated, isMobile)
+  );
 
   return (
     <div className={isMobile ? "" : "justify"}>
