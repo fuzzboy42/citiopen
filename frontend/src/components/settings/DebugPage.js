@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Grid,
-  Autocomplete,
-  Typography,
-  TextField,
-  MenuItem,
-  Tabs,
-  Tab,
-  Box,
-  Select,
-} from "@mui/material";
-import { TaskAlt, UploadFile } from "@mui/icons-material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Autocomplete from "@mui/material/Autocomplete";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import Select from "@mui/material/Select";
+import TaskAlt from "@mui/icons-material/TaskAlt";
+import UploadFile from "@mui/icons-material/UploadFile";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -127,7 +127,7 @@ function CreateBallkid(props) {
         <Button
           color="primary"
           variant="contained"
-          onClick={(e) => {
+          onClick={(e) =>
             fetch("/api/create-ballkid", {
               method: "POST",
               headers: getAuthHeader(),
@@ -153,8 +153,8 @@ function CreateBallkid(props) {
               setPreferredPosition("");
               setIsCaptain("");
               setImage("");
-            });
-          }}
+            })
+          }
         >
           Create Ballkid
         </Button>
@@ -1163,6 +1163,7 @@ function UpdateShift() {
 
 function BulkCreation({ type }) {
   const [file, setFile] = useState();
+  const [showProgress, setShowProgress] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -1203,11 +1204,13 @@ function BulkCreation({ type }) {
         </div>
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} className="sxs">
         <Button
           color="primary"
           variant="contained"
           onClick={(e) => {
+            setShowProgress(true);
+
             e.preventDefault();
             const formData = new FormData();
             formData.append("file", file);
@@ -1217,6 +1220,7 @@ function BulkCreation({ type }) {
               headers: { Authorization: "Token " + getToken() },
               body: formData,
             }).then((response) => {
+              setShowProgress(false);
               if (response.ok) {
                 setSuccessMsg(`Bulk created ${type}!`);
                 setFile(null);
@@ -1228,6 +1232,8 @@ function BulkCreation({ type }) {
         >
           Bulk Create {type}
         </Button>
+        &emsp;
+        {showProgress ? <CircularProgress size={20} /> : ""}
       </Grid>
     </Grid>
   );
@@ -1290,6 +1296,7 @@ export default function DebugPage(props) {
     "Update Shift": <UpdateShift />,
     "Bulk Create Ballkids": <BulkCreation type="ballkids" />,
     "Bulk Create Users": <BulkCreation type="users" />,
+    "Bulk Create Signups": <BulkCreation type="signups" />,
     "Bulk Create Ratings": <BulkCreation type="ratings" />,
   };
 

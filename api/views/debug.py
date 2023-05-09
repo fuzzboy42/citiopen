@@ -8,7 +8,7 @@ from api.utils import *
 from api.permissions import *
 from api.models.ballkid import *
 from api.models.rating import *
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import io
 
@@ -167,7 +167,6 @@ class BulkCreateUsers(APIView):
         file = request.FILES["file"]
         reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
 
-        users = []
         for line in reader:
             first_name = line["first_name"]
             last_name = line["last_name"]
@@ -183,7 +182,6 @@ class BulkCreateUsers(APIView):
 
             group = Group.objects.get(name=line["group"])
             user.groups.add(group)
-            users.append(user)
 
             ballkid = Ballkid.objects.filter(
                 is_active=True, first_name=first_name, last_name=last_name
@@ -193,7 +191,7 @@ class BulkCreateUsers(APIView):
                 ballkid.save()
 
         return Response(
-            {"Success": f"Bulk created users {users}"},
+            {"Success": f"Bulk created users"},
             status=status.HTTP_200_OK,
         )
 
@@ -222,6 +220,68 @@ class BulkCreateBallkids(APIView):
 
         return Response(
             {"Success": f"Bulk created ballkids {ballkids}"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class BulkCreateSignups(APIView):
+    permission_classes = [IsChairperson]
+
+    def post(self, request):
+        preferred_position_map = {
+            "Back": "Back",
+            "Net": "Net",
+            "Switch (Prefer Back)": "Back/Net",
+            "Switch (Prefer Net)": "Net/Back",
+        }
+        ballkids = []
+
+        file = request.FILES["file"]
+        reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
+
+        for line in reader:
+            first_name = line["First Name"].strip()
+            last_name = line["Last Name"].strip()
+            is_captain = line["Are you a captain?"].strip() == "Yes"
+            dob = datetime.strptime(line["Date of Birth"].strip(), "%m/%d/%Y")
+            first_day = datetime.strptime("07/29/2023", "%m/%d/%Y")
+            age = (first_day - dob) // timedelta(days=365.2425)
+
+            user = User(
+                username=f"{first_name.lower()}.{last_name.lower()}",
+                first_name=first_name,
+                last_name=last_name,
+                email=line["Email Address"].strip(),
+                password=make_password("password"),
+            )
+            user.save()
+
+            group = Group.objects.get(name="captain" if is_captain else "ballkid")
+            user.groups.add(group)
+
+            ballkids.append(
+                Ballkid(
+                    first_name=first_name,
+                    last_name=last_name,
+                    user=user,
+                    age=age,
+                    is_active=True,
+                    is_captain=is_captain,
+                    num_years_experience=line[
+                        "How many years have you been a Ballperson at the Citi Open (not counting the upcoming year)?"
+                    ].strip()
+                    or 0,
+                    preferred_position=preferred_position_map[
+                        line["What position are you?"].strip() or "Back"
+                    ],
+                    image=DEFAULT_IMAGE_FILE,
+                )
+            )
+
+        Ballkid.objects.bulk_create(ballkids)
+
+        return Response(
+            {"Success": f"Bulk created signups"},
             status=status.HTTP_200_OK,
         )
 

@@ -140,6 +140,7 @@ debug_urls = [
     path(
         "bulk-create-ballkids", BulkCreateBallkids.as_view(), name="bulk-create-ballkids"
     ),
+    path("bulk-create-signups", BulkCreateSignups.as_view(), name="bulk-create-signups"),
     path("bulk-create-ratings", BulkCreateRatings.as_view(), name="bulk-create-ratings"),
 ]
 

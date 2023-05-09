@@ -170,7 +170,7 @@ class UpdateBallkid(APIView):
         # from request's data stream
         request.body
 
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, partial=True)
 
         if serializer.is_valid():
             logger.info(f"[UpdateBallkid] serializer data: {serializer.data}")

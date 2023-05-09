@@ -77,6 +77,14 @@ class Ballkid(models.Model):
     )
     comments = models.TextField(default="", blank=True)
 
+    # TODO: consider adding this in the future but need to 
+    # figure out how to make it play nicely with update
+    # class Meta:
+    #     unique_together = (
+    #         "first_name",
+    #         "last_name",
+    #     )
+
     def recalc_checkin_analytics(self, now=None):
         """
         Recalculates total checkin duration for the ballkid and saves to the
