@@ -127,7 +127,9 @@ def save_calibration_parameters(cp, calibrated=None):
 
         if calibrated:
             ratee_calibrated = [val for key, val in calibrated.items() if key[1] == name]
-            calibrated_avg = statistics.mean(ratee_calibrated)
+            calibrated_avg = (
+                statistics.mean(ratee_calibrated) if len(ratee_calibrated) > 0 else None
+            )
             calibrated_stdev = (
                 statistics.stdev(ratee_calibrated) if len(ratee_calibrated) > 1 else None
             )
@@ -251,6 +253,7 @@ class CalibratedRatings(APIView):
         cp_dict, excluded = {}, {}
         ratings = Rating.objects.all()
 
+        # See which rating categories throw Rcal warnings
         all_warnings = set()
         for rating_name in RATING_CATEGORIES:
             with warnings.catch_warnings(record=True) as caught_warnings:
@@ -260,6 +263,7 @@ class CalibratedRatings(APIView):
             if any((x.category == RcalWarning for x in caught_warnings)):
                 all_warnings.add(rating_name)
 
+        # Get dict of all calibrated overall ratings for svaign calibration params
         calibrated = {
             (rating.id, rating.ratee.get_name()): cp_dict["overall"].calibrate_rating(
                 rating.rater.get_name(),
@@ -286,35 +290,35 @@ class CalibratedRatings(APIView):
                     float(rating.athleticism_rating),
                     clip_endpoints=(MIN_RATING, MAX_RATING),
                 )
-                if rating.athleticism_rating is not None
+                if rating.athleticism_rating
                 else None,
                 "rolling_rating": cp_dict["rolling"].calibrate_rating(
                     rating.rater.get_name(),
                     float(rating.rolling_rating),
                     clip_endpoints=(MIN_RATING, MAX_RATING),
                 )
-                if rating.rolling_rating is not None
+                if rating.rolling_rating
                 else None,
                 "awareness_rating": cp_dict["awareness"].calibrate_rating(
                     rating.rater.get_name(),
                     float(rating.awareness_rating),
                     clip_endpoints=(MIN_RATING, MAX_RATING),
                 )
-                if rating.awareness_rating is not None
+                if rating.awareness_rating
                 else None,
                 "decision_rating": cp_dict["decision"].calibrate_rating(
                     rating.rater.get_name(),
                     float(rating.decision_rating),
                     clip_endpoints=(MIN_RATING, MAX_RATING),
                 )
-                if rating.decision_rating is not None
+                if rating.decision_rating
                 else None,
                 "effort_rating": cp_dict["effort"].calibrate_rating(
                     rating.rater.get_name(),
                     float(rating.effort_rating),
                     clip_endpoints=(MIN_RATING, MAX_RATING),
                 )
-                if rating.effort_rating is not None
+                if rating.effort_rating
                 else None,
                 "comments": rating.comments,
                 # Annotated values

@@ -219,7 +219,7 @@ class BulkCreateBallkids(APIView):
         Ballkid.objects.bulk_create(ballkids)
 
         return Response(
-            {"Success": f"Bulk created ballkids {ballkids}"},
+            {"Success": f"Bulk created {len(ballkids)} ballkids"},
             status=status.HTTP_200_OK,
         )
 
@@ -290,4 +290,73 @@ class BulkCreateRatings(APIView):
     permission_classes = [IsChairperson]
 
     def post(self, request):
-        pass
+        author_to_name = {
+            "Emily": ("Emily", "Beck"),
+            "MatthewK": ("Matthew", "Kolodner"),
+            "Jeff": ("Jeff", "Zhang"),
+            "Billy": ("Billy", "Owens"),
+            "Jonathan": ("Jonathan", "Chen"),
+            "Ben": ("Ben", "Parzow"),
+            "Carolyn": ("Carolyn", "Quetsch"),
+            "Ryan": ("Ryan", "Gates"),
+            "Michael": ("Michael", "White"),
+            "Joseph": ("Joey", "Ramsey"),
+            "Dan": ("Daniel", "Yi"),
+            "Joe": ("Joe", "Iosue"),
+            "Sharon": ("Sharon", "Sabasteanski"),
+            "EvanCo": ("Evan", "Costanza"),
+            "Diana": ("Diana", "Lozanova"),
+            "Zachary": ("Zachary", "Spahr"),
+            "Benji": ("Benjy", "Apelbaum"),
+            "MichaelS": ("Michael", "Shapiro"),
+            "John": ("John", "Niswander"),
+            "Stuart": ("Stuart", "Berlin"),
+            "Debbie": ("Deborah", "Berlin"),
+            "Matthew": ("Matthew", "Nicholson"),
+        }
+
+        ratings = []
+
+        file = request.FILES["file"]
+        reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
+
+        for line in reader:
+            rater_name = (
+                author_to_name[line["Author"]]
+                if line["Author"] in author_to_name
+                else ("", "")
+            )
+            ratee_name = line["Ballperson"]
+
+            rater = Ballkid.objects.filter(
+                first_name=rater_name[0], last_name=rater_name[1]
+            ).first()
+            ratee = Ballkid.objects.filter(
+                first_name=ratee_name.split()[0], last_name=ratee_name.split()[1]
+            ).first()
+
+            if rater and ratee and line["Overall"]:
+                date = datetime.strptime(
+                    f'{line["Timestamp"]} 2022', "%A, %B %d, %I:%M %p %Y"
+                )
+
+                rating = Rating(
+                    ratee=ratee,
+                    rater=rater,
+                    date=date,
+                    rating=line["Overall"],
+                    rolling_rating=line["Rolling"] or None,
+                    athleticism_rating=line["Athleticism"] or None,
+                    effort_rating=line["Effort"] or None,
+                    awareness_rating=line["Awareness"] or None,
+                    decision_rating=line["Decisionmaking"] or None,
+                    comments=line["Note"],
+                )
+                ratings.append(rating)
+
+        Rating.objects.bulk_create(ratings)
+
+        return Response(
+            {"Success": f"Bulk created {len(ratings)} ratings"},
+            status=status.HTTP_200_OK,
+        )
