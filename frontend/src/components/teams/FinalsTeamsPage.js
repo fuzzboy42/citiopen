@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Divider,
-  Link,
-} from "@mui/material";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
+import Link from "@mui/material/IconButton";
+
 import { getAuthHeader, Icons } from "../Utils";
 import { MATCH_TYPES } from "../Consts";
 
@@ -59,7 +59,7 @@ export default function FinalsTeamsPage(props) {
         setAssigned(data.filter((ballkid) => ballkid.finals_team))
       );
 
-    fetch("/api/show-finals-teams", {
+    fetch("/api/get-tournament", {
       method: "GET",
       headers: getAuthHeader(),
     })

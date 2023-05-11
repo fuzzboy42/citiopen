@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Divider,
-  IconButton,
-  Button,
-  Link,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  Switch,
-} from "@mui/material";
-import { Close } from "@mui/icons-material";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Table from "@mui/material/Table";
+import TableContainer from "@mui/material/TableContainer";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+
+import Close from "@mui/icons-material/Close";
 import {
   getAuthHeader,
   Icons,
   Alerts,
   SearchAndFilter,
   filterBallkids,
+  HideShowToggle,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 
@@ -314,27 +314,10 @@ function Unassigned({ unassigned, teams, setUpdated }) {
 }
 
 function Header() {
-  const [showTeams, setShowTeams] = useState(null);
-  const showMessage = "Teams are now visible to ballkids and captains.";
-  const hideMessage = "Teams are now hidden from ballkids and captains.";
-
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    fetch("/api/show-teams", {
-      method: "GET",
-      headers: getAuthHeader(),
-    })
-      .then((response) => response.json())
-      .then((data) => setShowTeams(data["show_teams"]));
-  }, []);
-
-  return showTeams == null ? (
-    <Typography variant="h4" sx={{ mb: 1 }}>
-      Current Teams
-    </Typography>
-  ) : (
+  return (
     <div>
       <Alerts
         successMsg={successMsg}
@@ -344,28 +327,11 @@ function Header() {
       />
       <div className="justify" style={{ marginBottom: 10 }}>
         <Typography variant="h4">Current Teams</Typography>
-        <div className="sxs">
-          <Typography variant="body1">Hide</Typography>
-          <Switch
-            defaultChecked={showTeams}
-            onClick={(e) => {
-              fetch("/api/show-teams", {
-                method: "PATCH",
-                headers: getAuthHeader(),
-                body: JSON.stringify({
-                  show_teams: e.target.checked,
-                }),
-              }).then((response) => {
-                if (response.ok) {
-                  setSuccessMsg(e.target.checked ? showMessage : hideMessage);
-                } else {
-                  setErrorMsg("Team visibility setting not updated.");
-                }
-              });
-            }}
-          />
-          <Typography variant="body1">Show</Typography>
-        </div>
+        <HideShowToggle
+          teamType=""
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+        />
       </div>
     </div>
   );

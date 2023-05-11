@@ -89,8 +89,7 @@ analytics_urls = [
 
 # Tournament URLs
 tournament_urls = [
-    path("show-teams", ShowTeams.as_view(), name="show-teams"),
-    path("show-finals-teams", ShowFinalsTeams.as_view(), name="show-finals-teams"),
+    path("get-tournament", GetTournament.as_view(), name="get-tournament"),
 ]
 
 # Rating URLs

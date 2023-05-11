@@ -116,43 +116,24 @@ class UpdateSchedule(APIView):
             )
 
 
-class ShowTeams(APIView):
+class GetTournament(APIView):
     permission_classes = [IsChairpersonOrAuthenticatedReadOnly]
 
     def get(self, request, format=None):
         tournament = Tournament.objects.get(year=2023)
-        return Response({"show_teams": tournament.show_teams}, status=status.HTTP_200_OK)
+        return Response(TournamentSerializer(tournament).data, status=status.HTTP_200_OK)
 
     def patch(self, request, format=None):
-        show_teams = request.data["show_teams"]
-
         tournament = Tournament.objects.get(year=2023)
-        tournament.show_teams = show_teams
+
+        if request.data["show_teams"] is not None:
+            tournament.show_teams = request.data["show_teams"]
+        if request.data["show_finals_teams"] is not None:
+            tournament.show_finals_teams = request.data["show_finals_teams"]
+
         tournament.save()
 
         return Response(
-            {"Success": f"Updated show teams status to {show_teams}"},
-            status=status.HTTP_200_OK,
-        )
-
-
-class ShowFinalsTeams(APIView):
-    permission_classes = [IsChairpersonOrAuthenticatedReadOnly]
-
-    def get(self, request, format=None):
-        tournament = Tournament.objects.get(year=2023)
-        return Response(
-            {"show_finals_teams": tournament.show_finals_teams}, status=status.HTTP_200_OK
-        )
-
-    def patch(self, request, format=None):
-        show_finals_teams = request.data["show_finals_teams"]
-
-        tournament = Tournament.objects.get(year=2023)
-        tournament.show_finals_teams = show_finals_teams
-        tournament.save()
-
-        return Response(
-            {"Success": f"Updated show finals teams status to {show_finals_teams}"},
+            {"Success": f"Updated tournament"},
             status=status.HTTP_200_OK,
         )

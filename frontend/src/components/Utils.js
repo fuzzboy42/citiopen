@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
+
 import Icon from "@mui/material/Icon";
 import IconButton from "@mui/material/IconButton";
 import Alert from "@mui/material/Alert";
@@ -14,6 +15,7 @@ import TableHead from "@mui/material/TableHead";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import Switch from "@mui/material/Switch";
 
 import GridView from "@mui/icons-material/GridView";
 import List from "@mui/icons-material/List";
@@ -165,6 +167,55 @@ export function SearchAndFilter({
         ))}
       </div>
     </Grid>
+  );
+}
+
+export function HideShowToggle({ teamType, setSuccessMsg, setErrorMsg }) {
+  const [showTeams, setShowTeams] = useState(false);
+
+  const teamStr = teamType === "finals" ? "Finals teams" : "Teams";
+  const showMessage = `${teamStr} are now visible to ballkids and captains.`;
+  const hideMessage = `${teamStr} are now hidden from ballkids and captains.`;
+
+  useEffect(() => {
+    fetch("/api/get-tournament", {
+      method: "GET",
+      headers: getAuthHeader(),
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        setShowTeams(
+          data[teamType === "finals" ? "show_finals_teams" : "show_teams"]
+        )
+      );
+  }, [teamType]);
+
+  return (
+    <div className="sxs">
+      <Typography variant="body1">Hide</Typography>
+      <Switch
+        checked={showTeams}
+        onClick={(e) => {
+          setShowTeams(e.target.checked);
+          fetch("/api/get-tournament", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              show_teams: teamType === "finals" ? null : e.target.checked,
+              show_finals_teams:
+                teamType === "finals" ? e.target.checked : null,
+            }),
+          }).then((response) => {
+            if (response.ok) {
+              setSuccessMsg(e.target.checked ? showMessage : hideMessage);
+            } else {
+              setErrorMsg(`${teamStr} visibility setting not updated.`);
+            }
+          });
+        }}
+      />
+      <Typography variant="body1">Show</Typography>
+    </div>
   );
 }
 

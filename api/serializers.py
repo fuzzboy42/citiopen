@@ -37,6 +37,12 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TournamentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = "__all__"
+
+
 class CheckinAnalyticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckinAnalytics

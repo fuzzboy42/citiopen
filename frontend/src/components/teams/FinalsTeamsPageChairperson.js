@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Divider,
-  IconButton,
-  Button,
-  Link,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  Switch,
-} from "@mui/material";
-import { Close } from "@mui/icons-material";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Table from "@mui/material/Table";
+import TableContainer from "@mui/material/TableContainer";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+
+import Close from "@mui/icons-material/Close";
+
 import {
   getAuthHeader,
   Icons,
   Alerts,
   filterBallkids,
   SearchAndFilter,
+  HideShowToggle,
 } from "../Utils";
 import { MATCH_TYPES, MARGINS } from "../Consts";
 
@@ -300,27 +301,10 @@ function Unassigned({ unassigned, teams, setUpdated }) {
 }
 
 function Header() {
-  const [showFinalsTeams, setShowFinalsTeams] = useState(null);
-  const showMessage = "Finals teams are now visible to ballkids and captains.";
-  const hideMessage = "Finals teams are now hidden from ballkids and captains.";
-
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    fetch("/api/show-finals-teams", {
-      method: "GET",
-      headers: getAuthHeader(),
-    })
-      .then((response) => response.json())
-      .then((data) => setShowFinalsTeams(data["show_finals_teams"]));
-  }, []);
-
-  return showFinalsTeams == null ? (
-    <Typography variant="h4" sx={{ mb: 1 }}>
-      Finals Teams
-    </Typography>
-  ) : (
+  return (
     <div>
       <Alerts
         successMsg={successMsg}
@@ -330,28 +314,11 @@ function Header() {
       />
       <div className="justify" style={{ marginBottom: 10 }}>
         <Typography variant="h4">Finals Teams</Typography>
-        <div className="sxs">
-          <Typography variant="body1">Hide</Typography>
-          <Switch
-            defaultChecked={showFinalsTeams}
-            onClick={(e) => {
-              fetch("/api/show-finals-teams", {
-                method: "PATCH",
-                headers: getAuthHeader(),
-                body: JSON.stringify({
-                  show_finals_teams: e.target.checked,
-                }),
-              }).then((response) => {
-                if (response.ok) {
-                  setSuccessMsg(e.target.checked ? showMessage : hideMessage);
-                } else {
-                  setErrorMsg("Team visibility setting not updated.");
-                }
-              });
-            }}
-          />
-          <Typography variant="body1">Show</Typography>
-        </div>
+        <HideShowToggle
+          teamType="finals"
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+        />
       </div>
     </div>
   );

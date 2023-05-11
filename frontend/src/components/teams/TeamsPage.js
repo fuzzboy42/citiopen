@@ -64,7 +64,7 @@ export default function TeamsPage(props) {
       .then((response) => response.json())
       .then((data) => setTeams(data["teams"]));
 
-    fetch("/api/show-teams", {
+    fetch("/api/get-tournament", {
       method: "GET",
       headers: getAuthHeader(),
     })
