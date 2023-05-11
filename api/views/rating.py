@@ -263,7 +263,7 @@ class CalibratedRatings(APIView):
             if any((x.category == RcalWarning for x in caught_warnings)):
                 all_warnings.add(rating_name)
 
-        # Get dict of all calibrated overall ratings for svaign calibration params
+        # Get dict of all calibrated overall ratings for saving calibration params
         calibrated = {
             (rating.id, rating.ratee.get_name()): cp_dict["overall"].calibrate_rating(
                 rating.rater.get_name(),

@@ -13,7 +13,8 @@ import {
   LayoutButtons,
   getAuthHeader,
   getLocalStorage,
-  SearchBox,
+  SearchAndFilter,
+  filterBallkids,
 } from "../Utils";
 
 function renderUnarchiveButton(firstName, lastName, setUpdated) {
@@ -47,6 +48,7 @@ function renderUnarchiveButton(firstName, lastName, setUpdated) {
 export default function ArchivedBallkidList(props) {
   const [archived, setArchived] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
 
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
@@ -75,17 +77,15 @@ export default function ArchivedBallkidList(props) {
         <Typography variant="body1">There are no ballkids to show.</Typography>
       ) : (
         <Grid container spacing={gridLayout ? 2 : 1}>
-          <Grid item xs={12}>
-            <SearchBox setSearchKeyword={setSearchKeyword} />
-          </Grid>
+          <SearchAndFilter
+            setSearchKeyword={setSearchKeyword}
+            filterGroup={filterGroup}
+            setFilterGroup={setFilterGroup}
+            filters={["captain", "chairperson"]}
+          />
 
-          {archived
-            .filter((ballkid) =>
-              `${ballkid.first_name} ${ballkid.last_name}`
-                .toLowerCase()
-                .includes(searchKeyword.toLowerCase())
-            )
-            .map((ballkid) => (
+          {filterBallkids(archived, searchKeyword, filterGroup).map(
+            (ballkid) => (
               <Grid
                 item
                 key={ballkid.id}
@@ -128,7 +128,8 @@ export default function ArchivedBallkidList(props) {
                   </CardActionArea>
                 </Card>
               </Grid>
-            ))}
+            )
+          )}
         </Grid>
       )}
     </div>

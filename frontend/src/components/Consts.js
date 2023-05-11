@@ -1,3 +1,7 @@
+import Star from "@mui/icons-material/Star";
+import Circle from "@mui/icons-material/Circle";
+import EventSeat from "@mui/icons-material/EventSeat";
+
 export const MARGINS = { mt: 2, mb: 1 };
 
 export const MATCH_TYPES = {
@@ -12,6 +16,12 @@ export const CUT_STATUSES = {
   POSSIBLY_KEEP: "Possibly Keep",
   POSSIBLY_CUT: "Possibly Cut",
   DEFINITELY_CUT: "Definitely Cut",
+};
+
+export const ICON_DICT = {
+  captain: <Star sx={{ color: "orange" }} />,
+  rookie: <Circle sx={{ color: "green" }} />,
+  chairperson: <EventSeat sx={{ color: "purple" }} />,
 };
 
 // Note that these dates are 0-indexed!!

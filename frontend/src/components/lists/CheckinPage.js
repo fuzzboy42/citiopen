@@ -13,7 +13,8 @@ import {
   LayoutButtons,
   getAuthHeader,
   getLocalStorage,
-  SearchBox,
+  SearchAndFilter,
+  filterBallkids,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 
@@ -130,6 +131,7 @@ export default function CheckinPage(props) {
   const [checkedIn, setCheckedIn] = useState([]);
   const [checkedOut, setCheckedOut] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
 
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
@@ -157,7 +159,11 @@ export default function CheckinPage(props) {
         <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
       </div>
 
-      <SearchBox setSearchKeyword={setSearchKeyword} />
+      <SearchAndFilter
+        setSearchKeyword={setSearchKeyword}
+        filterGroup={filterGroup}
+        setFilterGroup={setFilterGroup}
+      />
 
       <Grid container justifyContent="space-between">
         <Grid item>
@@ -172,11 +178,7 @@ export default function CheckinPage(props) {
         )}
       </Grid>
       {renderBallkids(
-        checkedIn.filter((ballkid) =>
-          `${ballkid.first_name} ${ballkid.last_name}`
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase())
-        ),
+        filterBallkids(checkedIn, searchKeyword, filterGroup),
         true,
         gridLayout,
         setUpdated
@@ -185,11 +187,7 @@ export default function CheckinPage(props) {
         Checked Out
       </Typography>
       {renderBallkids(
-        checkedOut.filter((ballkid) =>
-          `${ballkid.first_name} ${ballkid.last_name}`
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase())
-        ),
+        filterBallkids(checkedOut, searchKeyword, filterGroup),
         false,
         gridLayout,
         setUpdated

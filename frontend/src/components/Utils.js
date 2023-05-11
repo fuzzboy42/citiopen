@@ -15,15 +15,12 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 
-import Star from "@mui/icons-material/Star";
-import Circle from "@mui/icons-material/Circle";
 import GridView from "@mui/icons-material/GridView";
 import List from "@mui/icons-material/List";
-import EventSeat from "@mui/icons-material/EventSeat";
 import Check from "@mui/icons-material/Check";
 
 import RatingDialog from "./ratings/RatingDialog";
-import { END_DATE, START_DATE } from "./Consts";
+import { END_DATE, START_DATE, ICON_DICT } from "./Consts";
 
 export function Icons({ ballkid, margin }) {
   if (!ballkid.is_captain && ballkid.num_years_experience > 0) {
@@ -32,9 +29,9 @@ export function Icons({ ballkid, margin }) {
 
   return (
     <Icon sx={{ mb: margin }}>
-      {ballkid.is_chairperson && <EventSeat sx={{ color: "purple" }} />}
-      {ballkid.is_captain && <Star sx={{ color: "orange" }} />}
-      {ballkid.num_years_experience === 0 && <Circle sx={{ color: "green" }} />}
+      {ballkid.is_chairperson && ICON_DICT["chairperson"]}
+      {ballkid.is_captain && ICON_DICT["captain"]}
+      {ballkid.num_years_experience === 0 && ICON_DICT["rookie"]}
     </Icon>
   );
 }
@@ -124,12 +121,63 @@ export function SearchBox({ setSearchKeyword }) {
   return (
     <TextField
       size="small"
+      type="search"
       variant="outlined"
       fullWidth
       sx={{ py: 1 }}
       placeholder="Search by ballkid name..."
       onChange={(e) => setSearchKeyword(e.target.value)}
     />
+  );
+}
+
+export function SearchAndFilter({
+  setSearchKeyword,
+  filterGroup,
+  setFilterGroup,
+  filters = ["captain", "rookie", "chairperson"],
+}) {
+  return (
+    <Grid item xs={12} className="justify">
+      <SearchBox setSearchKeyword={setSearchKeyword} />
+      &emsp;
+      <div className="sxs">
+        <Typography variant="body1" noWrap>
+          Filter to:
+        </Typography>
+        &ensp;
+        {filters.map((filterName) => (
+          <IconButton
+            key={filterName}
+            size="small"
+            style={{
+              borderRadius: 0,
+              background: filterGroup === filterName ? "lightgray" : "",
+            }}
+            onClick={() => {
+              filterGroup === filterName
+                ? setFilterGroup(null)
+                : setFilterGroup(filterName);
+            }}
+          >
+            {ICON_DICT[filterName]}
+          </IconButton>
+        ))}
+      </div>
+    </Grid>
+  );
+}
+
+export function filterBallkids(ballkids, searchKeyword, filterGroup) {
+  return ballkids.filter(
+    (ballkid) =>
+      `${ballkid.first_name} ${ballkid.last_name}`
+        .toLowerCase()
+        .includes(searchKeyword.toLowerCase()) &
+      (!filterGroup ||
+        (filterGroup === "rookie" && ballkid.num_years_experience === 0) ||
+        (filterGroup === "captain" && ballkid.is_captain) ||
+        (filterGroup === "chairperson" && ballkid.is_chairperson))
   );
 }
 

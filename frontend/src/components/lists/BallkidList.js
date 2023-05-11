@@ -9,7 +9,8 @@ import AspectRatio from "@mui/joy/AspectRatio";
 import {
   Icons,
   LayoutButtons,
-  SearchBox,
+  SearchAndFilter,
+  filterBallkids,
   getAuthHeader,
   getLocalStorage,
 } from "../Utils";
@@ -17,6 +18,7 @@ import {
 export default function BallkidList(props) {
   const [ballkids, setBallkids] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
 
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
@@ -40,17 +42,14 @@ export default function BallkidList(props) {
         <Typography>There are no ballkids to show.</Typography>
       ) : (
         <Grid container spacing={gridLayout ? 2 : 1}>
-          <Grid item xs={12}>
-            <SearchBox setSearchKeyword={setSearchKeyword} />
-          </Grid>
+          <SearchAndFilter
+            setSearchKeyword={setSearchKeyword}
+            filterGroup={filterGroup}
+            setFilterGroup={setFilterGroup}
+          />
 
-          {ballkids
-            .filter((ballkid) =>
-              `${ballkid.first_name} ${ballkid.last_name}`
-                .toLowerCase()
-                .includes(searchKeyword.toLowerCase())
-            )
-            .map((ballkid) => (
+          {filterBallkids(ballkids, searchKeyword, filterGroup).map(
+            (ballkid) => (
               <Grid
                 item
                 key={ballkid.id}
@@ -89,7 +88,8 @@ export default function BallkidList(props) {
                   </CardActionArea>
                 </Card>
               </Grid>
-            ))}
+            )
+          )}
         </Grid>
       )}
     </div>

@@ -19,7 +19,12 @@ import Paper from "@mui/material/Paper";
 import Clear from "@mui/icons-material/Clear";
 import Dangerous from "@mui/icons-material/Dangerous";
 import ReportOff from "@mui/icons-material/ReportOff";
-import { getAuthHeader, Icons, SearchBox } from "../Utils";
+import {
+  filterBallkids,
+  getAuthHeader,
+  Icons,
+  SearchAndFilter,
+} from "../Utils";
 import { CUT_STATUSES } from "../Consts";
 
 function DraggableBallkidAndIcon({ ballkid }) {
@@ -346,6 +351,7 @@ export default function CutPage(props) {
   const [active, setActive] = useState([]);
   const [cut, setCut] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
   const [updated, setUpdated] = useState(false);
 
   const sections = Object.keys(CUT_STATUSES).map((key) => CUT_STATUSES[key]);
@@ -377,24 +383,20 @@ export default function CutPage(props) {
         ))}
       </Grid>
 
-      <SearchBox setSearchKeyword={setSearchKeyword} />
+      <SearchAndFilter
+        setSearchKeyword={setSearchKeyword}
+        filterGroup={filterGroup}
+        setFilterGroup={setFilterGroup}
+      />
 
       <ActiveSection
-        active={active.filter((ballkid) =>
-          `${ballkid.first_name} ${ballkid.last_name}`
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase())
-        )}
+        active={filterBallkids(active, searchKeyword, filterGroup)}
         sections={sections}
         setUpdated={setUpdated}
       />
 
       <CutSection
-        cut={cut.filter((ballkid) =>
-          `${ballkid.first_name} ${ballkid.last_name}`
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase())
-        )}
+        cut={filterBallkids(cut, searchKeyword, filterGroup)}
         setUpdated={setUpdated}
       />
     </div>
