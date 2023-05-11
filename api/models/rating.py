@@ -31,6 +31,7 @@ class CalibrationParams(models.Model):
     rater_offset = models.FloatField(blank=True, null=True)
     num_ratee_ratings = models.IntegerField(default=0)
     num_rater_ratings = models.IntegerField(default=0)
+    num_raters = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.ballkid.get_name()} with improvement {self.ratee_improvement} and offset {self.ratee_offset}, reviewer scale {self.rater_scale} and offset {self.rater_offset}"

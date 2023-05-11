@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Typography,
-  Grid,
-  Button,
-  Box,
-  Menu,
-  MenuItem,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  TextField,
-  Link,
-} from "@mui/material";
-import { AspectRatio } from "@mui/joy";
-import {
-  MoreVert,
-  Dangerous,
-  ArrowCircleUp,
-  ArrowCircleDown,
-  RateReview,
-  Archive,
-  Unarchive,
-  ReportOff,
-  Shortcut,
-} from "@mui/icons-material";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Alert from "@mui/material/Alert";
+
+import AspectRatio from "@mui/joy/AspectRatio";
+
+import MoreVert from "@mui/icons-material/MoreVert";
+import Dangerous from "@mui/icons-material/Dangerous";
+import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
+import ArrowCircleDown from "@mui/icons-material/ArrowCircleDown";
+import RateReview from "@mui/icons-material/RateReview";
+import Archive from "@mui/icons-material/Archive";
+import Unarchive from "@mui/icons-material/Unarchive";
+import ReportOff from "@mui/icons-material/ReportOff";
+import Shortcut from "@mui/icons-material/Shortcut";
+
 import RatingDialog from "../ratings/RatingDialog";
 import {
   Icons,
@@ -39,6 +39,10 @@ import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
 import { RaterParamsChart } from "./RaterParamsChart";
 import { BallkidParamsChart } from "./BallkidParamsChart";
+import {
+  NUM_RATERS_WARNING_THRESHOLD,
+  NUM_RATINGS_WARNING_THRESHOLD,
+} from "../Consts";
 
 function renderHeader(ballkid, setUpdated, isMobile) {
   const overflowMenu =
@@ -282,7 +286,7 @@ function RatingSection({ ballkid, isMobile }) {
             endIcon={<Shortcut />}
             sx={{ my: 1 }}
           >
-            View {params["num_rater_ratings"]} ratings by this captain
+            View all {params["num_rater_ratings"]} ratings by this captain
           </Button>
 
           {params.rater_scale == null ? (
@@ -320,7 +324,7 @@ function RatingSection({ ballkid, isMobile }) {
           endIcon={<Shortcut />}
           sx={{ my: 1, mr: 1 }}
         >
-          View {params["num_ratee_ratings"]} ratings for this ballkid
+          View all {params["num_ratee_ratings"]} ratings for this ballkid
         </Button>
         <Button
           size="small"
@@ -337,6 +341,15 @@ function RatingSection({ ballkid, isMobile }) {
           ""
         ) : (
           <div>
+            {params["num_ratee_ratings"] >= NUM_RATINGS_WARNING_THRESHOLD &&
+            params["num_raters"] >= NUM_RATERS_WARNING_THRESHOLD ? (
+              ""
+            ) : (
+              <Alert severity="warning" sx={{ my: 1 }}>
+                Note: This ballkid only had {params["num_raters"]} rater(s) and
+                received a total of {params["num_ratee_ratings"]} rating(s).
+              </Alert>
+            )}
             <Typography variant="body1">
               Ballkid improvement: {Number(params.ratee_improvement).toFixed(3)}
             </Typography>

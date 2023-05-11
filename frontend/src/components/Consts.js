@@ -24,6 +24,9 @@ export const ICON_DICT = {
   chairperson: <EventSeat sx={{ color: "purple" }} />,
 };
 
+export const NUM_RATINGS_WARNING_THRESHOLD = 5;
+export const NUM_RATERS_WARNING_THRESHOLD = 3;
+
 // Note that these dates are 0-indexed!!
 export const START_DATE = new Date(2023, 4, 1);
 export const END_DATE = new Date(2023, 4, 15);

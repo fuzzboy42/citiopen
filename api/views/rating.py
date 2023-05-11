@@ -126,6 +126,9 @@ def save_calibration_parameters(cp, calibrated=None):
         )
         num_ratee_ratings = Rating.objects.filter(ratee=ballkid).count()
         num_rater_ratings = Rating.objects.filter(rater=ballkid).count()
+        num_raters = (
+            Rating.objects.filter(ratee=ballkid).values_list("rater").distinct().count()
+        )
 
         default_vals = {
             "ratee_improvement": improvement,
@@ -134,6 +137,7 @@ def save_calibration_parameters(cp, calibrated=None):
             "rater_offset": offset,
             "num_ratee_ratings": num_ratee_ratings,
             "num_rater_ratings": num_rater_ratings,
+            "num_raters": num_raters,
         }
 
         if calibrated:
@@ -367,10 +371,10 @@ class GetCalibrationParams(generics.RetrieveAPIView):
     serializer_class = CalibrationParamsSerializer
 
     def get_object(self):
-        try:
-            return CalibrationParams.objects.get(ballkid_id=self.kwargs["pk"])
-        except CalibrationParams.DoesNotExist:
-            pass
+        params, created = CalibrationParams.objects.get_or_create(
+            ballkid_id=self.kwargs["pk"]
+        )
+        return params
 
 
 class GetAverageCalibrationParams(APIView):
