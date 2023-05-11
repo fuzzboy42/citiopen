@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  CardActionArea,
-  Switch,
-  Grid,
-  Box,
-} from "@mui/material";
-import { AspectRatio } from "@mui/joy";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import CardActionArea from "@mui/material/CardActionArea";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+
+import AspectRatio from "@mui/joy/AspectRatio";
 import {
   Icons,
   LayoutButtons,
@@ -17,16 +16,28 @@ import {
   RatingButton,
   getLocalStorage,
   useIsMobile,
+  SearchAndFilter,
+  filterBallkids,
 } from "../Utils";
 
-function renderBallkids(ballkids, gridLayout, setUpdated, isMobile) {
+function BallkidsSection({ ballkids, gridLayout, setUpdated }) {
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
+
+  const isMobile = useIsMobile();
   const isChairperson = getLocalStorage("group") === "chairperson";
 
   return ballkids.length === 0 ? (
     <Typography variant="body1">There are no ballkids to rate.</Typography>
   ) : (
     <Grid container spacing={gridLayout ? 2 : 1}>
-      {ballkids.map((ballkid) => (
+      <SearchAndFilter
+        setSearchKeyword={setSearchKeyword}
+        filterGroup={filterGroup}
+        setFilterGroup={setFilterGroup}
+      />
+
+      {filterBallkids(ballkids, searchKeyword, filterGroup).map((ballkid) => (
         <Grid
           item
           key={ballkid.id}
@@ -99,7 +110,6 @@ export default function RateByNamePage(props) {
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );
-  const isMobile = useIsMobile();
   const pk = getLocalStorage("ballkid_id");
 
   useEffect(() => {
@@ -134,9 +144,11 @@ export default function RateByNamePage(props) {
         <Typography variant="body1">Show Ballkids to Rate</Typography>
       </div>
 
-      {showAll
-        ? renderBallkids(ballkids, gridLayout, setUpdated, isMobile)
-        : renderBallkids(unratedBallkids, gridLayout, setUpdated, isMobile)}
+      <BallkidsSection
+        ballkids={showAll ? ballkids : unratedBallkids}
+        gridLayout={gridLayout}
+        setUpdated={setUpdated}
+      />
     </div>
   );
 }
