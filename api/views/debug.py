@@ -1,8 +1,10 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User, Group
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from api.admin import *
 from api.serializers import *
 from api.utils import *
 from api.permissions import *
@@ -11,6 +13,7 @@ from api.models.rating import *
 from datetime import datetime, timedelta
 import csv
 import io
+import zipfile
 
 
 class CreateCheckinHistory(APIView):
@@ -368,3 +371,45 @@ class BulkCreateRatings(APIView):
             {"Success": f"Bulk created {len(ratings)} ratings"},
             status=status.HTTP_200_OK,
         )
+
+
+class DownloadData(APIView):
+    permission_classes = [IsChairperson]
+
+    def get(self, request, format=None):
+        filename_to_data = {}
+        today = datetime.strftime(datetime.now(), "%Y%m%d")
+        zip_filename = f"{today}_data.zip"
+
+        resource_list = [
+            BallkidResource(),
+            CalibrationParamsResource(),
+            CaptainAnalyticsResource(),
+            CaptainHistoryResource(),
+            CheckinAnalyticsResource(),
+            CheckinHistoryResource(),
+            CourtAnalyticsResource(),
+            CutHistoryResource(),
+            FinalsHistoryResource(),
+            RatingResource(),
+            ScheduleResource(),
+            TeamHistoryResource(),
+            TournamentResource(),
+        ]
+        for resource in resource_list:
+            csv_data = resource.export().csv
+            filename = resource._meta.model.__name__ + today
+            filename_to_data[filename] = csv_data
+
+            # Code to return a single CSV file
+            # response = Response(csv_data, content_type="text/csv")
+            # response["Content-Disposition"] = 'attachment; filename="test.csv"'
+            # return response
+
+        with zipfile.ZipFile(zip_filename, "a", zipfile.ZIP_DEFLATED) as zf:
+            for filename, data in filename_to_data.items():
+                zf.writestr(f"{filename}.csv", data)
+
+        response = HttpResponse(open(zip_filename, "rb"), content_type="application/zip")
+        response["Content-Disposition"] = "attachment; filename=name.zip"
+        return response

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "whitenoise.runserver_nostatic",
     "djoser",
+    "import_export",
     # Local apps
     "api.apps.ApiConfig",
     "accounts.apps.AccountsConfig",

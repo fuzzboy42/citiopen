@@ -237,7 +237,7 @@ function CreateUser(props) {
         <Button
           color="primary"
           variant="contained"
-          onClick={(e) => {
+          onClick={(e) =>
             fetch("/accounts/register", {
               method: "POST",
               headers: getAuthHeader(),
@@ -259,8 +259,8 @@ function CreateUser(props) {
               setLastName("");
               setGroup("ballkid");
               setEmail("");
-            });
-          }}
+            })
+          }
         >
           Create User
         </Button>
