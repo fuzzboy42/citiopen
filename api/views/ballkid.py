@@ -35,7 +35,7 @@ class BallkidsList(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = datetime.strftime(datetime.now(), "%Y")
+        current_year = get_current_year()
 
         ballkids = Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
             "last_name", "first_name"
@@ -76,7 +76,7 @@ class BallkidsSortedList(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = datetime.strftime(datetime.now(), "%Y")
+        current_year = get_current_year()
 
         ballkids = (
             Ballkid.objects.all()
@@ -158,7 +158,7 @@ class GetBallkid(generics.RetrieveAPIView):
 
     def get_queryset(self):
         me = self.kwargs.get("me")
-        current_year = datetime.strftime(datetime.now(), "%Y")
+        current_year = get_current_year()
 
         ballkids = Ballkid.objects.all()
 

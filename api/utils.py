@@ -3,6 +3,10 @@ from datetime import datetime, timedelta
 DEFAULT_IMAGE_FILE = "static/img/none.jpg"
 
 
+def get_current_year():
+    return datetime.strftime(datetime.now(), "%Y")
+
+
 def get_first_name(full_name):
     return " ".join(full_name.split(" ")[:-1])
 

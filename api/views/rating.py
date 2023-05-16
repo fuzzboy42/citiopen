@@ -197,7 +197,7 @@ class MyRatings(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = datetime.strftime(datetime.now(), "%Y")
+        current_year = get_current_year()
 
         return (
             Rating.objects.filter(rater_id=pk, date__year=current_year)
