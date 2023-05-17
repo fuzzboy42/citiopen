@@ -11,15 +11,15 @@ class TestBallkidModel(TestCase):
             last_name="Iosue",
             is_checked_in=True,
             current_team=3,
-            preferred_position=Position.NB,
-            position=Position.N,
+            preferred_position=POSITION.NB,
+            position=POSITION.N,
         )
         self.ballkid2 = Ballkid.objects.create(
             first_name="Joe",
             last_name="Iosue",
             is_checked_in=True,
-            preferred_position=Position.NB,
-            position=Position.N,
+            preferred_position=POSITION.NB,
+            position=POSITION.N,
         )
 
     def test_get_name(self):
@@ -32,22 +32,22 @@ class TestBallkidModel(TestCase):
         self.assertTrue(self.ballkid.is_checked_in)
 
     def test_set_field_position(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
 
-        self.ballkid.set_field("position", Position.N)
-        self.assertEqual(Position.N, self.ballkid.position)
+        self.ballkid.set_field("position", POSITION.N)
+        self.assertEqual(POSITION.N, self.ballkid.position)
 
     def test_set_field_finals_position(self):
-        self.ballkid.finals_position = Position.B
+        self.ballkid.finals_position = POSITION.B
 
-        self.ballkid.set_field("finals_position", Position.N)
-        self.assertEqual(Position.N, self.ballkid.finals_position)
+        self.ballkid.set_field("finals_position", POSITION.N)
+        self.assertEqual(POSITION.N, self.ballkid.finals_position)
 
     def test_set_field_preferred_position(self):
-        self.ballkid.preferred_position = Position.NB
+        self.ballkid.preferred_position = POSITION.NB
 
-        self.ballkid.set_field("preferred_position", Position.B)
-        self.assertEqual(Position.B, self.ballkid.preferred_position)
+        self.ballkid.set_field("preferred_position", POSITION.B)
+        self.assertEqual(POSITION.B, self.ballkid.preferred_position)
 
     def test_set_field_team_assign(self):
         self.ballkid.current_team = 0
@@ -160,17 +160,17 @@ class TestBallkidModel(TestCase):
         self.assertIsNotNone(history.end)
 
     def test_get_preferred_position_switch(self):
-        self.assertEqual(Position.N, self.ballkid.get_preferred_position())
+        self.assertEqual(POSITION.N, self.ballkid.get_preferred_position())
 
     def test_get_preferred_position_nonswitch(self):
-        self.ballkid.preferred_position = Position.N
+        self.ballkid.preferred_position = POSITION.N
 
-        self.assertEqual(Position.N, self.ballkid.get_preferred_position())
+        self.assertEqual(POSITION.N, self.ballkid.get_preferred_position())
 
     def test_get_preferred_position_bn(self):
-        self.ballkid.preferred_position = Position.BN
+        self.ballkid.preferred_position = POSITION.BN
 
-        self.assertEqual(Position.B, self.ballkid.get_preferred_position())
+        self.assertEqual(POSITION.B, self.ballkid.get_preferred_position())
 
     def test_validate_no_change(self):
         self.ballkid.validate()
@@ -178,75 +178,75 @@ class TestBallkidModel(TestCase):
         self.ballkid.refresh_from_db()
         self.assertTrue(self.ballkid.is_checked_in)
         self.assertEqual(3, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_unassign_resets_preferred_position(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
         self.ballkid.current_team = 0
-        self.assertEqual(Position.B, self.ballkid.position)
+        self.assertEqual(POSITION.B, self.ballkid.position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertTrue(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_checkout_resets_team_and_preferred_position(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
         self.ballkid.is_checked_in = False
         self.assertEqual(3, self.ballkid.current_team)
-        self.assertEqual(Position.B, self.ballkid.position)
+        self.assertEqual(POSITION.B, self.ballkid.position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertFalse(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_inactive_checked_out(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
         self.ballkid.is_active = False
         self.assertEqual(3, self.ballkid.current_team)
-        self.assertEqual(Position.B, self.ballkid.position)
+        self.assertEqual(POSITION.B, self.ballkid.position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertFalse(self.ballkid.is_active)
         self.assertFalse(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_cut_checked_out(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
         self.ballkid.is_cut = True
         self.assertEqual(3, self.ballkid.current_team)
-        self.assertEqual(Position.B, self.ballkid.position)
+        self.assertEqual(POSITION.B, self.ballkid.position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertTrue(self.ballkid.is_cut)
         self.assertFalse(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_uncut_no_change(self):
-        self.ballkid.position = Position.B
+        self.ballkid.position = POSITION.B
         self.ballkid.is_cut = True
         self.assertEqual(3, self.ballkid.current_team)
-        self.assertEqual(Position.B, self.ballkid.position)
+        self.assertEqual(POSITION.B, self.ballkid.position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertTrue(self.ballkid.is_cut)
         self.assertFalse(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
         self.ballkid.is_cut = False
         self.ballkid.validate()
@@ -254,16 +254,16 @@ class TestBallkidModel(TestCase):
         self.assertFalse(self.ballkid.is_cut)
         self.assertFalse(self.ballkid.is_checked_in)
         self.assertEqual(0, self.ballkid.current_team)
-        self.assertEqual(Position.N, self.ballkid.position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)
 
     def test_validate_unassign_finals_team_resets_preferred_position(self):
-        self.ballkid.finals_position = Position.B
+        self.ballkid.finals_position = POSITION.B
         self.ballkid.finals_team = ""
-        self.assertEqual(Position.B, self.ballkid.finals_position)
+        self.assertEqual(POSITION.B, self.ballkid.finals_position)
 
         self.ballkid.validate()
         self.ballkid.refresh_from_db()
         self.assertEqual("", self.ballkid.finals_team)
-        self.assertEqual(Position.N, self.ballkid.finals_position)
-        self.assertEqual(Position.NB, self.ballkid.preferred_position)
+        self.assertEqual(POSITION.N, self.ballkid.finals_position)
+        self.assertEqual(POSITION.NB, self.ballkid.preferred_position)

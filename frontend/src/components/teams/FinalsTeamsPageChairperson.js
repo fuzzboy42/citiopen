@@ -95,7 +95,7 @@ function Team({ team, assigned, setUpdated }) {
             <Button
               size="small"
               onClick={(e) => {
-                fetch("/api/clear-finals-team", {
+                fetch("/api/clear-team", {
                   method: "PATCH",
                   headers: getAuthHeader(),
                   body: JSON.stringify({

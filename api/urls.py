@@ -23,7 +23,6 @@ ballkid_urls = [
     path("checkout-all", CheckoutAll.as_view(), name="checkout-all"),
     path("cut-all", CutAll.as_view(), name="cut-all"),
     path("calc-num-teams", CalcNumTeams.as_view(), name="calc-num-teams"),
-    path("clear-finals-team", ClearFinalsTeam.as_view(), name="clear-finals-team"),
     path("clear-team", ClearTeam.as_view(), name="clear-team"),
 ]
 

@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger("api.ballkid")
 
 
-class Position(models.TextChoices):
+class POSITION(models.TextChoices):
     B = "Back", _("Back")
     N = "Net", _("Net")
     BN = "Back/Net", _("Back/Net")
@@ -55,7 +55,7 @@ class Ballkid(models.Model):
     is_captain = models.BooleanField(default=False)
     is_chairperson = models.BooleanField(default=False)
     preferred_position = models.CharField(
-        max_length=10, choices=Position.choices, default=Position.B
+        max_length=10, choices=POSITION.choices, default=POSITION.B
     )
 
     # Ballkid status
@@ -70,10 +70,10 @@ class Ballkid(models.Model):
     current_team = models.IntegerField(default=0)
     finals_team = models.CharField(max_length=20, choices=MATCH_TYPE.choices, blank=True)
     position = models.CharField(
-        max_length=10, choices=Position.choices, default=Position.B
+        max_length=10, choices=POSITION.choices, default=POSITION.B
     )
     finals_position = models.CharField(
-        max_length=10, choices=Position.choices, default=Position.B
+        max_length=10, choices=POSITION.choices, default=POSITION.B
     )
     comments = models.TextField(default="", blank=True)
 
@@ -577,15 +577,15 @@ class Ballkid(models.Model):
         Returns the ballkid's preferred position
         """
         if (
-            self.preferred_position == Position.BN
-            or self.preferred_position == Position.B
+            self.preferred_position == POSITION.BN
+            or self.preferred_position == POSITION.B
         ):
-            return Position.B
+            return POSITION.B
         elif (
-            self.preferred_position == Position.NB
-            or self.preferred_position == Position.N
+            self.preferred_position == POSITION.NB
+            or self.preferred_position == POSITION.N
         ):
-            return Position.N
+            return POSITION.N
 
     def validate(self):
         """

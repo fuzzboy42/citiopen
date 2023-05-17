@@ -134,8 +134,8 @@ class CreateBallkid(APIView):
             logger.info(f"[CreateBallkid] data: {data}")
 
             ballkid, created = Ballkid.objects.get_or_create(
-                first_name=serializer.data["first_name"],
-                last_name=serializer.data["last_name"],
+                first_name=serializer.data["first_name"].strip(),
+                last_name=serializer.data["last_name"].strip(),
                 defaults=data,
             )
             logger.info(f"[CreateBallkid] ballkid: {ballkid}; created: {created}")
@@ -246,8 +246,8 @@ class CutAll(APIView):
 
     def patch(self, request, format=None):
         should_cut = request.data["should_cut"]
-
         cut_status = request.data["cut_status"]
+
         queryset = Ballkid.objects.filter(cut_status=cut_status)
         for ballkid in queryset:
             ballkid.set_field("is_cut", should_cut)
@@ -284,17 +284,25 @@ class ClearTeam(APIView):
     permission_classes = [IsChairperson]
 
     def patch(self, request, format=None):
-        if "current_team" not in request.data:
+        if "current_team" in request.data:
+            team_type = "current_team"
+        elif "finals_team" in request.data:
+            team_type = "finals_team"
+        else:
             return Response(
-                {"Bad request": "Missing current_team argument"},
+                {"Bad request": "Missing current_team or finals_team argument"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        team = request.data["current_team"]
-        queryset = Ballkid.objects.filter(current_team=team)
+        team = request.data[team_type]
+        queryset = (
+            Ballkid.objects.filter(current_team=team)
+            if team_type == "current_team"
+            else Ballkid.objects.filter(finals_team=team)
+        )
         if queryset.exists():
             for ballkid in queryset:
-                ballkid.set_field("current_team", 0)
+                ballkid.set_field(team_type, 0 if team_type == "current_team" else "")
                 ballkid.validate()
                 ballkid.save()
 
@@ -302,32 +310,6 @@ class ClearTeam(APIView):
 
         return Response(
             f"Team {team} does not exist, already clear",
-            status=status.HTTP_200_OK,
-        )
-
-
-class ClearFinalsTeam(APIView):
-    permission_classes = [IsChairperson]
-
-    def patch(self, request, format=None):
-        if "finals_team" not in request.data:
-            return Response(
-                {"Bad request": "Missing finals_team argument"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        team = request.data["finals_team"]
-        queryset = Ballkid.objects.filter(finals_team=team)
-        if queryset.exists():
-            for ballkid in queryset:
-                ballkid.set_field("finals_team", "")
-                ballkid.validate()
-                ballkid.save()
-
-            return Response(f"Team {team} cleared", status=status.HTTP_200_OK)
-
-        return Response(
-            f"Team {team} is already clear",
             status=status.HTTP_200_OK,
         )
 
