@@ -1,10 +1,8 @@
 from django.urls import reverse
-from django.db.models import Max
 from django.contrib.auth.models import User, Group
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from api.models.ballkid import Ballkid, MATCH_TYPE, POSITION, CUT_STATUS
-from api.models.rating import Rating
+from api.models.ballkid import Ballkid, MATCH_TYPE
 from api.serializers import *
 from api.utils import *
 from datetime import datetime
@@ -1097,7 +1095,7 @@ class TestGetCourtAnalytics(APITestCase):
         self.assertEqual(1, analytic.count)
         self.assertEqual(timedelta(hours=5), analytic.duration)
 
-    def test_mult_ballkids_mult_histories_mult_courts_ordered(self):
+    def test_mult_ballkids_mult_histories_mult_courts_nonordered(self):
         TeamHistory.objects.create(
             ballkid=self.ballkid1,
             start=datetime(2023, 5, 3, 10, 25, 0),
@@ -1138,8 +1136,8 @@ class TestGetCourtAnalytics(APITestCase):
         )
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
-        analytic1 = CourtAnalytics.objects.get(ballkid=self.ballkid1, court=COURT.HARRIS)
-        analytic2 = CourtAnalytics.objects.get(ballkid=self.ballkid1, court=COURT.STADIUM)
+        analytic1 = CourtAnalytics.objects.get(ballkid=self.ballkid1, court=COURT.STADIUM)
+        analytic2 = CourtAnalytics.objects.get(ballkid=self.ballkid1, court=COURT.HARRIS)
 
         serializer = CourtAnalyticsSerializer([analytic1, analytic2], many=True)
         self.assertEqual(serializer.data, response.data)

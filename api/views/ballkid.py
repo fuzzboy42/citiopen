@@ -397,7 +397,7 @@ class GetCourtAnalytics(APIView):
     def get(self, request, pk):
         ballkid = get_object_or_404(Ballkid, id=pk)
         ballkid.recalc_court_analytics()
-        analytics = CourtAnalytics.objects.filter(ballkid_id=pk).order_by("-duration")
+        analytics = CourtAnalytics.objects.filter(ballkid_id=pk)
         return Response(CourtAnalyticsSerializer(analytics, many=True).data)
 
 
