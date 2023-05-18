@@ -6,18 +6,12 @@ from rest_framework.test import APITestCase, APIClient
 from api.models.ballkid import Ballkid, MATCH_TYPE, POSITION, CUT_STATUS
 from api.models.rating import Rating
 from api.serializers import BallkidSerializer
+from api.tests.utils import *
 
 
 class TestBallkidListView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(
             first_name="Lacy", last_name="Iosue", num_years_experience=3
@@ -81,13 +75,7 @@ class TestBallkidListView(APITestCase):
 
 class TestCreateBallkidView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.url = reverse("create-ballkid")
 
@@ -170,13 +158,7 @@ class TestCreateBallkidView(APITestCase):
 
 class TestGetBallkidView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(
             first_name="Andrea", last_name="Iosue", num_years_experience=3
@@ -550,13 +532,7 @@ class TestUpdateBallkidView(APITestCase):
 
 class TestCheckoutAllView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.url = reverse("checkout-all")
 
@@ -783,13 +759,7 @@ class TestCutAllView(APITestCase):
 
 class TestCalcNumTeamsView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.url = reverse("calc-num-teams")
 
@@ -930,13 +900,7 @@ class TestCalcNumTeamsView(APITestCase):
 
 class TestClearTeamView(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        group = Group.objects.create(name="chairperson")
-        user.groups.add(group)
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.url = reverse("clear-team")
 

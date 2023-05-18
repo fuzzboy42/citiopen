@@ -1,7 +1,6 @@
 from django.test import TestCase
 from api.models.ballkid import *
 from api.models.schedule import *
-from datetime import datetime, timedelta
 
 
 class TestBallkidModel(TestCase):

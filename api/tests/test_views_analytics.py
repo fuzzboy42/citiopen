@@ -1,22 +1,15 @@
 from django.urls import reverse
-from django.contrib.auth.models import User, Group
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
 from api.models.ballkid import Ballkid, MATCH_TYPE
 from api.serializers import *
-from api.utils import *
+from api.tests.utils import *
 from datetime import datetime
 
 
 class TestGetFinalsHistory(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(
             first_name="Lacy", last_name="Iosue", num_years_experience=3
@@ -84,13 +77,7 @@ class TestGetFinalsHistory(APITestCase):
 
 class TestGetCutHistory(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -167,13 +154,8 @@ class TestGetCutHistory(APITestCase):
 
 class TestGetPastTeams(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
+        self.captain_client = setup_testing_client(name='captain')
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -429,14 +411,6 @@ class TestGetPastTeams(APITestCase):
         )
 
     def test_captain_with_permissions(self):
-        captain_user = User.objects.create(username="captain")
-        captain_user.is_staff = True
-        captain_user.groups.add(Group.objects.create(name="captain"))
-        captain_user.save()
-
-        captain_client = APIClient()
-        captain_client.force_authenticate(user=captain_user)
-
         CaptainHistory.objects.create(
             captain=self.captain1,
             ballkid=self.ballkid1,
@@ -466,7 +440,7 @@ class TestGetPastTeams(APITestCase):
             team=3,
         )
 
-        response = captain_client.get(
+        response = self.captain_client.get(
             reverse("get-past-teams", kwargs={"pk": self.captain2.id}),
             format="json",
         )
@@ -484,13 +458,7 @@ class TestGetPastTeams(APITestCase):
 
 class TestGetCheckinHistory(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -605,13 +573,7 @@ class TestGetCheckinHistory(APITestCase):
 
 class TestGetCheckinDuration(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -699,13 +661,7 @@ class TestGetCheckinDuration(APITestCase):
 
 class TestGetCaptainAnalytics(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -987,13 +943,7 @@ class TestGetCaptainAnalytics(APITestCase):
 
 class TestGetCourtAnalytics(APITestCase):
     def setUp(self):
-        user = User.objects.create(username="test")
-        user.is_staff = True
-        user.groups.add(Group.objects.create(name="chairperson"))
-        user.save()
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=user)
+        self.client = setup_testing_client()
 
         self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
         self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
@@ -1186,3 +1136,12 @@ class TestGetCourtAnalytics(APITestCase):
         analytic = CourtAnalytics.objects.get(ballkid=self.ballkid1, court=COURT.STADIUM)
         self.assertEqual(1, analytic.count)
         self.assertEqual(timedelta(hours=5), analytic.duration)
+
+
+class TestGetCheckinLeaderboard(APITestCase):
+    def setUp(self):
+        self.client = setup_testing_client()
+
+
+    def test_something(self):
+        pass
