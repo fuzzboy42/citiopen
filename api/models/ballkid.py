@@ -102,10 +102,10 @@ class Ballkid(models.Model):
         # updating based on the most recent history
         histories = CheckinHistory.objects.filter(ballkid_id=self.id)
         for history in histories:
-            end_time = history.checkout if history.checkout else now
-            duration += end_time - history.checkin
+            end_time = history.end if history.end else now
+            duration += end_time - history.start
 
-            day = datetime.strftime(history.checkin, HYPHEN_YEAR_MONTH_DAY_FORMAT_STR)
+            day = datetime.strftime(history.start, HYPHEN_YEAR_MONTH_DAY_FORMAT_STR)
             days.add(day)
 
         analytic, created = CheckinAnalytics.objects.get_or_create(ballkid_id=self.id)
@@ -278,19 +278,19 @@ class Ballkid(models.Model):
 
         # If checking in, create new checkin history row
         if value:
-            history = CheckinHistory.objects.create(ballkid=self, checkin=now)
+            history = CheckinHistory.objects.create(ballkid=self, start=now)
             history.save()
         # If checking out, update most recent checkin history row
         else:
             histories = CheckinHistory.objects.filter(ballkid=self)
             if histories.count() > 0:
-                history = histories.order_by("-checkin").first()
-                history.checkout = now
-                if history.checkout < history.checkin:
+                history = histories.order_by("-start").first()
+                history.end = now
+                if history.end < history.start:
                     raise Exception(
-                        f"Checkout time {history.checkout} is before checkin time {history.checkin}"
+                        f"Checkout time {history.end} is before checkin time {history.start}"
                     )
-                history.duration = history.checkout - history.checkin
+                history.duration = history.end - history.start
                 history.save()
 
     def handle_team_history(self, value, now=None):
@@ -653,13 +653,13 @@ class CutHistory(models.Model):
 
 class CheckinHistory(models.Model):
     ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE)
-    checkin = models.DateTimeField(default=datetime.now)
-    checkout = models.DateTimeField(null=True)
+    start = models.DateTimeField(default=datetime.now)
+    end = models.DateTimeField(null=True)
     duration = models.DurationField(default=timedelta)
 
     def __str__(self):
-        return f"{self.ballkid.get_name()} checked in at {self.checkin} and checked out at \
-            {self.checkout} (total duration: {self.duration})"
+        return f"{self.ballkid.get_name()} checked in at {self.start} and checked out at \
+            {self.end} (total duration: {self.duration})"
 
 
 class CheckinAnalytics(models.Model):

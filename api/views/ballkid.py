@@ -367,7 +367,7 @@ class GetCheckinHistory(APIView):
     permission_classes = [IsChairpersonOrSelf]
 
     def get(self, request, pk):
-        histories = CheckinHistory.objects.filter(ballkid_id=pk).order_by("checkin")
+        histories = CheckinHistory.objects.filter(ballkid_id=pk).order_by("start")
         return Response(CheckinHistorySerializer(histories, many=True).data)
 
 

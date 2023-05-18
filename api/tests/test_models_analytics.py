@@ -72,7 +72,7 @@ class TestBallkidModelAnalytics(TestCase):
         self.ballkid.is_checked_in = False
         self.assertEqual(2, len(CheckinHistory.objects.filter(ballkid=self.ballkid)))
 
-        histories = CheckinHistory.objects.all().order_by("checkin")
+        histories = CheckinHistory.objects.all().order_by("start")
         self.assertEqual(2, len(histories))
         history1 = histories.first()
         history2 = histories.last()
@@ -467,10 +467,10 @@ class TestBallkidModelAnalytics(TestCase):
     def test_recalc_checkin_analytics_doesnt_exist(self):
         self.assertEqual(0, len(CheckinAnalytics.objects.all()))
 
-        history1 = CheckinHistory.objects.create(
+        CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 10, 30),
-            checkout=datetime(2022, 1, 1, 14, 29),
+            start=datetime(2022, 1, 1, 10, 30),
+            end=datetime(2022, 1, 1, 14, 29),
         )
         self.ballkid.recalc_checkin_analytics()
 
@@ -481,10 +481,10 @@ class TestBallkidModelAnalytics(TestCase):
     def test_recalc_checkin_analytics_exists(self):
         self.assertEqual(0, len(CheckinAnalytics.objects.all()))
 
-        history1 = CheckinHistory.objects.create(
+        CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 10, 30),
-            checkout=datetime(2022, 1, 1, 14, 29),
+            start=datetime(2022, 1, 1, 10, 30),
+            end=datetime(2022, 1, 1, 14, 29),
         )
         CheckinAnalytics.objects.create(ballkid=self.ballkid, duration=timedelta())
         self.ballkid.recalc_checkin_analytics()
@@ -494,10 +494,10 @@ class TestBallkidModelAnalytics(TestCase):
         self.assertEqual(timedelta(hours=3, minutes=59), analytics.first().duration)
 
     def test_recalc_checkin_analytics_one_history(self):
-        history1 = CheckinHistory.objects.create(
+        CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 16, 30),
-            checkout=datetime(2022, 1, 2, 0, 30),
+            start=datetime(2022, 1, 1, 16, 30),
+            end=datetime(2022, 1, 2, 0, 30),
         )
         self.ballkid.recalc_checkin_analytics()
 
@@ -506,15 +506,15 @@ class TestBallkidModelAnalytics(TestCase):
         self.assertEqual(timedelta(hours=8), analytics.first().duration)
 
     def test_recalc_checkin_analytics_mult_histories(self):
-        history1 = CheckinHistory.objects.create(
+        CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 16, 30),
-            checkout=datetime(2022, 1, 2, 0, 30),
+            start=datetime(2022, 1, 1, 16, 30),
+            end=datetime(2022, 1, 2, 0, 30),
         )
-        history2 = CheckinHistory.objects.create(
+        CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 2, 8, 15),
-            checkout=datetime(2022, 1, 2, 18, 30),
+            start=datetime(2022, 1, 2, 8, 15),
+            end=datetime(2022, 1, 2, 18, 30),
         )
         self.ballkid.recalc_checkin_analytics()
 
@@ -525,18 +525,18 @@ class TestBallkidModelAnalytics(TestCase):
     def test_recalc_checkin_analytics_mult_ballkids(self):
         CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 16, 30),
-            checkout=datetime(2022, 1, 2, 0, 30),
+            start=datetime(2022, 1, 1, 16, 30),
+            end=datetime(2022, 1, 2, 0, 30),
         )
         CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 2, 8, 15),
-            checkout=datetime(2022, 1, 2, 18, 30),
+            start=datetime(2022, 1, 2, 8, 15),
+            end=datetime(2022, 1, 2, 18, 30),
         )
         CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2022, 1, 2, 8, 15),
-            checkout=datetime(2022, 1, 2, 18, 30),
+            start=datetime(2022, 1, 2, 8, 15),
+            end=datetime(2022, 1, 2, 18, 30),
         )
         self.ballkid.recalc_checkin_analytics()
         self.ballkid2.recalc_checkin_analytics()
@@ -549,8 +549,8 @@ class TestBallkidModelAnalytics(TestCase):
     def test_recalc_checkin_analytics_milliseconds(self):
         CheckinHistory.objects.create(
             ballkid=self.ballkid,
-            checkin=datetime(2022, 1, 1, 16, 30, 2, 10),
-            checkout=datetime(2022, 1, 2, 0, 30, 3, 11),
+            start=datetime(2022, 1, 1, 16, 30, 2, 10),
+            end=datetime(2022, 1, 2, 0, 30, 3, 11),
         )
         self.ballkid.recalc_checkin_analytics()
 
@@ -561,7 +561,7 @@ class TestBallkidModelAnalytics(TestCase):
 
     def test_recalc_checkin_analytics_empty_end(self):
         CheckinHistory.objects.create(
-            ballkid=self.ballkid, checkin=datetime(2022, 1, 1, 16, 30, 2)
+            ballkid=self.ballkid, start=datetime(2022, 1, 1, 16, 30, 2)
         )
         self.ballkid.recalc_checkin_analytics(now=datetime(2022, 1, 2, 0, 30, 3))
 

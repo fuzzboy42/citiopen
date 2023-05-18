@@ -476,19 +476,19 @@ class TestGetCheckinHistory(APITestCase):
     def test_mult_ballkids_mult_histories_missing_checkout(self):
         history1 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
         )
         history2 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 4, 13, 25, 0),
+            start=datetime(2023, 5, 4, 13, 25, 0),
         )
         history3 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
         )
         history4 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 1, 18, 25, 0),
+            start=datetime(2023, 5, 1, 18, 25, 0),
         )
 
         response = self.client.get(
@@ -503,26 +503,26 @@ class TestGetCheckinHistory(APITestCase):
     def test_mult_ballkids_mult_histories(self):
         history1 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history2 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 4, 13, 25, 0),
-            checkout=datetime(2023, 5, 4, 19, 25, 0),
+            start=datetime(2023, 5, 4, 13, 25, 0),
+            end=datetime(2023, 5, 4, 19, 25, 0),
             duration=timedelta(hours=6),
         )
         history3 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history4 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 1, 18, 25, 0),
-            checkout=datetime(2023, 5, 1, 19, 25, 0),
+            start=datetime(2023, 5, 1, 18, 25, 0),
+            end=datetime(2023, 5, 1, 19, 25, 0),
             duration=timedelta(hours=1),
         )
 
@@ -538,26 +538,26 @@ class TestGetCheckinHistory(APITestCase):
     def test_mult_ballkids_mult_histories_in_order(self):
         history1 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history2 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 4, 13, 25, 0),
-            checkout=datetime(2023, 5, 4, 19, 25, 0),
+            start=datetime(2023, 5, 4, 13, 25, 0),
+            end=datetime(2023, 5, 4, 19, 25, 0),
             duration=timedelta(hours=6),
         )
         history3 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history4 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 1, 18, 25, 0),
-            checkout=datetime(2023, 5, 1, 19, 25, 0),
+            start=datetime(2023, 5, 1, 18, 25, 0),
+            end=datetime(2023, 5, 1, 19, 25, 0),
             duration=timedelta(hours=1),
         )
 
@@ -591,26 +591,26 @@ class TestGetCheckinDuration(APITestCase):
     def test_mult_ballkids_mult_histories(self):
         history1 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history2 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 4, 13, 25, 0),
-            checkout=datetime(2023, 5, 4, 19, 25, 0),
+            start=datetime(2023, 5, 4, 13, 25, 0),
+            end=datetime(2023, 5, 4, 19, 25, 0),
             duration=timedelta(hours=6),
         )
         history3 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history4 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 1, 18, 25, 0),
-            checkout=datetime(2023, 5, 1, 19, 25, 0),
+            start=datetime(2023, 5, 1, 18, 25, 0),
+            end=datetime(2023, 5, 1, 19, 25, 0),
             duration=timedelta(hours=1),
         )
 
@@ -626,26 +626,26 @@ class TestGetCheckinDuration(APITestCase):
     def test_mult_ballkids_mult_histories_past_midnight_more_than_24_hrs(self):
         history1 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 4, 2, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 4, 2, 25, 0),
             duration=timedelta(hours=16),
         )
         history2 = CheckinHistory.objects.create(
             ballkid=self.ballkid1,
-            checkin=datetime(2023, 5, 4, 10, 25, 0),
-            checkout=datetime(2023, 5, 4, 19, 25, 0),
+            start=datetime(2023, 5, 4, 10, 25, 0),
+            end=datetime(2023, 5, 4, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history3 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 3, 10, 25, 0),
-            checkout=datetime(2023, 5, 3, 19, 25, 0),
+            start=datetime(2023, 5, 3, 10, 25, 0),
+            end=datetime(2023, 5, 3, 19, 25, 0),
             duration=timedelta(hours=9),
         )
         history4 = CheckinHistory.objects.create(
             ballkid=self.ballkid2,
-            checkin=datetime(2023, 5, 1, 18, 25, 0),
-            checkout=datetime(2023, 5, 1, 19, 25, 0),
+            start=datetime(2023, 5, 1, 18, 25, 0),
+            end=datetime(2023, 5, 1, 19, 25, 0),
             duration=timedelta(hours=1),
         )
 
@@ -1149,7 +1149,7 @@ class TestGetCheckinLeaderboard(APITestCase):
             first_name="Joseph", last_name="Iosue", is_active=False
         )
 
-    def test_nohistories(self):
+    def test_no_histories(self):
         response = self.client.get(
             reverse("get-checkin-leaderboard"),
             format="json",
@@ -1160,3 +1160,17 @@ class TestGetCheckinLeaderboard(APITestCase):
         for analytic in CheckinAnalytics.objects.all():
             self.assertEqual(0, analytic.count)
             self.assertEqual(timedelta(), analytic.duration)
+
+    # def test_no_histories(self):
+    #     CheckinHistory.objects.create(ballkid=self.ballkid1, )
+
+    #     response = self.client.get(
+    #         reverse("get-checkin-leaderboard"),
+    #         format="json",
+    #     )
+
+    #     self.assertEqual(status.HTTP_200_OK, response.status_code)
+    #     self.assertEqual(3, CheckinAnalytics.objects.count())
+    #     for analytic in CheckinAnalytics.objects.all():
+    #         self.assertEqual(0, analytic.count)
+    #         self.assertEqual(timedelta(), analytic.duration)
