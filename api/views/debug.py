@@ -12,6 +12,7 @@ from api.models.ballkid import *
 from api.models.rating import *
 from datetime import datetime, timedelta
 import csv
+import os
 import io
 import zipfile
 
@@ -116,7 +117,9 @@ class CreateCutHistory(APIView):
 
     def post(self, request, format=None):
         ballkid = Ballkid.objects.get(id=request.data["ballkid_id"])
-        day = datetime.strptime(request.data["furthest_day"], SLASH_MONTH_DAY_YEAR_FORMAT_STR)
+        day = datetime.strptime(
+            request.data["furthest_day"], SLASH_MONTH_DAY_YEAR_FORMAT_STR
+        )
         furthest_date = day.date()
         furthest_day = datetime.strftime(day, WEEKDAY_FORMAT_STR)
 
@@ -243,12 +246,18 @@ class BulkCreateSignups(APIView):
         reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
 
         for line in reader:
-            first_name = line["First Name"].strip()
-            last_name = line["Last Name"].strip()
+            first_name = line["First Name"].strip().capitalize()
+            last_name = line["Last Name"].strip().capitalize()
             is_captain = line["Are you a captain?"].strip() == "Yes"
-            dob = datetime.strptime(line["Date of Birth"].strip(), SLASH_MONTH_DAY_YEAR_FORMAT_STR)
+            dob = datetime.strptime(
+                line[
+                    "Date of Birth *You Must Be 14 years Old By Tournament Start (July 29th) To Apply*"
+                ].strip(),
+                SLASH_MONTH_DAY_YEAR_FORMAT_STR,
+            )
             first_day = datetime.strptime("07/29/2023", SLASH_MONTH_DAY_YEAR_FORMAT_STR)
             age = (first_day - dob) // timedelta(days=365.2425)
+            image = f"static/img/{first_name.lower()}_{last_name.lower()}.jpg"
 
             user = User(
                 username=f"{first_name.lower()}.{last_name.lower()}",
@@ -277,7 +286,7 @@ class BulkCreateSignups(APIView):
                     preferred_position=preferred_position_map[
                         line["What position are you?"].strip() or "Back"
                     ],
-                    image=DEFAULT_IMAGE_FILE,
+                    image=image if os.path.isfile(image) else DEFAULT_IMAGE_FILE,
                 )
             )
 
