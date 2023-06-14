@@ -10,7 +10,6 @@ import { Icons, getAuthHeader, useIsMobile } from "../Utils";
 
 export default function BallkidPage(props) {
   const [ballkid, setBallkid] = useState(null);
-  const [updated, setUpdated] = useState(false);
 
   const isMobile = useIsMobile();
   const { pk } = useParams();
@@ -18,9 +17,8 @@ export default function BallkidPage(props) {
   useEffect(() => {
     fetch("/api/get-ballkid/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setBallkid(data))
-      .then(() => setUpdated(false));
-  }, [updated, pk]);
+      .then((data) => setBallkid(data));
+  }, [pk]);
 
   return ballkid == null ? (
     ""

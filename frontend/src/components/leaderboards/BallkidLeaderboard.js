@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
@@ -30,7 +31,7 @@ export default function BallkidLeaderboard(props) {
       width: 200,
       renderCell: (rowData) => (
         <div className="sxs">
-          <Link href={`/ballkid/${rowData.row.id}`}>
+          <Link component={RouterLink} to={`/ballkid/${rowData.row.id}`}>
             {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
           </Link>
           &thinsp;

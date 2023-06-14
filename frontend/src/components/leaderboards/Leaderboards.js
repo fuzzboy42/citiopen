@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
@@ -17,30 +18,30 @@ export default function Leaderboards(props) {
 
       <div className="sxs">
         <Beenhere color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/checkin">
+        <Link variant="h6" component={RouterLink} to="/leaderboards/checkin">
           Check-in
-        </Typography>
+        </Link>
       </div>
 
       <div className="sxs">
         <Place color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/court">
+        <Link variant="h6" component={RouterLink} to="/leaderboards/court">
           Court Time
-        </Typography>
+        </Link>
       </div>
 
       <div className="sxs">
         <ThumbsUpDown color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/ballkid">
+        <Link variant="h6" component={RouterLink} to="/leaderboards/ballkid">
           Ratings - Ballkid
-        </Typography>
+        </Link>
       </div>
 
       <div className="sxs">
         <RateReview color="primary" /> &emsp;
-        <Typography variant="h6" component={Link} href="/leaderboards/captain">
+        <Link variant="h6" component={RouterLink} to="/leaderboards/captain">
           Ratings - Captain
-        </Typography>
+        </Link>
       </div>
     </div>
   );

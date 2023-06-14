@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -11,7 +11,6 @@ import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Alert from "@mui/material/Alert";
 
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -285,8 +284,8 @@ function RatingSection({ ballkid, isMobile }) {
           <Button
             size="small"
             variant="outlined"
-            component={Link}
-            href={`/ratings?rater=${ballkid.id}`}
+            component={RouterLink}
+            to={`/ratings?rater=${ballkid.id}`}
             endIcon={<Shortcut />}
             sx={{ my: 1 }}
           >
@@ -323,8 +322,8 @@ function RatingSection({ ballkid, isMobile }) {
         <Button
           size="small"
           variant="outlined"
-          component={Link}
-          href={`/ratings?ratee=${ballkid.id}`}
+          component={RouterLink}
+          to={`/ratings?ratee=${ballkid.id}`}
           endIcon={<Shortcut />}
           sx={{ my: 1, mr: 1 }}
         >
@@ -333,8 +332,8 @@ function RatingSection({ ballkid, isMobile }) {
         <Button
           size="small"
           variant="outlined"
-          component={Link}
-          href={`/my-ratings?ratee=${ballkid.id}`}
+          component={RouterLink}
+          to={`/my-ratings?ratee=${ballkid.id}`}
           endIcon={<Shortcut />}
           sx={{ my: 1 }}
         >

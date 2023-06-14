@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
@@ -28,7 +29,7 @@ export default function MatchLeaderboard(props) {
       headerName: "Ballkid",
       width: 200,
       renderCell: (rowData) => (
-        <Link href={`/ballkid/${rowData.row.ballkid_id}`}>
+        <Link component={RouterLink} to={`/ballkid/${rowData.row.ballkid_id}`}>
           {rowData.row.ballkid_name}
         </Link>
       ),

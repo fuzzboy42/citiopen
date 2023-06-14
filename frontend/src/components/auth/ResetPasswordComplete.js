@@ -1,5 +1,9 @@
 import React from "react";
-import { Link, Grid, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
 
 export default function ForgotPasswordComplete(props) {
   return (
@@ -23,7 +27,7 @@ export default function ForgotPasswordComplete(props) {
           </Grid>
 
           <Grid item xs={12}>
-            <Link variant="body1" href="/login">
+            <Link variant="body1" component={RouterLink} to="/login">
               Log in
             </Link>
           </Grid>

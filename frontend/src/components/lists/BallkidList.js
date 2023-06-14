@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -69,7 +70,10 @@ export default function BallkidList(props) {
                 xl={gridLayout ? 1 : 12}
               >
                 <Card>
-                  <CardActionArea href={`ballkid/${ballkid.id}`}>
+                  <CardActionArea
+                    component={RouterLink}
+                    to={`/ballkid/${ballkid.id}`}
+                  >
                     {!gridLayout ? (
                       ""
                     ) : (

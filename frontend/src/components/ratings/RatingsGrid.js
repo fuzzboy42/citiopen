@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -146,7 +146,7 @@ export default function RatingsGrid({ ratings, setUpdated }) {
       headerName: "Ballkid",
       width: 150,
       renderCell: (rowData) => (
-        <Link href={`/ballkid/${rowData.row.ratee}`}>
+        <Link component={RouterLink} to={`/ballkid/${rowData.row.ratee}`}>
           {rowData.row.ratee_name}
         </Link>
       ),
@@ -157,7 +157,7 @@ export default function RatingsGrid({ ratings, setUpdated }) {
       headerName: "Rater",
       width: 150,
       renderCell: (rowData) => (
-        <Link href={`/ballkid/${rowData.row.rater}`}>
+        <Link component={RouterLink} to={`/ballkid/${rowData.row.rater}`}>
           {rowData.row.rater_name}
         </Link>
       ),

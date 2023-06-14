@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -53,7 +54,11 @@ function Team({ team, assigned }) {
                 ballkid.finals_team === team &&
                 ballkid.finals_position === position ? (
                   <div className="sxs" key={`ballkid${ballkid.id}`}>
-                    <Link variant="body2" href={`ballkid/${ballkid.id}`}>
+                    <Link
+                      variant="body2"
+                      component={RouterLink}
+                      to={`/ballkid/${ballkid.id}`}
+                    >
                       {ballkid.first_name} {ballkid.last_name}
                     </Link>
                     &thinsp;

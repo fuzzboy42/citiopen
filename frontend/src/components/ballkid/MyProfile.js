@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 
 import Shortcut from "@mui/icons-material/Shortcut";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -33,8 +33,8 @@ function RatingSection({ ballkid }) {
         <Button
           size="small"
           variant="outlined"
-          component={Link}
-          href={`/ratings?rater=${ballkid.id}`}
+          component={RouterLink}
+          to={`/ratings?rater=${ballkid.id}`}
           endIcon={<Shortcut />}
           sx={{ my: 1 }}
         >

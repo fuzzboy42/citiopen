@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
@@ -28,7 +29,11 @@ function Team(props) {
                 ballkid.position === position ? (
                   <div className="justify" key={`ballkid${ballkid.id}`}>
                     <div className="sxs">
-                      <Link variant="body2" href={`ballkid/${ballkid.id}`}>
+                      <Link
+                        variant="body2"
+                        component={RouterLink}
+                        to={`/ballkid/${ballkid.id}`}
+                      >
                         {ballkid.first_name} {ballkid.last_name}
                       </Link>
                       &thinsp;

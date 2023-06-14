@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 
 import Shortcut from "@mui/icons-material/Shortcut";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -103,8 +102,8 @@ export default function BallkidPageCaptain(props) {
               <Button
                 size="small"
                 variant="outlined"
-                component={Link}
-                href={`/my-ratings?ratee=${ballkid.id}`}
+                component={RouterLink}
+                to={`/my-ratings?ratee=${ballkid.id}`}
                 endIcon={<Shortcut />}
                 sx={{ my: 1 }}
               >

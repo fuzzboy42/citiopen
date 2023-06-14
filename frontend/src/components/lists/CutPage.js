@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { Link as RouterLink } from "react-router-dom";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -44,7 +45,11 @@ function DraggableBallkidAndIcon({ ballkid }) {
       }}
     >
       <div className="sxs">
-        <Link variant="body2" href={`ballkid/${ballkid.id}`}>
+        <Link
+          variant="body2"
+          component={RouterLink}
+          to={`/ballkid/${ballkid.id}`}
+        >
           {ballkid.first_name} {ballkid.last_name}
         </Link>
         &thinsp;

@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { Button, Grid, Typography, TextField, Link } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+
 import { Alerts, handleChange, setLocalStorage } from "../Utils";
 
 function submitPassword(state, setSuccessMsg, setErrorMsg, setToken, navigate) {
@@ -118,13 +124,9 @@ export default function LoginPage(props) {
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Typography
-              variant="body1"
-              component={Link}
-              href="/forgot-password"
-            >
+            <Link variant="body1" component={RouterLink} to="/forgot-password">
               Forgot password?
-            </Typography>
+            </Link>
           </Grid>
         </Grid>
       </div>
