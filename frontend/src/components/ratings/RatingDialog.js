@@ -40,6 +40,11 @@ export function RatingAndLabel({ label, rating, setRating }) {
         value={rating}
         onChange={(e, newVal) => setRating(newVal)}
         sx={{ mr: isMobile ? 3 : 0 }}
+        // onMouseDown={(e) => e.stopPropagation()}
+        // onClick={(e) => {
+        //   e.stopPropagation();
+        //   e.preventDefault();
+        // }}
       />
     </Grid>
   );
@@ -61,13 +66,18 @@ export default function RatingDialog({ open, setOpen, ballkid, setUpdated }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleClose = () => {
+  const handleClose = (e) => {
     setOpen(false);
     setErrorMsg("");
+    e.stopPropagation();
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      PaperProps={{ onClick: (e) => e.stopPropagation() }}
+    >
       <DialogContent>
         <Grid
           container
