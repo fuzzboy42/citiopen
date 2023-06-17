@@ -219,6 +219,24 @@ export function HideShowToggle({ teamType, setSuccessMsg, setErrorMsg }) {
   );
 }
 
+export function CourtAssignment({ nextShifts }) {
+  const hasAnotherShift = nextShifts.length > 0;
+  const isCurrentlyOn =
+    hasAnotherShift && isCurrentHour(nextShifts[0]["start"]);
+  const court = hasAnotherShift ? nextShifts[0]["court"] : "";
+  const time = hasAnotherShift ? dayHourToStr(nextShifts[0]["start"]) : "";
+
+  return (
+    <Typography variant="subtitle2">
+      {!hasAnotherShift
+        ? "No more shifts"
+        : isCurrentlyOn
+        ? `Currently on: ${court}`
+        : `On at ${time}: ${court}`}
+    </Typography>
+  );
+}
+
 export function filterBallkids(ballkids, searchKeyword, filterGroup) {
   return ballkids.filter(
     (ballkid) =>

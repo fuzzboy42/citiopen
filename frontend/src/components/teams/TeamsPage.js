@@ -8,18 +8,14 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 
-import { getAuthHeader, Icons, isCurrentHour } from "../Utils";
-import { dayHourToStr } from "../Utils";
+import { CourtAssignment, getAuthHeader, Icons, isCurrentHour } from "../Utils";
 import { ON_COURT_GREEN } from "../Consts";
 
 function Team({ team, assigned, nextShifts }) {
   const positions = ["Net", "Back"];
 
-  const hasAnotherShift = nextShifts.length > 0;
   const isCurrentlyOn =
-    hasAnotherShift && isCurrentHour(nextShifts[0]["start"]);
-  const court = hasAnotherShift ? nextShifts[0]["court"] : "";
-  const time = hasAnotherShift ? dayHourToStr(nextShifts[0]["start"]) : "";
+    nextShifts.length > 0 && isCurrentHour(nextShifts[0]["start"]);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
@@ -34,13 +30,7 @@ function Team({ team, assigned, nextShifts }) {
                 ({assigned.length})
               </Typography>
             </div>
-            <Typography variant="subtitle2">
-              {!hasAnotherShift
-                ? "No more shifts"
-                : isCurrentlyOn
-                ? `Currently on: ${court}`
-                : `On at ${time}: ${court}`}
-            </Typography>
+            <CourtAssignment nextShifts={nextShifts} />
           </div>
 
           {positions.map((position) => (

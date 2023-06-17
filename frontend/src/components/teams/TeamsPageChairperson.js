@@ -28,7 +28,7 @@ import {
   filterBallkids,
   HideShowToggle,
   isCurrentHour,
-  dayHourToStr,
+  CourtAssignment,
 } from "../Utils";
 import { MARGINS, ON_COURT_GREEN } from "../Consts";
 
@@ -123,12 +123,8 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
 
 export function Team({ team, assigned, nextShifts, setUpdated }) {
   const positions = ["Net", "Back"];
-
-  const hasAnotherShift = nextShifts.length > 0;
   const isCurrentlyOn =
-    hasAnotherShift && isCurrentHour(nextShifts[0]["start"]);
-  const court = hasAnotherShift ? nextShifts[0]["court"] : "";
-  const time = hasAnotherShift ? dayHourToStr(nextShifts[0]["start"]) : "";
+    nextShifts.length > 0 && isCurrentHour(nextShifts[0]["start"]);
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
@@ -180,13 +176,7 @@ export function Team({ team, assigned, nextShifts, setUpdated }) {
             </Button>
           </div>
 
-          <Typography variant="subtitle2">
-            {!hasAnotherShift
-              ? "No more shifts"
-              : isCurrentlyOn
-              ? `Currently on: ${court}`
-              : `On at ${time}: ${court}`}
-          </Typography>
+          <CourtAssignment nextShifts={nextShifts} />
 
           {positions.map((position) => (
             <div key={position}>
