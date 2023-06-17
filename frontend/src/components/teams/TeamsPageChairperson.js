@@ -149,7 +149,10 @@ export function Team({ team, assigned, nextShifts, setUpdated }) {
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2} ref={dropRef}>
-      <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
+      <Card
+        sx={{ mb: 2, backgroundColor: isCurrentlyOn ? "lightgreen" : "" }}
+        elevation={isOver ? 10 : 1}
+      >
         <CardContent>
           <div className="justify">
             <div className="sxs">

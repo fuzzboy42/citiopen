@@ -28,7 +28,7 @@ function Team({ team, assigned, nextShifts, setUpdated }) {
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-      <Card sx={{ mb: 2 }}>
+      <Card sx={{ mb: 2, backgroundColor: isCurrentlyOn ? "lightgreen" : "" }}>
         <CardContent>
           <div className="justify">
             <Typography variant="h6">Team {team}</Typography>
