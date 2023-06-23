@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -53,6 +54,7 @@ function renderAverages(averages) {
 export default function CheckinLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
   const [averages, setAverages] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/get-checkin-leaderboard", { headers: getAuthHeader() })
@@ -61,7 +63,8 @@ export default function CheckinLeaderboard(props) {
 
     fetch("/api/get-average-checkin-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setAverages(data));
+      .then((data) => setAverages(data))
+      .then(() => setLoading(false));
   }, []);
 
   const columns = [
@@ -122,16 +125,22 @@ export default function CheckinLeaderboard(props) {
         Check-in Leaderboard
       </Typography>
 
-      {averages !== undefined ? renderAverages(averages) : ""}
+      {loading ? (
+        <CircularProgress className="center" size={30} />
+      ) : (
+        <div>
+          {averages !== undefined ? renderAverages(averages) : ""}
 
-      <div style={{ height: 500 }}>
-        <DataGrid
-          columns={columns}
-          rows={rows}
-          pageSize={25}
-          density="compact"
-        />
-      </div>
+          <div style={{ height: 500 }}>
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              pageSize={25}
+              density="compact"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

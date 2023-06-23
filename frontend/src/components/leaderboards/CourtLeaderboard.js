@@ -10,6 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -83,6 +84,8 @@ function renderAverages(averages, showPercent) {
 export default function CourtLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
   const [averages, setAverages] = useState();
+  const [loading, setLoading] = useState(true);
+
   // const [showAdjusted, setShowAdjusted] = useState(false);
   const [showPercent, setShowPercent] = useState(false);
 
@@ -91,7 +94,8 @@ export default function CourtLeaderboard(props) {
   useEffect(() => {
     fetch("/api/get-court-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setBallkids(data));
+      .then((data) => setBallkids(data))
+      .then(() => setLoading(false));
 
     fetch("/api/get-average-court-leaderboard", { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -252,32 +256,39 @@ export default function CourtLeaderboard(props) {
         <Typography variant="body1">Show as Percent</Typography>
       </div>
 
-      {averages !== undefined ? renderAverages(averages, showPercent) : ""}
+      {loading ? (
+        <CircularProgress className="center" size={30} />
+      ) : (
+        <div>
+          {averages !== undefined ? renderAverages(averages, showPercent) : ""}
 
-      <div style={{ height: 500 }}>
-        <DataGrid
-          columns={columns}
-          rows={rows}
-          pageSize={25}
-          density="compact"
-        />
-      </div>
+          <div style={{ height: 500 }}>
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              pageSize={25}
+              density="compact"
+            />
+          </div>
 
-      <Typography variant="body1" mt={2}>
-        Note: % On Court = (Total time on any court) / (Total time checked in)
-      </Typography>
-      <Typography variant="body1">
-        Note: % [<em>Court Name </em>] = (Total time on [<em>Court Name </em>])
-        / (Total time on any court)
-      </Typography>
-      <Typography variant="body1">
-        Note: Time is represented in [<em>hrs </em>]:[<em>mins </em>]
-      </Typography>
-      {/* <Typography variant="body1">
+          <Typography variant="body1" mt={2}>
+            Note: % On Court = (Total time on any court) / (Total time checked
+            in)
+          </Typography>
+          <Typography variant="body1">
+            Note: % [<em>Court Name </em>] = (Total time on [
+            <em>Court Name </em>]) / (Total time on any court)
+          </Typography>
+          <Typography variant="body1">
+            Note: Time is represented in [<em>hrs </em>]:[<em>mins </em>]
+          </Typography>
+          {/* <Typography variant="body1">
         Note: Raw court time takes into account rain delays and courts ending
         early. Adjusted court time additionally takes into account number of
         ballkids per team.
       </Typography> */}
+        </div>
+      )}
     </div>
   );
 }
