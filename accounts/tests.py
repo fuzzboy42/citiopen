@@ -4,14 +4,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from django.contrib.auth.models import User, Group
 from api.models.ballkid import Ballkid
+from api.tests.utils import setup_testing_client
 
 
 class AccountsTest(APITestCase):
     def setUp(self):
-        # We want to go ahead and originally create a user.
-        self.test_user = User.objects.create_user(
-            "testuser", "test@example.com", "testpassword"
-        )
+        self.client = setup_testing_client()
 
     def test_create_user(self):
         """
@@ -98,7 +96,7 @@ class AccountsTest(APITestCase):
 
     def test_create_user_with_preexisting_username(self):
         data = {
-            "username": "testuser",
+            "username": "chairperson",
             "email": "user@example.com",
             "password": "testuser",
         }
@@ -125,6 +123,7 @@ class AccountsTest(APITestCase):
         self.assertEqual(len(response.data["email"]), 1)
 
     def test_login_existing_user(self):
+        User.objects.create_user("testuser", "test@example.com", "testpassword")
         data = {
             "username": "testuser",
             "password": "testpassword",
@@ -142,6 +141,8 @@ class AccountsTest(APITestCase):
         self.assertFalse("token" in response.json())
 
     def test_login_existing_user_capitalized_user(self):
+        User.objects.create_user("testuser", "test@example.com", "testpassword")
+
         data = {
             "username": "Testuser",
             "password": "testpassword",
