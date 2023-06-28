@@ -6,6 +6,9 @@ from rest_framework.response import Response
 from api.serializers import *
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import *
+import logging
+
+logger = logging.getLogger("api.schedule")
 
 
 class GetSchedule(generics.ListAPIView):
@@ -20,6 +23,10 @@ class GetSchedule(generics.ListAPIView):
             day = datetime.strptime(param, SLASH_MONTH_DAY_YEAR_FORMAT_STR)
         start_hour = datetime(year=day.year, month=day.month, day=day.day, hour=8)
         end_hour = start_hour + timedelta(days=1)
+
+        logger.info(
+            f"{datetime.now()} [GetSchedule] input {param}; start range {start_hour} and end {end_hour}"
+        )
 
         return Schedule.objects.filter(
             start__gte=start_hour, start__lt=end_hour
@@ -39,6 +46,10 @@ class CreateSchedule(APIView):
         num_courts = request.data["num_courts"]
         courts = NUM_COURTS_TO_COURTS[num_courts]
 
+        logger.info(
+            f"{datetime.now()} [CreateSchedule] num_teams {num_teams}, num_hours {num_hours}, num_courts {num_courts} with courts {courts}"
+        )
+
         team_index = 0
         for hour_index in range(num_hours):
             hour = start_hour + timedelta(hours=hour_index)
@@ -48,6 +59,7 @@ class CreateSchedule(APIView):
                     team=(team_index % num_teams) + 1,
                     court=court,
                 )
+                logger.info(f"{datetime.now()} [CreateSchedule] creating shift {shift}")
                 shift.save()
 
                 team_index += 1
@@ -72,12 +84,15 @@ class AddHour(APIView):
         max_hour = shifts.aggregate(max=Max("start"))["max"]
         next_hour = max_hour + timedelta(hours=1)
 
+        logger.info(f"{datetime.now()} [AddHour] for day {day}, max_hour was {max_hour}")
+
         for court in COURT.choices:
             shift = Schedule(
                 start=next_hour,
                 court=court[0],
             )
             shift.save()
+            logger.info(f"{datetime.now()} [AddHour] Created shift {shift}")
 
         return Response(
             {"Success": f"Added hour at {next_hour}"}, status=status.HTTP_200_OK
@@ -99,12 +114,20 @@ class UpdateSchedule(APIView):
             shift.team = team
             shift.save()
 
+            logger.info(
+                f"{datetime.now()} [UpdateSchedule] updated shift with start {start} and court {court} to team {team}"
+            )
+
             return Response(
                 {"Success": f"Updated team to {team} at {start} on {court}"},
                 status=status.HTTP_200_OK,
             )
 
         except Exception as e:
+            logger.warn(
+                f"{datetime.now()} [UpdateSchedule] start {start}, court {court}, team {team}; error: {e} "
+            )
+
             return Response(
                 {"Invalid schedule update": f"Error: {e}"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -115,11 +138,18 @@ class GetNextShifts(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        """
+        Returns all current and future shifts for which a team is assigned.
+        E.g. if it is currently 10:30am, then all shifts starting at or after
+        10am are returned
+        """
         # TODO: maybe change this to filter to unique teams
         threshold = datetime.now() - timedelta(hours=1)
         shifts = (
             Schedule.objects.exclude(team=0).filter(start__gt=threshold).order_by("start")
         )
+        logger.info(f"{datetime.now()} [GetNextShifts] next shifts {shifts}")
+
         return Response(ScheduleSerializer(shifts, many=True).data)
 
 
@@ -128,6 +158,7 @@ class GetTournament(APIView):
 
     def get(self, request, format=None):
         tournament = Tournament.objects.get(year=2023)
+        logger.info(f"{datetime.now()} [GetTournament] tournament {tournament}")
         return Response(TournamentSerializer(tournament).data, status=status.HTTP_200_OK)
 
     def patch(self, request, format=None):
@@ -139,6 +170,10 @@ class GetTournament(APIView):
             tournament.show_finals_teams = request.data["show_finals_teams"]
 
         tournament.save()
+
+        logger.info(
+            f"{datetime.now()} [GetTournament] tournament {tournament} updated with request {request.data}"
+        )
 
         return Response(
             {"Success": f"Updated tournament"},

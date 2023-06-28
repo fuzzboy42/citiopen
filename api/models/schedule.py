@@ -30,3 +30,6 @@ class Tournament(models.Model):
     show_teams = models.BooleanField(default=False)
     show_finals_teams = models.BooleanField(default=False)
     on_rain_delay = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Year {self.year} with show_teams {self.show_teams}, show_finals_teams {self.show_finals_teams}, and on_rain_delay {self.on_rain_delay}"
