@@ -19,7 +19,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import Close from "@mui/icons-material/Close";
-import SwapVert from "@mui/icons-material/SwapVert";
 
 import {
   getAuthHeader,
@@ -89,7 +88,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
                       .then(() => setUpdated(true));
                   }}
                 >
-                  <SwapVert />
+                  Switch
                 </Button>
               ) : (
                 ""
@@ -303,6 +302,7 @@ function Unassigned({ unassigned, teams, setUpdated }) {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Preferred Position</TableCell>
+                  <TableCell align="right">Assign To Team</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -313,6 +313,17 @@ function Unassigned({ unassigned, teams, setUpdated }) {
                         {<DraggableBallkidAndIcon ballkid={ballkid} />}
                       </TableCell>
                       <TableCell>{ballkid.preferred_position}</TableCell>
+                      <TableCell align="right">
+                        {teams.map((team) =>
+                          renderAssignButton(ballkid, team, team, setUpdated)
+                        )}
+                        {renderAssignButton(
+                          ballkid,
+                          "New Team",
+                          teams.length + 1,
+                          setUpdated
+                        )}
+                      </TableCell>
                     </TableRow>
                   )
                 )}

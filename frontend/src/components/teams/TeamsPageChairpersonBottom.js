@@ -19,7 +19,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import Close from "@mui/icons-material/Close";
-import SwapVert from "@mui/icons-material/SwapVert";
 
 import {
   getAuthHeader,
@@ -89,7 +88,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
                       .then(() => setUpdated(true));
                   }}
                 >
-                  <SwapVert />
+                  Switch
                 </Button>
               ) : (
                 ""
@@ -145,7 +144,7 @@ export function Team({ team, assigned, nextShifts, setUpdated }) {
   });
 
   return (
-    <Grid item xs={12} sm={6} md={6} lg={6} xl={3} ref={dropRef}>
+    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} ref={dropRef}>
       <Card
         sx={{ mb: 2, backgroundColor: isCurrentlyOn ? ON_COURT_GREEN : "" }}
         elevation={isOver ? 10 : 1}
@@ -303,6 +302,7 @@ function Unassigned({ unassigned, teams, setUpdated }) {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Preferred Position</TableCell>
+                  <TableCell align="right">Assign To Team</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -313,6 +313,17 @@ function Unassigned({ unassigned, teams, setUpdated }) {
                         {<DraggableBallkidAndIcon ballkid={ballkid} />}
                       </TableCell>
                       <TableCell>{ballkid.preferred_position}</TableCell>
+                      <TableCell align="right">
+                        {teams.map((team) =>
+                          renderAssignButton(ballkid, team, team, setUpdated)
+                        )}
+                        {renderAssignButton(
+                          ballkid,
+                          "New Team",
+                          teams.length + 1,
+                          setUpdated
+                        )}
+                      </TableCell>
                     </TableRow>
                   )
                 )}
@@ -352,7 +363,7 @@ function Header() {
 export default function TeamsPageChairperson(props) {
   const [assigned, setAssigned] = useState([]);
   const [unassigned, setUnassigned] = useState([]);
-  const [nextShifts, setNextShifts] = useState([]);
+  const [nextShifts, setNextShifts] = useState({});
   const [teams, setTeams] = useState([]);
   const [updated, setUpdated] = useState(false);
 
@@ -386,35 +397,13 @@ export default function TeamsPageChairperson(props) {
 
   return (
     <div className="page">
-      <Grid container className="justify-top">
-        <Grid
-          item
-          md={7}
-          lg={7.5}
-          xl={8}
-          sx={{ pr: 3 }}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
-        >
-          <Header />
-          {renderTeams(assigned, teams, nextShifts, setUpdated)}
-        </Grid>
-        <Divider orientation="vertical" variant="middle" flexItem />
-
-        <Grid
-          item
-          md={4.5}
-          lg={4}
-          xl={3.5}
-          sx={{ pl: 3 }}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
-        >
-          <Unassigned
-            unassigned={unassigned}
-            teams={teams}
-            setUpdated={setUpdated}
-          />
-        </Grid>
-      </Grid>
+      <Header />
+      {renderTeams(assigned, teams, nextShifts, setUpdated)}
+      <Unassigned
+        unassigned={unassigned}
+        teams={teams}
+        setUpdated={setUpdated}
+      />
     </div>
   );
 }
