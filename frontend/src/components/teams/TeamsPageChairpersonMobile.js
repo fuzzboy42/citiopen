@@ -19,6 +19,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import Close from "@mui/icons-material/Close";
+import SwapVert from "@mui/icons-material/SwapVert";
 
 import {
   getAuthHeader,
@@ -88,7 +89,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
                       .then(() => setUpdated(true));
                   }}
                 >
-                  Switch
+                  <SwapVert />
                 </Button>
               ) : (
                 ""

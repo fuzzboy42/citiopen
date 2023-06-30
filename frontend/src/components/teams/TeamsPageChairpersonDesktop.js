@@ -117,7 +117,7 @@ function renderBallkidsOnTeam(assigned, teamNum, position, setUpdated) {
   );
 }
 
-export function Team({ team, assigned, nextShifts, setUpdated }) {
+export function Team({ team, assigned, nextShifts, isNewTeam, setUpdated }) {
   const positions = ["Net", "Back"];
   const isCurrentlyOn =
     nextShifts.length > 0 && isCurrentHour(nextShifts[0]["start"]);
@@ -142,56 +142,88 @@ export function Team({ team, assigned, nextShifts, setUpdated }) {
   return (
     <Grid item xs={12} sm={12} md={6} lg={4} xl={3} ref={dropRef}>
       <Card
-        sx={{ mb: 1, backgroundColor: isCurrentlyOn ? ON_COURT_GREEN : "" }}
+        sx={{
+          mb: 1,
+          backgroundColor: isCurrentlyOn ? ON_COURT_GREEN : "",
+          borderWidth: isNewTeam ? 1 : 0,
+          borderStyle: "dashed",
+          borderColor: "gray",
+        }}
         elevation={isOver ? 10 : 1}
       >
-        <CardContent>
-          <div className="justify">
-            <div className="sxs">
-              <Typography variant="h6">Team {team}</Typography>
-              <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                ({assigned.length})
-              </Typography>
-            </div>
-
-            <Button
-              size="small"
-              onClick={(e) => {
-                fetch("/api/clear-team", {
-                  method: "PATCH",
-                  headers: getAuthHeader(),
-                  body: JSON.stringify({
-                    current_team: team,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then(() => setUpdated(true));
-              }}
-            >
-              Clear
-            </Button>
-          </div>
-
-          <CourtAssignment nextShifts={nextShifts} />
-
-          {positions.map((position) => (
-            <div key={position}>
-              <Divider sx={{ my: 1 }} />
+        {isNewTeam ? (
+          <CardContent>
+            <Typography variant="h6">
+              {isNewTeam ? "New Team" : `Team ${team}`}
+            </Typography>
+          </CardContent>
+        ) : (
+          <CardContent>
+            <div className="justify">
               <div className="sxs">
-                <Typography variant="subtitle1">{position}s</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}>
-                  (
-                  {
-                    assigned.filter((ballkid) => ballkid.position === position)
-                      .length
-                  }
-                  )
+                <Typography variant="h6">Team {team}</Typography>
+                <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                  ({assigned.length})
                 </Typography>
               </div>
-              {renderBallkidsOnTeam(assigned, team, position, setUpdated)}
+
+              <Button
+                size="small"
+                onClick={(e) => {
+                  fetch("/api/clear-team", {
+                    method: "PATCH",
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({
+                      current_team: team,
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then(() => setUpdated(true));
+                }}
+              >
+                Clear
+              </Button>
             </div>
-          ))}
-        </CardContent>
+
+            <div className="justify">
+              <CourtAssignment nextShifts={nextShifts} />
+              {/* <Button
+                // variant="outlined"
+                size="small"
+                color="error"
+                onClick={() => {
+                  fetch("/api/checkout-all", {
+                    method: "PATCH",
+                    headers: getAuthHeader(),
+                  })
+                    .then((response) => response.json())
+                    .then(() => setUpdated(true));
+                }}
+              >
+                Check Out All
+              </Button> */}
+            </div>
+
+            {positions.map((position) => (
+              <div key={position}>
+                <Divider sx={{ my: 1 }} />
+                <div className="sxs">
+                  <Typography variant="subtitle1">{position}s</Typography>
+                  <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                    (
+                    {
+                      assigned.filter(
+                        (ballkid) => ballkid.position === position
+                      ).length
+                    }
+                    )
+                  </Typography>
+                </div>
+                {renderBallkidsOnTeam(assigned, team, position, setUpdated)}
+              </div>
+            ))}
+          </CardContent>
+        )}
       </Card>
     </Grid>
   );
@@ -206,9 +238,17 @@ function renderTeams(assigned, teams, nextShifts, setUpdated) {
           team={team}
           assigned={assigned.filter((ballkid) => ballkid.current_team === team)}
           nextShifts={nextShifts.filter((shift) => shift.team === team)}
+          isNewTeam={false}
           setUpdated={setUpdated}
         />
       ))}
+      <Team
+        team={parseInt(teams.slice(-1)) + 1}
+        assigned={[]}
+        nextShifts={[]}
+        isNewTeam={true}
+        setUpdated={setUpdated}
+      />
     </Grid>
   ) : (
     <Typography variant="body1">
@@ -354,7 +394,11 @@ export default function TeamsPageChairpersonDesktop(props) {
 
     fetch("/api/calc-num-teams", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setTeams(data["teams"]));
+      .then(
+        (data) => setTeams(data["teams"])
+        // setTeams([...data["teams"], parseInt(data["teams"].slice(-1)) + 1])
+        // setTeams([...data["teams"], 0])
+      );
 
     fetch("/api/get-next-shifts", { headers: getAuthHeader() })
       .then((response) => response.json())
