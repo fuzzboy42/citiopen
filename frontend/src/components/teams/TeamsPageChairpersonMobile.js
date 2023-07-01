@@ -16,10 +16,10 @@ import {
   SearchAndFilter,
   filterBallkids,
   CheckoutConfirmDialog,
+  DraggableBallkidAndIcon,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
-  DraggableBallkidAndIcon,
   Teams,
   Header,
   renderCheckoutUnassignedButton,

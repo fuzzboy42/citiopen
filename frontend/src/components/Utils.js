@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
+import { useDrag } from "react-dnd";
+import { Link as RouterLink } from "react-router-dom";
 
+import Link from "@mui/material/Link";
 import Icon from "@mui/material/Icon";
 import IconButton from "@mui/material/IconButton";
 import Alert from "@mui/material/Alert";
@@ -296,6 +299,35 @@ export function CheckoutConfirmDialog({
         </Button>
       </DialogActions>
     </Dialog>
+  );
+}
+
+export function DraggableBallkidAndIcon({ ballkid }) {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "ballkid",
+    item: { ...ballkid },
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+  }));
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      <div className="sxs">
+        <Link
+          variant="body2"
+          component={RouterLink}
+          to={`/ballkid/${ballkid.id}`}
+        >
+          {ballkid.first_name} {ballkid.last_name}
+        </Link>
+        &thinsp;
+        <Icons ballkid={ballkid} margin={0} />
+      </div>
+    </div>
   );
 }
 

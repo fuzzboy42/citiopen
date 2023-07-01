@@ -11,16 +11,20 @@ import {
   SearchAndFilter,
   filterBallkids,
   CheckoutConfirmDialog,
+  DraggableBallkidAndIcon,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
-  DraggableBallkidAndIcon,
   Teams,
   Header,
   renderCheckoutUnassignedButton,
 } from "./TeamsPageChairpersonUtils";
 
-function Unassigned({ unassigned, setUpdated }) {
+export function UnassignedDesktop({
+  unassigned,
+  setUpdated,
+  isFinalsPage = false,
+}) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
   const [open, setOpen] = useState(false);
@@ -29,18 +33,23 @@ function Unassigned({ unassigned, setUpdated }) {
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
-    drop: (ballkid) =>
+    drop: (ballkid) => {
+      const teamAssignDict = isFinalsPage
+        ? { finals_team: "" }
+        : { current_team: 0 };
+
       fetch("/api/update-ballkid", {
         method: "PATCH",
         headers: getAuthHeader(),
         body: JSON.stringify({
           first_name: ballkid.first_name,
           last_name: ballkid.last_name,
-          current_team: 0,
+          ...teamAssignDict,
         }),
       })
         .then((response) => response.json())
-        .then(() => setUpdated(true)),
+        .then(() => setUpdated(true));
+    },
     collect: (monitor) => ({ isOver: monitor.isOver() }),
   });
 
@@ -72,7 +81,9 @@ function Unassigned({ unassigned, setUpdated }) {
           </Typography>
         </div>
 
-        {unassigned.length === 0 ? "" : renderCheckoutUnassignedButton(setOpen)}
+        {unassigned.length === 0 || isFinalsPage
+          ? ""
+          : renderCheckoutUnassignedButton(setOpen)}
       </div>
 
       <div>
@@ -184,7 +195,7 @@ export default function TeamsPageChairpersonDesktop(props) {
           xl={3}
           style={{ maxHeight: "85vh", overflow: "auto" }}
         >
-          <Unassigned unassigned={unassigned} setUpdated={setUpdated} />
+          <UnassignedDesktop unassigned={unassigned} setUpdated={setUpdated} />
         </Grid>
       </Grid>
     </div>

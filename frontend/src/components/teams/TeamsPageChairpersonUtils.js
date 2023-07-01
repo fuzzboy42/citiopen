@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import { Link as RouterLink } from "react-router-dom";
+import { useDrop } from "react-dnd";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -9,14 +8,13 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 
 import Close from "@mui/icons-material/Close";
 import SwapVert from "@mui/icons-material/SwapVert";
 
 import {
   getAuthHeader,
-  Icons,
+  DraggableBallkidAndIcon,
   Alerts,
   HideShowToggle,
   isCurrentHour,
@@ -26,42 +24,12 @@ import {
 } from "../Utils";
 import { ON_COURT_GREEN, MARGINS } from "../Consts";
 
-export function DraggableBallkidAndIcon(props) {
-  const ballkid = props.ballkid;
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "ballkid",
-    item: { ...ballkid },
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  }));
-
-  return (
-    <div
-      ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      <div className="sxs">
-        <Link
-          variant="body2"
-          component={RouterLink}
-          to={`/ballkid/${ballkid.id}`}
-        >
-          {ballkid.first_name} {ballkid.last_name}
-        </Link>
-        &thinsp;
-        <Icons ballkid={ballkid} margin={0} />
-      </div>
-    </div>
-  );
-}
-
 function renderSwitchButton(ballkid, setUpdated) {
   return (
     <Button
       variant="outlined"
       size="small"
-      onClick={(e) => {
+      onClick={(e) =>
         fetch("/api/update-ballkid", {
           method: "PATCH",
           headers: getAuthHeader(),
@@ -72,8 +40,8 @@ function renderSwitchButton(ballkid, setUpdated) {
           }),
         })
           .then((response) => response.json())
-          .then(() => setUpdated(true));
-      }}
+          .then(() => setUpdated(true))
+      }
       sx={{ minWidth: 0 }}
     >
       <SwapVert />
@@ -180,12 +148,19 @@ function renderTeamCardHeader(team, assigned, nextShifts, setOpen, setUpdated) {
   );
 }
 
-function Team({ team, assigned, nextShifts, isMobile, isNewTeam, setUpdated }) {
+export function Team({
+  team,
+  assigned,
+  nextShifts,
+  setUpdated,
+  isNewTeam = false,
+}) {
   const positions = ["Net", "Back"];
   const isCurrentlyOn =
     nextShifts.length > 0 && isCurrentHour(nextShifts[0]["start"]);
 
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
@@ -296,7 +271,7 @@ export function renderCheckoutUnassignedButton(setOpen) {
 export function Teams({ assigned, teams, nextShifts, setUpdated }) {
   const isMobile = useIsMobile();
 
-  return assigned.length > 0 ? (
+  return (
     <Grid container spacing={2}>
       {teams.map((team) => (
         <Team
@@ -304,28 +279,22 @@ export function Teams({ assigned, teams, nextShifts, setUpdated }) {
           team={team}
           assigned={assigned.filter((ballkid) => ballkid.current_team === team)}
           nextShifts={nextShifts.filter((shift) => shift.team === team)}
-          isMobile={isMobile}
-          isNewTeam={false}
           setUpdated={setUpdated}
         />
       ))}
+
       {isMobile ? (
         ""
       ) : (
         <Team
-          team={parseInt(teams.slice(-1)) + 1}
+          team={teams.length === 0 ? 1 : parseInt(teams.slice(-1)) + 1}
           assigned={[]}
           nextShifts={[]}
-          isMobile={isMobile}
-          isNewTeam={true}
           setUpdated={setUpdated}
+          isNewTeam={true}
         />
       )}
     </Grid>
-  ) : (
-    <Typography variant="body1">
-      There are currently no teams assigned.
-    </Typography>
   );
 }
 

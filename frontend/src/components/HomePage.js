@@ -17,7 +17,6 @@ import ResetPasswordComplete from "./auth/ResetPasswordComplete";
 import ResetPassword from "./auth/ResetPassword";
 import ResetEmailSent from "./auth/ResetEmailSent";
 import BallkidPageChairperson from "./ballkid/BallkidPageChairperson";
-import FinalsTeamsPageChairperson from "./teams/FinalsTeamsPageChairperson";
 import FinalsTeamsPage from "./teams/FinalsTeamsPage";
 import RatingsPage from "./ratings/RatingsPage";
 import MyRatingsPage from "./ratings/MyRatingsPage";
@@ -34,6 +33,8 @@ import CaptainLeaderboard from "./leaderboards/CaptainLeaderboard";
 import CourtLeaderboard from "./leaderboards/CourtLeaderboard";
 import BallkidLeaderboard from "./leaderboards/BallkidLeaderboard";
 import TournamentSettings from "./settings/TournamentSettings";
+import FinalsTeamsPageChairpersonMobile from "./teams/FinalsTeamsPageChairpersonMobile";
+import FinalsTeamsPageChairpersonDesktop from "./teams/FinalsTeamsPageChairpersonDesktop";
 
 import { useToken, getLocalStorage, useIsMobile } from "./Utils";
 import GamePage from "./settings/GamePage";
@@ -70,7 +71,16 @@ function chairpersonRoutes(isMobile, setToken) {
           )
         }
       />
-      <Route path="/finals-teams" element={<FinalsTeamsPageChairperson />} />
+      <Route
+        path="/finals-teams"
+        element={
+          isMobile ? (
+            <FinalsTeamsPageChairpersonMobile />
+          ) : (
+            <FinalsTeamsPageChairpersonDesktop />
+          )
+        }
+      />
       <Route path="/tournament-settings" element={<TournamentSettings />} />
       <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />

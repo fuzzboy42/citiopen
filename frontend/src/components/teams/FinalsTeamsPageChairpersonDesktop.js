@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import { Link as RouterLink } from "react-router-dom";
+import { useDrop } from "react-dnd";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -9,56 +8,18 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
-import Table from "@mui/material/Table";
-import TableContainer from "@mui/material/TableContainer";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 import Close from "@mui/icons-material/Close";
+import SwapVert from "@mui/icons-material/SwapVert";
 
 import {
   getAuthHeader,
-  Icons,
   Alerts,
-  filterBallkids,
-  SearchAndFilter,
   HideShowToggle,
+  DraggableBallkidAndIcon,
 } from "../Utils";
-import { MATCH_TYPES, MARGINS } from "../Consts";
-
-function DraggableBallkidAndIcon(props) {
-  const ballkid = props.ballkid;
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "ballkid",
-    item: { ...ballkid },
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  }));
-
-  return (
-    <div
-      ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      <div className="sxs">
-        <Link
-          variant="body2"
-          component={RouterLink}
-          to={`/ballkid/${ballkid.id}`}
-        >
-          {ballkid.first_name} {ballkid.last_name}
-        </Link>
-        &thinsp;
-        <Icons ballkid={ballkid} margin={0} />
-      </div>
-    </div>
-  );
-}
+import { MATCH_TYPES } from "../Consts";
+import { UnassignedDesktop } from "./TeamsPageChairpersonDesktop";
 
 function Team({ team, assigned, setUpdated }) {
   const positions = ["Net", "Back"];
@@ -81,38 +42,37 @@ function Team({ team, assigned, setUpdated }) {
   });
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} ref={dropRef}>
+    <Grid item xs={12} sm={6} md={6} lg={6} xl={3} ref={dropRef}>
       <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
         <CardContent>
           <div className="justify">
             <div className="sxs">
               <Typography variant="h6">{team}</Typography>
               <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                (
-                {
-                  assigned.filter((ballkid) => ballkid.finals_team === team)
-                    .length
-                }
-                )
+                ({assigned.length})
               </Typography>
             </div>
 
-            <Button
-              size="small"
-              onClick={(e) => {
-                fetch("/api/clear-team", {
-                  method: "PATCH",
-                  headers: getAuthHeader(),
-                  body: JSON.stringify({
-                    finals_team: team,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then(() => setUpdated(true));
-              }}
-            >
-              Clear
-            </Button>
+            {assigned.length === 0 ? (
+              ""
+            ) : (
+              <Button
+                size="small"
+                onClick={(e) => {
+                  fetch("/api/clear-team", {
+                    method: "PATCH",
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({
+                      finals_team: team,
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then(() => setUpdated(true));
+                }}
+              >
+                Clear
+              </Button>
+            )}
           </div>
           {positions.map((position) => (
             <div key={position}>
@@ -166,8 +126,9 @@ function renderBallkidsOnTeam(assigned, team, position, setUpdated) {
                       .then((response) => response.json())
                       .then(() => setUpdated(true));
                   }}
+                  sx={{ minWidth: 0 }}
                 >
-                  Switch
+                  <SwapVert />
                 </Button>
               ) : (
                 ""
@@ -200,124 +161,6 @@ function renderBallkidsOnTeam(assigned, team, position, setUpdated) {
   );
 }
 
-function renderTeams(assigned, teams, setUpdated) {
-  return (
-    <Grid container spacing={2}>
-      {teams.map((team) => (
-        <Team
-          key={team}
-          team={team}
-          assigned={assigned}
-          setUpdated={setUpdated}
-        />
-      ))}
-    </Grid>
-  );
-}
-
-function renderAssignButton(ballkid, team, setUpdated) {
-  return (
-    <Button
-      key={team}
-      sx={{ m: 0.2 }}
-      size="small"
-      variant="outlined"
-      onClick={(e) => {
-        fetch("/api/update-ballkid", {
-          method: "PATCH",
-          headers: getAuthHeader(),
-          body: JSON.stringify({
-            first_name: ballkid.first_name,
-            last_name: ballkid.last_name,
-            finals_team: team,
-          }),
-        })
-          .then((response) => response.json())
-          .then(() => setUpdated(true));
-      }}
-    >
-      {team}
-    </Button>
-  );
-}
-
-function Unassigned({ unassigned, teams, setUpdated }) {
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
-
-  const [{ isOver }, dropRef] = useDrop({
-    accept: "ballkid",
-    drop: (ballkid) =>
-      fetch("/api/update-ballkid", {
-        method: "PATCH",
-        headers: getAuthHeader(),
-        body: JSON.stringify({
-          first_name: ballkid.first_name,
-          last_name: ballkid.last_name,
-          finals_team: "",
-        }),
-      })
-        .then((response) => response.json())
-        .then(() => setUpdated(true)),
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
-  });
-
-  return unassigned.length === 0 ? (
-    ""
-  ) : (
-    <div>
-      <div className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Unassigned
-        </Typography>
-        <Typography variant="h6" sx={MARGINS}>
-          &ensp; (
-          {filterBallkids(unassigned, searchKeyword, filterGroup).length})
-        </Typography>
-      </div>
-
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
-      />
-
-      <TableContainer
-        component={Paper}
-        ref={dropRef}
-        elevation={isOver ? 10 : 1}
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Preferred Position</TableCell>
-              <TableCell align="right">Assign To Team</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filterBallkids(unassigned, searchKeyword, filterGroup).map(
-              (ballkid) => (
-                <TableRow key={ballkid.id}>
-                  <TableCell component="th" scope="row">
-                    {<DraggableBallkidAndIcon ballkid={ballkid} />}
-                  </TableCell>
-                  <TableCell>{ballkid.preferred_position}</TableCell>
-                  <TableCell align="right">
-                    {teams.map((team) =>
-                      renderAssignButton(ballkid, team, setUpdated)
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
-}
-
 function Header() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -342,7 +185,7 @@ function Header() {
   );
 }
 
-export default function FinalsTeamsPageChairperson(props) {
+export default function FinalsTeamsPageChairpersonDesktop(props) {
   const [assigned, setAssigned] = useState([]);
   const [unassigned, setUnassigned] = useState([]);
   const [updated, setUpdated] = useState(false);
@@ -361,13 +204,46 @@ export default function FinalsTeamsPageChairperson(props) {
 
   return (
     <div className="page">
-      <Header />
-      {renderTeams(assigned, teams, setUpdated)}
-      <Unassigned
-        unassigned={unassigned}
-        teams={teams}
-        setUpdated={setUpdated}
-      />
+      <Grid container className="justify-top">
+        <Grid
+          item
+          sm={6}
+          md={7}
+          lg={8}
+          xl={9}
+          style={{ maxHeight: "85vh", overflow: "auto" }}
+        >
+          <Header />
+          <Grid container spacing={2}>
+            {teams.map((team) => (
+              <Team
+                key={team}
+                team={team}
+                assigned={assigned.filter(
+                  (ballkid) => ballkid.finals_team === team
+                )}
+                nextShifts={[]}
+                setUpdated={setUpdated}
+              />
+            ))}
+          </Grid>
+        </Grid>
+
+        <Grid
+          item
+          sm={6}
+          md={5}
+          lg={4}
+          xl={3}
+          style={{ maxHeight: "85vh", overflow: "auto" }}
+        >
+          <UnassignedDesktop
+            unassigned={unassigned}
+            setUpdated={setUpdated}
+            isFinalsPage={true}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 }
