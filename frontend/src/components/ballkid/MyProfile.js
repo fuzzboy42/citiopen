@@ -163,20 +163,13 @@ export default function MyProfile(props) {
               <CheckinHistoryChart histories={checkins} totalTime={totalTime} />
             </Grid>
 
-            {isMobile ? (
-              ""
-            ) : (
-              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CourtHistoryChart histories={courts} />
-              </Grid>
-            )}
-            {isMobile ? (
-              ""
-            ) : (
-              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CaptainHistoryChart histories={captains} />
-              </Grid>
-            )}
+            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+              <CourtHistoryChart histories={courts} />
+            </Grid>
+
+            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+              <CaptainHistoryChart histories={captains} />
+            </Grid>
           </Grid>
         )}
       </Grid>

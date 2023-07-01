@@ -310,17 +310,14 @@ function RatingSection({ ballkid, isMobile }) {
               <Typography variant="body1">
                 Reviewer offset: {Number(params.rater_offset).toFixed(3)}
               </Typography>
-              {isMobile ? (
-                ""
-              ) : (
-                <RaterParamsChart
-                  offset={params.rater_offset}
-                  scale={params.rater_scale}
-                  average_offset={average.rater_offset__avg}
-                  average_scale={average.rater_scale__avg}
-                  sx={{ mb: 2 }}
-                />
-              )}
+
+              <RaterParamsChart
+                offset={params.rater_offset}
+                scale={params.rater_scale}
+                average_offset={average.rater_offset__avg}
+                average_scale={average.rater_scale__avg}
+                sx={{ mb: 2 }}
+              />
             </div>
           )}
         </Grid>
@@ -367,15 +364,12 @@ function RatingSection({ ballkid, isMobile }) {
             <Typography variant="body1">
               Ballkid offset: {Number(params.ratee_offset).toFixed(3)}
             </Typography>
-            {isMobile ? (
-              ""
-            ) : (
-              <BallkidParamsChart
-                offset={params.ratee_offset}
-                improvement={params.ratee_improvement}
-                sx={{ mb: 2 }}
-              />
-            )}
+
+            <BallkidParamsChart
+              offset={params.ratee_offset}
+              improvement={params.ratee_improvement}
+              sx={{ mb: 2 }}
+            />
           </div>
         )}
       </Grid>
@@ -739,28 +733,21 @@ export default function BallkidPageChairperson(props) {
             Total time checked in: {getTimeStr(getTimeFloat(totalTime))}
           </Typography>
 
-          {isMobile ? (
-            ""
-          ) : (
-            <Grid container>
-              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CheckinHistoryChart
-                  histories={checkins}
-                  totalTime={totalTime}
-                />
-              </Grid>
-
-              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CourtHistoryChart histories={courts} />
-              </Grid>
-
-              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CaptainHistoryChart histories={captains} />
-              </Grid>
-
-              {/* <MatchHistoryChart histories={matches} /> */}
+          <Grid container>
+            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+              <CheckinHistoryChart histories={checkins} totalTime={totalTime} />
             </Grid>
-          )}
+
+            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+              <CourtHistoryChart histories={courts} />
+            </Grid>
+
+            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+              <CaptainHistoryChart histories={captains} />
+            </Grid>
+
+            {/* <MatchHistoryChart histories={matches} /> */}
+          </Grid>
         </div>
       )}
 
