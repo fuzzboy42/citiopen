@@ -4,6 +4,7 @@ import { useDrop } from "react-dnd";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -62,7 +63,7 @@ function CutStatusSection({ section, active, setUpdated }) {
   });
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} ref={dropRef}>
+    <Grid item xs={12} sm={12} md={6} lg={6} xl={3} ref={dropRef}>
       <ConfirmDialog
         section={section}
         message={`You are about to cut all ${active.length} ballkid${
@@ -189,52 +190,10 @@ function renderBallkidsInSection(active, section, position, setUpdated) {
   );
 }
 
-function renderAssignCutButton(ballkid, section, setUpdated) {
-  var color;
-  switch (section) {
-    case "Definitely Keep":
-      color = "success";
-      break;
-    case "Possibly Keep":
-      color = "primary";
-      break;
-    case "Possibly Cut":
-      color = "warning";
-      break;
-    case "Definitely Cut":
-      color = "error";
-      break;
-    default:
-      console.log("Unrecognized cut status: " + section);
-  }
+function ActiveSection({ active, setUpdated }) {
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterGroup, setFilterGroup] = useState();
 
-  return (
-    <Button
-      key={section}
-      sx={{ m: 0.2 }}
-      size="small"
-      color={color}
-      variant="outlined"
-      onClick={(e) => {
-        fetch("/api/update-ballkid", {
-          method: "PATCH",
-          headers: getAuthHeader(),
-          body: JSON.stringify({
-            first_name: ballkid.first_name,
-            last_name: ballkid.last_name,
-            cut_status: section,
-          }),
-        })
-          .then((response) => response.json())
-          .then(() => setUpdated(true));
-      }}
-    >
-      {section}
-    </Button>
-  );
-}
-
-function ActiveSection({ active, sections, setUpdated }) {
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
     drop: (ballkid) =>
@@ -253,120 +212,47 @@ function ActiveSection({ active, sections, setUpdated }) {
   });
 
   return (
-    <div>
+    <Box
+      component={Paper}
+      ref={dropRef}
+      elevation={isOver ? 10 : 1}
+      sx={{ pl: { xs: 0, sm: 3 }, ml: { xs: 0, sm: 3 }, pb: 2 }}
+    >
       <div className="sxs">
         <Typography variant="h5" sx={MARGINS}>
           Active Ballkids
         </Typography>
         <Typography variant="h6" sx={MARGINS}>
-          &ensp; ({active.filter((ballkid) => ballkid.cut_status === "").length}
+          &ensp; (
+          {
+            filterBallkids(active, searchKeyword, filterGroup).filter(
+              (ballkid) => ballkid.cut_status === ""
+            ).length
+          }
           )
         </Typography>
       </div>
+
+      <SearchAndFilter
+        setSearchKeyword={setSearchKeyword}
+        filterGroup={filterGroup}
+        setFilterGroup={setFilterGroup}
+      />
+
       {active.length === 0 ? (
         <Typography>
           There are currently no active ballkids left to categorize.
         </Typography>
       ) : (
-        <TableContainer
-          component={Paper}
-          ref={dropRef}
-          elevation={isOver ? 10 : 1}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Preferred Position</TableCell>
-                <TableCell align="right">Mark As</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {active.map((ballkid) =>
-                ballkid.cut_status !== "" ? (
-                  ""
-                ) : (
-                  <TableRow key={ballkid.id}>
-                    <TableCell component="th" scope="row">
-                      {<DraggableBallkidAndIcon ballkid={ballkid} />}
-                    </TableCell>
-                    <TableCell>{ballkid.preferred_position}</TableCell>
-                    <TableCell align="right">
-                      {sections.map((section) =>
-                        renderAssignCutButton(ballkid, section, setUpdated)
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Grid container>
+          {filterBallkids(active, searchKeyword, filterGroup).map((ballkid) => (
+            <Grid key={ballkid.id} item sm={12} md={6} sx={{ px: 1 }}>
+              {<DraggableBallkidAndIcon ballkid={ballkid} />}
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
-  );
-}
-
-function CutSection({ cut, setUpdated }) {
-  return (
-    <div>
-      <div className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Cut Ballkids
-        </Typography>
-        <Typography variant="h6" sx={MARGINS}>
-          &ensp; ({cut.length})
-        </Typography>
-      </div>
-      {cut.length === 0 ? (
-        <Typography>There are currently no cut ballkids.</Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Preferred Position</TableCell>
-                <TableCell align="right">Un-Cut?</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {cut.map((ballkid) => (
-                <TableRow key={ballkid.id}>
-                  <TableCell component="th" scope="row">
-                    {<DraggableBallkidAndIcon ballkid={ballkid} />}
-                  </TableCell>
-                  <TableCell>{ballkid.preferred_position}</TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      variant="outlined"
-                      label="Cut"
-                      color="success"
-                      size="small"
-                      onClick={(e) => {
-                        fetch("/api/update-ballkid", {
-                          method: "PATCH",
-                          headers: getAuthHeader(),
-                          body: JSON.stringify({
-                            first_name: ballkid.first_name,
-                            last_name: ballkid.last_name,
-                            is_cut: false,
-                          }),
-                        })
-                          .then((response) => response.json())
-                          .then(() => setUpdated(true));
-                      }}
-                    >
-                      <ReportOff />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </div>
+    </Box>
   );
 }
 
@@ -443,37 +329,47 @@ export default function CutPageDesktop(props) {
 
   return (
     <div className="page">
-      <Typography variant="h4" sx={{ mb: 1 }}>
-        Cut Page
-      </Typography>
+      <Grid container className="justify-top">
+        <Grid
+          item
+          sm={6}
+          md={7}
+          lg={8}
+          xl={9}
+          style={{ maxHeight: "85vh", overflow: "auto" }}
+        >
+          <Typography variant="h4" sx={{ mb: 1 }}>
+            Cut Page
+          </Typography>
+          <Grid container spacing={2}>
+            {sections.map((section) => (
+              <CutStatusSection
+                key={section}
+                section={section}
+                active={active.filter(
+                  (ballkid) => ballkid.cut_status === section
+                )}
+                setUpdated={setUpdated}
+              />
+            ))}
+          </Grid>
+        </Grid>
 
-      <Grid container spacing={2}>
-        {sections.map((section) => (
-          <CutStatusSection
-            key={section}
-            section={section}
-            active={active.filter((ballkid) => ballkid.cut_status === section)}
+        <Grid
+          item
+          sm={6}
+          md={5}
+          lg={4}
+          xl={3}
+          style={{ maxHeight: "85vh", overflow: "auto" }}
+        >
+          <ActiveSection
+            active={filterBallkids(active, searchKeyword, filterGroup)}
+            sections={sections}
             setUpdated={setUpdated}
           />
-        ))}
+        </Grid>
       </Grid>
-
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
-      />
-
-      <ActiveSection
-        active={filterBallkids(active, searchKeyword, filterGroup)}
-        sections={sections}
-        setUpdated={setUpdated}
-      />
-
-      <CutSection
-        cut={filterBallkids(cut, searchKeyword, filterGroup)}
-        setUpdated={setUpdated}
-      />
     </div>
   );
 }
