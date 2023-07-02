@@ -72,7 +72,11 @@ export default function BallkidList(props) {
                 <Card>
                   <CardActionArea
                     component={RouterLink}
-                    to={`/ballkid/${ballkid.id}`}
+                    to={
+                      ballkid.id === getLocalStorage("ballkid_id")
+                        ? "/me"
+                        : `/ballkid/${ballkid.id}`
+                    }
                   >
                     {!gridLayout ? (
                       ""
