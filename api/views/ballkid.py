@@ -263,45 +263,50 @@ def recalc_captain_analytics(ballkid, now=None):
                 )
 
 
+def ratings_annotate(ballkids, pk):
+    current_year = get_current_year()
+
+    return ballkids.annotate(
+        num_ratings=Count("ratee", filter=Q(ratee__date__year=current_year)),
+        have_rated=Exists(
+            Rating.objects.filter(
+                rater_id=pk,
+                ratee_id=OuterRef("id"),
+                date__year=current_year,
+            )
+        ),
+    )
+
+
 class BallkidsList(generics.ListAPIView):
     serializer_class = BallkidSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = get_current_year()
-
         ballkids = Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
             "last_name", "first_name"
         )
-        logger.info(f"{datetime.now()} [BallkidsList] pk: {pk}; ballkids: {ballkids}")
 
-        return (
-            ballkids
-            if not pk
-            else ballkids.annotate(
-                num_ratings=Count("ratee", filter=Q(ratee__date__year=current_year)),
-                have_rated=Exists(
-                    Rating.objects.filter(
-                        rater_id=pk,
-                        ratee_id=OuterRef("id"),
-                        date__year=current_year,
-                    )
-                ),
-            )
-        )
+        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
+        logger.info(f"{datetime.now()} [BallkidsList] pk: {pk}; ballkids: {queryset}")
+        return queryset
 
 
 class AllBallkidsList(generics.ListAPIView):
     serializer_class = BallkidSerializer
-    permission_classes = [IsChairperson]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return (
-            Ballkid.objects.all()
-            .filter(is_active=True)
-            .order_by("last_name", "first_name")
+        pk = self.kwargs.get("pk")
+
+        ballkids = Ballkid.objects.filter(is_active=True).order_by(
+            "last_name", "first_name"
         )
+
+        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
+        logger.info(f"{datetime.now()} [AllBallkidsList] pk: {pk}; ballkids: {queryset}")
+        return queryset
 
 
 class AllBallkidsSortedList(generics.ListAPIView):
@@ -309,10 +314,8 @@ class AllBallkidsSortedList(generics.ListAPIView):
     permission_classes = [IsChairperson]
 
     def get_queryset(self):
-        return (
-            Ballkid.objects.all()
-            .filter(is_active=True)
-            .order_by("is_captain", "num_years_experience", "last_name", "first_name")
+        return Ballkid.objects.filter(is_active=True).order_by(
+            "is_captain", "num_years_experience", "last_name", "first_name"
         )
 
 
@@ -322,31 +325,16 @@ class BallkidsSortedList(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = get_current_year()
 
-        ballkids = (
-            Ballkid.objects.all()
-            .filter(is_active=True, is_cut=False)
-            .order_by("-is_captain", "-num_years_experience", "last_name", "first_name")
+        ballkids = Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
+            "-is_captain", "-num_years_experience", "last_name", "first_name"
         )
+
+        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
         logger.info(
-            f"{datetime.now()} [BallkidsSortedList] pk: {pk}; ballkids: {ballkids}"
+            f"{datetime.now()} [BallkidsSortedList] pk: {pk}; ballkids: {queryset}"
         )
-
-        return (
-            ballkids
-            if not pk
-            else ballkids.annotate(
-                num_ratings=Count("ratee", filter=Q(ratee__date__year=current_year)),
-                have_rated=Exists(
-                    Rating.objects.filter(
-                        rater_id=pk,
-                        ratee_id=OuterRef("id"),
-                        date__year=current_year,
-                    )
-                ),
-            )
-        )
+        return queryset
 
 
 class BallkidsInactiveList(generics.ListAPIView):
@@ -405,24 +393,10 @@ class GetBallkid(generics.RetrieveAPIView):
 
     def get_queryset(self):
         me = self.kwargs.get("me")
-        current_year = get_current_year()
-
         ballkids = Ballkid.objects.all()
 
-        return (
-            ballkids
-            if not me
-            else ballkids.annotate(
-                num_ratings=Count("ratee", filter=Q(ratee__date__year=current_year)),
-                have_rated=Exists(
-                    Rating.objects.filter(
-                        rater_id=me,
-                        ratee_id=OuterRef("id"),
-                        date__year=current_year,
-                    )
-                ),
-            )
-        )
+        queryset = ballkids if not me else ratings_annotate(ballkids, me)
+        return queryset
 
 
 class UpdateBallkid(APIView):
@@ -634,8 +608,6 @@ class GetPastTeams(APIView):
             .values("date", "ballkid_id")
             .order_by("-date", "ballkid__last_name", "ballkid__first_name")
         )
-
-        print(histories)
 
         logger.info(f"{datetime.now()} [GetPastTeams] pk: {pk}; histories {histories}")
 
