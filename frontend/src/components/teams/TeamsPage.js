@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import Link from "@mui/material/Link";
 
-import { CourtAssignment, getAuthHeader, Icons, isCurrentHour } from "../Utils";
+import {
+  CourtAssignment,
+  getAuthHeader,
+  isCurrentHour,
+  BallkidAndIcon,
+} from "../Utils";
 import { ON_COURT_GREEN } from "../Consts";
 
 function Team({ team, assigned, nextShifts }) {
@@ -51,17 +54,7 @@ function Team({ team, assigned, nextShifts }) {
               {assigned.map((ballkid) =>
                 ballkid.current_team === team &&
                 ballkid.position === position ? (
-                  <div className="sxs" key={`ballkid${ballkid.id}`}>
-                    <Link
-                      variant="body2"
-                      component={RouterLink}
-                      to={`/ballkid/${ballkid.id}`}
-                    >
-                      {ballkid.first_name} {ballkid.last_name}
-                    </Link>
-                    &thinsp;
-                    <Icons ballkid={ballkid} margin={0} />
-                  </div>
+                  <BallkidAndIcon ballkid={ballkid} />
                 ) : (
                   ""
                 )

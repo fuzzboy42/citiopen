@@ -15,7 +15,7 @@ import {
   SearchAndFilter,
   filterBallkids,
   CheckoutConfirmDialog,
-  DraggableBallkidAndIcon,
+  BallkidAndIcon,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
@@ -107,7 +107,7 @@ function Unassigned({ unassigned, teams, setUpdated }) {
                   (ballkid) => (
                     <TableRow key={ballkid.id}>
                       <TableCell component="th" scope="row">
-                        {<DraggableBallkidAndIcon ballkid={ballkid} />}
+                        <BallkidAndIcon ballkid={ballkid} />
                       </TableCell>
                       <TableCell>{ballkid.preferred_position}</TableCell>
                       <TableCell align="right">

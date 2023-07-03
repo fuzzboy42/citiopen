@@ -146,7 +146,14 @@ export default function RatingsGrid({ ratings, setUpdated }) {
       headerName: "Ballkid",
       width: 150,
       renderCell: (rowData) => (
-        <Link component={RouterLink} to={`/ballkid/${rowData.row.ratee}`}>
+        <Link
+          component={RouterLink}
+          to={
+            rowData.row.ratee === getLocalStorage("ballkid_id")
+              ? "/me"
+              : `/ballkid/${rowData.row.ratee}`
+          }
+        >
           {rowData.row.ratee_name}
         </Link>
       ),
@@ -157,7 +164,14 @@ export default function RatingsGrid({ ratings, setUpdated }) {
       headerName: "Rater",
       width: 150,
       renderCell: (rowData) => (
-        <Link component={RouterLink} to={`/ballkid/${rowData.row.rater}`}>
+        <Link
+          component={RouterLink}
+          to={
+            rowData.row.rater === getLocalStorage("ballkid_id")
+              ? "/me"
+              : `/ballkid/${rowData.row.rater}`
+          }
+        >
           {rowData.row.rater_name}
         </Link>
       ),

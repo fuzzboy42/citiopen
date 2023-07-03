@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
 import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
@@ -14,7 +12,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { getAuthHeader, getTimeStr, getTimeFloat, Icons } from "../Utils";
+import {
+  getAuthHeader,
+  getTimeStr,
+  getTimeFloat,
+  BallkidAndIcon,
+} from "../Utils";
 
 function renderAverages(averages, showPercent) {
   const courtTimes = {
@@ -114,15 +117,7 @@ export default function CourtLeaderboard(props) {
       field: "name",
       headerName: "Ballkid",
       width: 200,
-      renderCell: (rowData) => (
-        <div className="sxs">
-          <Link component={RouterLink} to={`/ballkid/${rowData.row.id}`}>
-            {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
-          </Link>
-          &thinsp;
-          <Icons ballkid={rowData.row.ballkid} margin={0} />
-        </div>
-      ),
+      renderCell: (rowData) => <BallkidAndIcon ballkid={rowData.row.ballkid} />,
     },
     {
       field: "time",

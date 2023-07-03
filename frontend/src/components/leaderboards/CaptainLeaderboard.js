@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { getAuthHeader } from "../Utils";
-import { EventSeat } from "@mui/icons-material";
+import { BallkidAndIcon, getAuthHeader } from "../Utils";
 
 export default function CaptainLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
@@ -30,18 +28,7 @@ export default function CaptainLeaderboard(props) {
       field: "name",
       headerName: "Captain / Chairperson",
       width: 200,
-      renderCell: (rowData) => (
-        <div className="sxs">
-          <Link component={RouterLink} to={`/ballkid/${rowData.row.id}`}>
-            {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
-          </Link>
-          {rowData.row.ballkid.is_chairperson ? (
-            <EventSeat sx={{ color: "purple", ml: 1 }} />
-          ) : (
-            ""
-          )}
-        </div>
-      ),
+      renderCell: (rowData) => <BallkidAndIcon ballkid={rowData.row.ballkid} />,
     },
     {
       field: "numRatings",

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { getAuthHeader, getTimeStr } from "../Utils";
+import {
+  getAuthHeader,
+  getTimeStr,
+  getLocalStorage,
+  BallkidAndIcon,
+} from "../Utils";
 
 export default function MatchLeaderboard(props) {
   const [checkinTimes, setCheckinTimes] = useState([]);
@@ -28,11 +31,7 @@ export default function MatchLeaderboard(props) {
       field: "name",
       headerName: "Ballkid",
       width: 200,
-      renderCell: (rowData) => (
-        <Link component={RouterLink} to={`/ballkid/${rowData.row.ballkid_id}`}>
-          {rowData.row.ballkid_name}
-        </Link>
-      ),
+      renderCell: (rowData) => <BallkidAndIcon ballkid={rowData.row.ballkid} />,
     },
     {
       field: "time",

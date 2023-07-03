@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import Link from "@mui/material/Link";
 
 import {
-  Icons,
   getAuthHeader,
   RatingButton,
   getLocalStorage,
   isCurrentHour,
   CourtAssignment,
+  BallkidAndIcon,
 } from "../Utils";
 import { ON_COURT_GREEN } from "../Consts";
 
@@ -59,18 +57,8 @@ function Team({ team, assigned, nextShifts, setUpdated }) {
                 ballkid.position !== position ? (
                   ""
                 ) : (
-                  <div className="justify" key={`ballkid${ballkid.id}`}>
-                    <div className="sxs">
-                      <Link
-                        variant="body2"
-                        component={RouterLink}
-                        to={`/ballkid/${ballkid.id}`}
-                      >
-                        {ballkid.first_name} {ballkid.last_name}
-                      </Link>
-                      &thinsp;
-                      <Icons ballkid={ballkid} margin={0} />
-                    </div>
+                  <div className="justify" key={ballkid.id}>
+                    <BallkidAndIcon ballkid={ballkid} />
 
                     {ballkid.id === getLocalStorage("ballkid_id") ? (
                       ""

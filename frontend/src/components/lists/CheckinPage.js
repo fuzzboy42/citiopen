@@ -77,7 +77,11 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
           <Card>
             <CardActionArea
               component={RouterLink}
-              to={`/ballkid/${ballkid.id}`}
+              to={
+                ballkid.id === getLocalStorage("ballkid_id")
+                  ? "/me"
+                  : `/ballkid/${ballkid.id}`
+              }
             >
               {!gridLayout ? (
                 ""

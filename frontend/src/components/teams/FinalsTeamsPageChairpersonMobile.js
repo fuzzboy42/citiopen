@@ -24,7 +24,7 @@ import {
   filterBallkids,
   SearchAndFilter,
   HideShowToggle,
-  DraggableBallkidAndIcon,
+  BallkidAndIcon,
 } from "../Utils";
 import { MATCH_TYPES, MARGINS } from "../Consts";
 
@@ -96,7 +96,7 @@ function renderBallkidsOnTeam(assigned, team, position, setUpdated) {
       {assigned.map((ballkid) =>
         ballkid.finals_team === team && ballkid.finals_position === position ? (
           <div key={`ballkid${ballkid.id}`} className="justify">
-            {<DraggableBallkidAndIcon ballkid={ballkid} />}
+            {<BallkidAndIcon ballkid={ballkid} />}
             <div className="sxs">
               {ballkid.preferred_position.includes("/") ? (
                 <Button
@@ -230,7 +230,7 @@ function Unassigned({ unassigned, teams, setUpdated }) {
               (ballkid) => (
                 <TableRow key={ballkid.id}>
                   <TableCell component="th" scope="row">
-                    {<DraggableBallkidAndIcon ballkid={ballkid} />}
+                    {<BallkidAndIcon ballkid={ballkid} />}
                   </TableCell>
                   <TableCell>{ballkid.preferred_position}</TableCell>
                   <TableCell align="right">

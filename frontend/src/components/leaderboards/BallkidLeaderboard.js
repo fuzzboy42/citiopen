@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { Icons, getAuthHeader } from "../Utils";
+import { BallkidAndIcon, getAuthHeader } from "../Utils";
 
 export default function BallkidLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
@@ -29,15 +27,7 @@ export default function BallkidLeaderboard(props) {
       field: "name",
       headerName: "Ballkid",
       width: 200,
-      renderCell: (rowData) => (
-        <div className="sxs">
-          <Link component={RouterLink} to={`/ballkid/${rowData.row.id}`}>
-            {rowData.row.ballkid.first_name} {rowData.row.ballkid.last_name}
-          </Link>
-          &thinsp;
-          <Icons ballkid={rowData.row.ballkid} margin={0} />
-        </div>
-      ),
+      renderCell: (rowData) => <BallkidAndIcon ballkid={rowData.row.ballkid} />,
     },
     {
       field: "numRatings",
