@@ -14,6 +14,7 @@ import {
   SearchAndFilter,
   filterBallkids,
   BallkidCard,
+  setLocalStorage,
 } from "../Utils";
 
 function getBallkidsToRender(ballkids, showUnrated, showTeam, myTeam) {
@@ -36,11 +37,17 @@ function getBallkidsToRender(ballkids, showUnrated, showTeam, myTeam) {
   return ballkidsToRender;
 }
 
-function renderSwitch(param, setParam, offStr, onStr) {
+function renderSwitch(param, setParam, offStr, onStr, switchName) {
   return (
     <Grid item className="sxs" xs={12} md={6} lg={5} xl={4}>
       <Typography variant="body1">{offStr}</Typography>
-      <Switch checked={param} onClick={(e) => setParam(e.target.checked)} />
+      <Switch
+        checked={param}
+        onClick={(e) => {
+          setParam(e.target.checked);
+          setLocalStorage(switchName, e.target.checked);
+        }}
+      />
       <Typography variant="body1">{onStr}</Typography>
     </Grid>
   );
@@ -99,8 +106,13 @@ export default function RateByNamePage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [myTeam, setMyTeam] = useState();
 
-  const [showUnrated, setShowUnrated] = useState(false);
-  const [showTeam, setShowTeam] = useState(true);
+  const [showUnrated, setShowUnrated] = useState(
+    getLocalStorage("showUnrated") ?? false
+  );
+  const [showTeam, setShowTeam] = useState(
+    getLocalStorage("showTeam") ??
+      (getLocalStorage("group") === "chairperson" ? false : true)
+  );
   const [updated, setUpdated] = useState(false);
 
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -151,14 +163,16 @@ export default function RateByNamePage(props) {
           showUnrated,
           setShowUnrated,
           "Show All Ballkids",
-          "Show Ballkids to Rate"
+          "Show Ballkids to Rate",
+          "showUnrated"
         )}
 
         {renderSwitch(
           showTeam,
           setShowTeam,
           "Show All Teams",
-          "Show My Team Only"
+          "Show My Team Only",
+          "showTeam"
         )}
       </Grid>
 
