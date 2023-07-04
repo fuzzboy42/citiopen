@@ -40,6 +40,7 @@ schedule_urls = [
 
 # Analytics URLs
 analytics_urls = [
+    path("get-analytics/<int:pk>", GetAnalytics.as_view(), name="get-analytics"),
     path(
         "get-checkin-duration/<int:pk>",
         GetCheckinDuration.as_view(),

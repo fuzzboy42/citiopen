@@ -9,16 +9,12 @@ import Button from "@mui/material/Button";
 import Shortcut from "@mui/icons-material/Shortcut";
 import AspectRatio from "@mui/joy/AspectRatio";
 
+import { getAuthHeader, getLocalStorage, useIsMobile, Icons } from "../Utils";
 import {
-  getAuthHeader,
-  getLocalStorage,
-  useIsMobile,
-  Icons,
   renderBallkidCutHistory,
   renderBallkidFinalsHistory,
-  getTimeStr,
-  getTimeFloat,
-} from "../Utils";
+  AggregateMetrics,
+} from "./BallkidPageChairperson";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
@@ -57,8 +53,6 @@ export default function MyProfile(props) {
   const [captains, setCaptains] = useState([]);
   const [courts, setCourts] = useState([]);
 
-  const [totalTime, setTotalTime] = useState("");
-
   const [updated, setUpdated] = useState(false);
 
   const isMobile = useIsMobile();
@@ -88,11 +82,7 @@ export default function MyProfile(props) {
 
     fetch("/api/get-checkins/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setCheckins(data));
-
-    fetch("/api/get-checkin-duration/" + pk, { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) => setTotalTime(data["duration"]))
+      .then((data) => setCheckins(data))
       .then(() => setUpdated(false));
   }, [updated, pk]);
 
@@ -151,25 +141,21 @@ export default function MyProfile(props) {
           )}
         </Grid>
 
-        <RatingSection ballkid={ballkid} />
-
         {!ballkid.is_active ? (
           ""
         ) : (
           <div>
+            <RatingSection ballkid={ballkid} />
+
             <Typography variant="h6" sx={MARGINS}>
               Analytics:
             </Typography>
-            <Typography variant="body1">
-              Total time checked in: {getTimeStr(getTimeFloat(totalTime))}
-            </Typography>
+
+            <AggregateMetrics pk={pk} />
 
             <Grid container>
               <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-                <CheckinHistoryChart
-                  histories={checkins}
-                  totalTime={totalTime}
-                />
+                <CheckinHistoryChart histories={checkins} />
               </Grid>
 
               <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>

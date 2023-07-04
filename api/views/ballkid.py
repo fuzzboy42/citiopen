@@ -265,7 +265,7 @@ def recalc_captain_analytics(ballkid, now=None):
                 )
 
 
-def ratings_annotate(ballkids, pk):
+def annotate_ratings(ballkids, pk):
     current_year = get_current_year()
 
     return ballkids.annotate(
@@ -280,6 +280,48 @@ def ratings_annotate(ballkids, pk):
     )
 
 
+def annotate_durations(ballkids):
+    return ballkids.annotate(
+        checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
+        court_duration=Coalesce(Sum("courtanalytics__duration"), timedelta()),
+        stadium_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__court=COURT.STADIUM),
+            ),
+            timedelta(),
+        ),
+        harris_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__court=COURT.HARRIS),
+            ),
+            timedelta(),
+        ),
+        grandstand_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__court=COURT.GRANDSTAND),
+            ),
+            timedelta(),
+        ),
+        four_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__court=COURT.FOUR),
+            ),
+            timedelta(),
+        ),
+        five_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__court=COURT.FIVE),
+            ),
+            timedelta(),
+        ),
+    )
+
+
 class BallkidsList(generics.ListAPIView):
     serializer_class = BallkidSerializer
     permission_classes = [IsAuthenticated]
@@ -290,7 +332,7 @@ class BallkidsList(generics.ListAPIView):
             "last_name", "first_name"
         )
 
-        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
+        queryset = ballkids if not pk else annotate_ratings(ballkids, pk)
         logger.info(f"{datetime.now()} [BallkidsList] pk: {pk}; ballkids: {queryset}")
         return queryset
 
@@ -306,7 +348,7 @@ class AllBallkidsList(generics.ListAPIView):
             "last_name", "first_name"
         )
 
-        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
+        queryset = ballkids if not pk else annotate_ratings(ballkids, pk)
         logger.info(f"{datetime.now()} [AllBallkidsList] pk: {pk}; ballkids: {queryset}")
         return queryset
 
@@ -332,7 +374,7 @@ class BallkidsSortedList(generics.ListAPIView):
             "-is_captain", "-num_years_experience", "last_name", "first_name"
         )
 
-        queryset = ballkids if not pk else ratings_annotate(ballkids, pk)
+        queryset = ballkids if not pk else annotate_ratings(ballkids, pk)
         logger.info(
             f"{datetime.now()} [BallkidsSortedList] pk: {pk}; ballkids: {queryset}"
         )
@@ -397,7 +439,7 @@ class GetBallkid(generics.RetrieveAPIView):
         me = self.kwargs.get("me")
         ballkids = Ballkid.objects.all()
 
-        queryset = ballkids if not me else ratings_annotate(ballkids, me)
+        queryset = ballkids if not me else annotate_ratings(ballkids, me)
         return queryset
 
 
@@ -672,6 +714,18 @@ class GetCourtAnalytics(APIView):
         return Response(CourtAnalyticsSerializer(analytics, many=True).data)
 
 
+class GetAnalytics(APIView):
+    permission_classes = [IsChairpersonOrSelf]
+
+    def get(self, request, pk):
+        ballkid = get_object_or_404(Ballkid, id=pk)
+        recalc_court_analytics(ballkid=ballkid)
+        recalc_checkin_analytics(ballkid=ballkid)
+
+        ballkids = annotate_durations(Ballkid.objects.filter(id=pk))
+        return Response(BallkidSerializer(ballkids[0]).data)
+
+
 class GetCheckinLeaderboard(generics.ListAPIView):
     permission_classes = [IsChairperson]
     serializer_class = BallkidSerializer
@@ -764,48 +818,8 @@ class GetCourtLeaderboard(generics.ListAPIView):
         recalc_court_analytics()
         recalc_checkin_analytics()
 
-        return (
-            Ballkid.objects.filter(is_active=True)
-            .annotate(
-                checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
-                court_duration=Coalesce(Sum("courtanalytics__duration"), timedelta()),
-                stadium_duration=Coalesce(
-                    Sum(
-                        "courtanalytics__duration",
-                        filter=Q(courtanalytics__court=COURT.STADIUM),
-                    ),
-                    timedelta(),
-                ),
-                harris_duration=Coalesce(
-                    Sum(
-                        "courtanalytics__duration",
-                        filter=Q(courtanalytics__court=COURT.HARRIS),
-                    ),
-                    timedelta(),
-                ),
-                grandstand_duration=Coalesce(
-                    Sum(
-                        "courtanalytics__duration",
-                        filter=Q(courtanalytics__court=COURT.GRANDSTAND),
-                    ),
-                    timedelta(),
-                ),
-                four_duration=Coalesce(
-                    Sum(
-                        "courtanalytics__duration",
-                        filter=Q(courtanalytics__court=COURT.FOUR),
-                    ),
-                    timedelta(),
-                ),
-                five_duration=Coalesce(
-                    Sum(
-                        "courtanalytics__duration",
-                        filter=Q(courtanalytics__court=COURT.FIVE),
-                    ),
-                    timedelta(),
-                ),
-            )
-            .order_by("-court_duration")
+        return annotate_durations(Ballkid.objects.filter(is_active=True)).order_by(
+            "-court_duration"
         )
 
 
@@ -816,41 +830,14 @@ class GetAverageCourtLeaderboard(APIView):
         recalc_court_analytics()
         recalc_checkin_analytics()
 
-        averages = (
-            Ballkid.objects.filter(is_active=True)
-            .annotate(
-                checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
-                court_duration=Sum("courtanalytics__duration"),
-                stadium_duration=Sum(
-                    "courtanalytics__duration",
-                    filter=Q(courtanalytics__court=COURT.STADIUM),
-                ),
-                harris_duration=Sum(
-                    "courtanalytics__duration",
-                    filter=Q(courtanalytics__court=COURT.HARRIS),
-                ),
-                grandstand_duration=Sum(
-                    "courtanalytics__duration",
-                    filter=Q(courtanalytics__court=COURT.GRANDSTAND),
-                ),
-                four_duration=Sum(
-                    "courtanalytics__duration",
-                    filter=Q(courtanalytics__court=COURT.FOUR),
-                ),
-                five_duration=Sum(
-                    "courtanalytics__duration",
-                    filter=Q(courtanalytics__court=COURT.FIVE),
-                ),
-            )
-            .aggregate(
-                checkin_avg=Coalesce(Avg("checkin_duration"), timedelta()),
-                court_avg=Coalesce(Avg("court_duration"), timedelta()),
-                stadium_avg=Coalesce(Avg("stadium_duration"), timedelta()),
-                harris_avg=Coalesce(Avg("harris_duration"), timedelta()),
-                grandstand_avg=Coalesce(Avg("grandstand_duration"), timedelta()),
-                four_avg=Coalesce(Avg("four_duration"), timedelta()),
-                five_avg=Coalesce(Avg("five_duration"), timedelta()),
-            )
+        averages = annotate_durations(Ballkid.objects.filter(is_active=True)).aggregate(
+            checkin_avg=Coalesce(Avg("checkin_duration"), timedelta()),
+            court_avg=Coalesce(Avg("court_duration"), timedelta()),
+            stadium_avg=Coalesce(Avg("stadium_duration"), timedelta()),
+            harris_avg=Coalesce(Avg("harris_duration"), timedelta()),
+            grandstand_avg=Coalesce(Avg("grandstand_duration"), timedelta()),
+            four_avg=Coalesce(Avg("four_duration"), timedelta()),
+            five_avg=Coalesce(Avg("five_duration"), timedelta()),
         )
 
         return Response(averages, status=status.HTTP_200_OK)

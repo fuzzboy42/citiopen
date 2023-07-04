@@ -13,12 +13,6 @@ import IconButton from "@mui/material/IconButton";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -36,7 +30,7 @@ import List from "@mui/icons-material/List";
 import Check from "@mui/icons-material/Check";
 
 import RatingDialog from "./ratings/RatingDialog";
-import { END_DATE, START_DATE, ICON_DICT, MARGINS } from "./Consts";
+import { END_DATE, START_DATE, ICON_DICT } from "./Consts";
 
 export function Icons({ ballkid, margin }) {
   if (!ballkid.is_captain && ballkid.num_years_experience > 0) {
@@ -413,68 +407,6 @@ export function filterBallkids(ballkids, searchKeyword, filterGroup) {
   );
 }
 
-export function renderBallkidFinalsHistory(finals) {
-  return (
-    <Grid item xs={12} md={6.5}>
-      <Typography variant="h6" sx={MARGINS}>
-        Previous Years' Finals:
-      </Typography>
-
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Year</TableCell>
-              <TableCell align="center">Match Type</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {finals.map((final) => (
-              <TableRow key={final.id}>
-                <TableCell align="center">{final.year}</TableCell>
-                <TableCell align="center">{final.match_type}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
-  );
-}
-
-export function renderBallkidCutHistory(cuts) {
-  return (
-    <Grid item xs={12} md={6.5}>
-      <Typography variant="h6" sx={MARGINS}>
-        Cut History:
-      </Typography>
-
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Year</TableCell>
-              <TableCell align="center">Furthest Day</TableCell>
-              <TableCell align="center">Self-cut?</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cuts.map((cut) => (
-              <TableRow key={cut.id}>
-                <TableCell align="center">{cut.year}</TableCell>
-                <TableCell align="center">{cut.furthest_day}</TableCell>
-                <TableCell align="center">
-                  {cut.self_cut ? "Yes" : "No"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
-  );
-}
-
 // Converts a time of format
 // [year]-[month]-[day]T[24hour]:[minute]:[seconds]
 // into [12hour][am/pm]
@@ -539,6 +471,7 @@ export function getTimeStr(timeFloat, verbose = true) {
   return verbose ? hours + " hrs " + mins + " mins" : hours + ":" + mins;
 }
 
+// Renders a float as a percent with 1 decimal point
 export function toPercent(val) {
   const percent = Number((val * 100).toFixed(1));
   return `${percent}%`;

@@ -43,8 +43,6 @@ import {
   Icons,
   getAuthHeader,
   getLocalStorage,
-  renderBallkidCutHistory,
-  renderBallkidFinalsHistory,
   useIsMobile,
   getTimeFloat,
   getTimeStr,
@@ -268,6 +266,68 @@ function renderTeam(ballkid, teams, setUpdated, isMobile) {
         </Box>
       )}
     </div>
+  );
+}
+
+export function renderBallkidFinalsHistory(finals) {
+  return (
+    <Grid item xs={12} md={6.5}>
+      <Typography variant="h6" sx={MARGINS}>
+        Previous Years' Finals:
+      </Typography>
+
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Match Type</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {finals.map((final) => (
+              <TableRow key={final.id}>
+                <TableCell align="center">{final.year}</TableCell>
+                <TableCell align="center">{final.match_type}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
+  );
+}
+
+export function renderBallkidCutHistory(cuts) {
+  return (
+    <Grid item xs={12} md={6.5}>
+      <Typography variant="h6" sx={MARGINS}>
+        Cut History:
+      </Typography>
+
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Furthest Day</TableCell>
+              <TableCell align="center">Self-cut?</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cuts.map((cut) => (
+              <TableRow key={cut.id}>
+                <TableCell align="center">{cut.year}</TableCell>
+                <TableCell align="center">{cut.furthest_day}</TableCell>
+                <TableCell align="center">
+                  {cut.self_cut ? "Yes" : "No"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
   );
 }
 
@@ -643,23 +703,27 @@ function Comments(props) {
   );
 }
 
-function AggregateMetrics({ pk }) {
+export function AggregateMetrics({ pk }) {
   const [metrics, setMetrics] = useState([]);
   const [averages, setAverages] = useState();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/get-court-leaderboard", { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) =>
-        setMetrics(data.filter((ballkid) => ballkid.id === pk)[0])
-      );
+  const isChairperson = getLocalStorage("group") === "chairperson";
 
-    fetch("/api/get-average-court-leaderboard", { headers: getAuthHeader() })
+  useEffect(() => {
+    fetch(`/api/get-analytics/${pk}`, { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setAverages(data))
-      .then(() => setLoading(false));
-  }, [pk]);
+      .then((data) => setMetrics(data));
+
+    if (isChairperson) {
+      fetch("/api/get-average-court-leaderboard", { headers: getAuthHeader() })
+        .then((response) => response.json())
+        .then((data) => setAverages(data))
+        .then(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [pk, isChairperson]);
 
   return loading ? (
     <CircularProgress className="center-div" size={30} />
@@ -692,21 +756,25 @@ function AggregateMetrics({ pk }) {
                   )}
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell align="center">Average</TableCell>
-                <TableCell align="center">
-                  {getTimeStr(parseFloat(averages["checkin_avg"]) / 3600)}
-                </TableCell>
-                <TableCell align="center">
-                  {getTimeStr(parseFloat(averages["court_avg"]) / 3600)}
-                </TableCell>
-                <TableCell align="center">
-                  {toPercent(
-                    parseFloat(averages["court_avg"]) /
-                      parseFloat(averages["checkin_avg"])
-                  )}
-                </TableCell>
-              </TableRow>
+              {!isChairperson ? (
+                ""
+              ) : (
+                <TableRow>
+                  <TableCell align="center">Average</TableCell>
+                  <TableCell align="center">
+                    {getTimeStr(parseFloat(averages["checkin_avg"]) / 3600)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {getTimeStr(parseFloat(averages["court_avg"]) / 3600)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {toPercent(
+                      parseFloat(averages["court_avg"]) /
+                        parseFloat(averages["checkin_avg"])
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
