@@ -19,6 +19,10 @@ import {
 function getBallkidsToRender(ballkids, showUnrated, showTeam, myTeam) {
   const pk = getLocalStorage("ballkid_id");
 
+  if (myTeam === 0 && showTeam) {
+    return [];
+  }
+
   var ballkidsToRender = ballkids;
   ballkidsToRender = !showUnrated
     ? ballkidsToRender
