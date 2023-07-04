@@ -45,6 +45,7 @@ import {
 import {
   NUM_RATERS_WARNING_THRESHOLD,
   NUM_RATINGS_WARNING_THRESHOLD,
+  MARGINS,
 } from "../Consts";
 
 function renderHeader(ballkid, setUpdated, isMobile) {
@@ -643,7 +644,6 @@ export default function BallkidPageChairperson(props) {
   const [cuts, setCuts] = useState([]);
   const [checkins, setCheckins] = useState([]);
   const [captains, setCaptains] = useState([]);
-  const [courts, setCourts] = useState([]);
 
   const [totalTime, setTotalTime] = useState("");
 
@@ -671,10 +671,6 @@ export default function BallkidPageChairperson(props) {
     fetch(`/api/get-captains/${pk}`, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setCaptains(data));
-
-    fetch(`/api/get-courts/${pk}`, { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) => setCourts(data));
 
     fetch(`/api/get-checkins/${pk}`, { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -741,7 +737,7 @@ export default function BallkidPageChairperson(props) {
         <div>
           <RatingSection ballkid={ballkid} />
 
-          <Typography variant="h6" sx={{ mt: 2 }}>
+          <Typography variant="h6" sx={MARGINS}>
             Analytics:
           </Typography>
           <Typography variant="body1">
@@ -754,7 +750,7 @@ export default function BallkidPageChairperson(props) {
             </Grid>
 
             <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CourtHistoryChart histories={courts} />
+              <CourtHistoryChart />
             </Grid>
 
             <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>

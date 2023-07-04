@@ -16,10 +16,13 @@ import {
   Icons,
   renderBallkidCutHistory,
   renderBallkidFinalsHistory,
+  getTimeStr,
+  getTimeFloat,
 } from "../Utils";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
 import { CourtHistoryChart } from "./CourtHistoryChart";
+import { MARGINS } from "../Consts";
 
 function RatingSection({ ballkid }) {
   return !ballkid.is_captain ? (
@@ -153,24 +156,31 @@ export default function MyProfile(props) {
         {!ballkid.is_active ? (
           ""
         ) : (
-          <Grid container>
-            <Grid item xs={12}>
-              <br />
-              <Typography variant="h6">Analytics:</Typography>
-            </Grid>
+          <div>
+            <Typography variant="h6" sx={MARGINS}>
+              Analytics:
+            </Typography>
+            <Typography variant="body1">
+              Total time checked in: {getTimeStr(getTimeFloat(totalTime))}
+            </Typography>
 
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CheckinHistoryChart histories={checkins} totalTime={totalTime} />
-            </Grid>
+            <Grid container>
+              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+                <CheckinHistoryChart
+                  histories={checkins}
+                  totalTime={totalTime}
+                />
+              </Grid>
 
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CourtHistoryChart histories={courts} />
-            </Grid>
+              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+                <CourtHistoryChart histories={courts} />
+              </Grid>
 
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CaptainHistoryChart histories={captains} />
+              <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
+                <CaptainHistoryChart histories={captains} />
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
         )}
       </Grid>
       <Grid container>

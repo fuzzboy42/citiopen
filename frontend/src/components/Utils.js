@@ -415,8 +415,10 @@ export function filterBallkids(ballkids, searchKeyword, filterGroup) {
 
 export function renderBallkidFinalsHistory(finals) {
   return (
-    <Grid item xs={12} sm={6.5} sx={MARGINS}>
-      <Typography variant="h6">Previous Years' Finals:</Typography>
+    <Grid item xs={12} sm={6.5}>
+      <Typography variant="h6" sx={MARGINS}>
+        Previous Years' Finals:
+      </Typography>
 
       <TableContainer>
         <Table size="small">
@@ -442,8 +444,10 @@ export function renderBallkidFinalsHistory(finals) {
 
 export function renderBallkidCutHistory(cuts) {
   return (
-    <Grid item xs={12} sm={6.5} sx={MARGINS}>
-      <Typography variant="h6">Cut History:</Typography>
+    <Grid item xs={12} sm={6.5}>
+      <Typography variant="h6" sx={MARGINS}>
+        Cut History:
+      </Typography>
 
       <TableContainer>
         <Table size="small">
