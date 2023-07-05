@@ -31,11 +31,11 @@ export default function RatingsPage(props) {
       .then((response) => {
         if (response.status === 203) {
           setCalibrationWarning(
-            "Warning: Potentially insufficient data for effective overall calibration."
+            "Warning: Insufficient data for effective overall calibration."
           );
         } else if (response.status === 206) {
           setCalibrationWarning(
-            "Warning: Potentially insufficient data for effective calibration of one or more reviewers."
+            "Warning: Insufficient data for effective calibration of one or more reviewers."
           );
         }
         return response.json();
