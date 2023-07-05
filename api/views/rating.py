@@ -1,4 +1,4 @@
-from django.db.models import Value, Avg, F
+from django.db.models import Value, Avg, F, StdDev
 from django.db.models.functions import Concat
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger("api.rating")
 
 
-def queryset_to_rcal(data, min_date, rating_name="overall", returnAveraged=True):
+def queryset_to_rcal(data, rating_name="overall", returnAveraged=True):
     """
     Converts a Django queryset into the appropriate format for review calibration:
         Queryset of Rating objects => dict of (captain, ballkid, day) : rating
@@ -30,6 +30,11 @@ def queryset_to_rcal(data, min_date, rating_name="overall", returnAveraged=True)
 
     NOTE THAT RATINGS OF 0 ARE CONSIDERED EMPTY AND ARE NOT INCLUDED
     """
+    if len(data) == 0:
+        return {}
+
+    # TODO: need to update this so that it is min date per year!!!!!
+    min_date = min([rating.date for rating in data])
 
     logger.info(
         f"{datetime.now()} [queryset_to_rcal] data {data} with min_date {min_date} and rating_name {rating_name}"
@@ -111,15 +116,21 @@ def remove_nonoverlapping_reviewers(data):
     return new_data, excluded
 
 
-def calibrate(ratings, rating_name="overall", min_rating=0.5, max_rating=5, stdev=2):
+def calibrate(
+    ratings,
+    rating_name="overall",
+    year=get_current_year(),
+    min_rating=0.5,
+    max_rating=5,
+    stdev=2,
+):
     logger.info(
         f"{datetime.now()} [calibrate] starting calibration for {len(ratings)} ratings and rating_name {rating_name}. First 10: {ratings[:10]}"
     )
+    year_ratings = ratings.filter(date__year=year)
 
-    min_date = min([rating.date for rating in ratings])
-
-    train = queryset_to_rcal(ratings, min_date, rating_name, returnAveraged=True)
-    test = queryset_to_rcal(ratings, min_date, rating_name, returnAveraged=False)
+    train = queryset_to_rcal(ratings, rating_name, returnAveraged=True)
+    test = queryset_to_rcal(year_ratings, rating_name, returnAveraged=False)
 
     train, excluded = remove_nonoverlapping_reviewers(train)
     test, _ = remove_nonoverlapping_reviewers(test)
@@ -137,7 +148,7 @@ def calibrate(ratings, rating_name="overall", min_rating=0.5, max_rating=5, stde
     return cp, excluded
 
 
-def save_calibration_parameters(cp, calibrated=None):
+def save_calibration_parameters(cp, calibrated=None, year=get_current_year()):
     """
     Save calibration params as a CalibrationParams object.
 
@@ -150,58 +161,55 @@ def save_calibration_parameters(cp, calibrated=None):
         f"{datetime.now()} [save_calibration_parameters] saving calibration params"
     )
 
-    if cp is None:
-        logger.info(
-            f"{datetime.now()} [save_calibration_parameters] cp object is None, returning early without saving"
-        )
-        return
+    # Update all non-calibration related parameters
+    year_ratings = Rating.objects.filter(date__year=year)
 
-    current_year = get_current_year()
+    raters = year_ratings.values_list("rater", flat=True).distinct()
+    ratees = year_ratings.values_list("ratee", flat=True).distinct()
+    keys = raters.union(ratees)
 
-    improvements = cp.improvement_rates()
-    ballkid_offsets = cp.person_offsets()
-    scales = cp.reviewer_scales()
-    offsets = cp.reviewer_offsets()
+    logger.info(
+        f"{datetime.now()} [save_calibration_parameters] union of raters {raters} and ratees {ratees}: {keys}"
+    )
 
-    keys = improvements.keys() | scales.keys()
-    for name in keys:
-        improvement = improvements.get(name)
-        ballkid_offset = ballkid_offsets.get(name)
-        scale = scales.get(name)
-        offset = offsets.get(name)
-
+    for ballkid_id in keys:
         try:
-            ballkid = Ballkid.objects.get(
-                first_name=get_first_name(name), last_name=get_last_name(name)
-            )
+            ballkid = Ballkid.objects.get(id=ballkid_id)
+            name = ballkid.get_name()
         except ObjectDoesNotExist:
             logger.warning(
                 f"{datetime.now()} [save_calibration_params] Could not find ballkid {name}"
             )
             continue
 
-        num_ratee_ratings = Rating.objects.filter(
-            ratee=ballkid, date__year=current_year
-        ).count()
-        num_rater_ratings = Rating.objects.filter(
-            rater=ballkid, date__year=current_year
-        ).count()
-        num_raters = (
-            Rating.objects.filter(ratee=ballkid, date__year=current_year)
-            .values_list("rater")
-            .distinct()
-            .count()
-        )
+        ratee_ratings = year_ratings.filter(ratee=ballkid)
+        rater_ratings = year_ratings.filter(rater=ballkid)
 
-        default_vals = {
-            "ratee_improvement": improvement,
-            "ratee_offset": ballkid_offset,
-            "rater_scale": scale,
-            "rater_offset": offset,
-            "num_ratee_ratings": num_ratee_ratings,
-            "num_rater_ratings": num_rater_ratings,
-            "num_raters": num_raters,
-        }
+        num_ratee_ratings = ratee_ratings.filter(date__year=year).count()
+        num_rater_ratings = rater_ratings.filter(date__year=year).count()
+        num_raters = (
+            ratee_ratings.filter(date__year=year).values_list("rater").distinct().count()
+        )
+        ratee_raw_avg = ratee_ratings.aggregate(val=Avg("rating"))["val"]
+        ratee_raw_stdev = ratee_ratings.aggregate(val=StdDev("rating"))["val"]
+        rater_raw_avg = rater_ratings.aggregate(val=Avg("rating"))["val"]
+        rater_raw_stdev = rater_ratings.aggregate(val=StdDev("rating"))["val"]
+
+        params, _ = CalibrationParams.objects.update_or_create(
+            ballkid=ballkid,
+            defaults={
+                "num_ratee_ratings": num_ratee_ratings,
+                "num_rater_ratings": num_rater_ratings,
+                "num_raters": num_raters,
+                "ratee_raw_avg": ratee_raw_avg,
+                "ratee_raw_stdev": ratee_raw_stdev,
+                "rater_raw_avg": rater_raw_avg,
+                "rater_raw_stdev": rater_raw_stdev,
+            },
+        )
+        logger.info(
+            f"{datetime.now()} [save_calibration_parameters] params for ballkid {ballkid} updated with raw metrics: {params}"
+        )
 
         if calibrated:
             ratee_calibrated = [val for key, val in calibrated.items() if key[1] == name]
@@ -212,27 +220,30 @@ def save_calibration_parameters(cp, calibrated=None):
                 statistics.stdev(ratee_calibrated) if len(ratee_calibrated) > 1 else None
             )
 
-            cp, created = CalibrationParams.objects.update_or_create(
+            params, _ = CalibrationParams.objects.update_or_create(
                 ballkid=ballkid,
                 defaults={
-                    **default_vals,
                     "ratee_calibrated_avg": calibrated_avg,
                     "ratee_calibrated_stdev": calibrated_stdev,
                 },
             )
             logger.info(
-                f"{datetime.now()} [save_calibration_params] Created {created} calibration params object for ballkid {ballkid} with defaults {default_vals}, ratee calibrated avg {calibrated_avg} ratee calibrated stdev {calibrated_stdev}"
+                f"{datetime.now()} [save_calibration_parameters] params for ballkid {ballkid} updated with calibrated metrics: {params}"
             )
 
-        else:
-            cp, created = CalibrationParams.objects.update_or_create(
-                ballkid=ballkid, defaults=default_vals
+        if cp is not None:
+            params, _ = CalibrationParams.objects.update_or_create(
+                ballkid=ballkid,
+                defaults={
+                    "ratee_improvement": cp.improvement_rates().get(name),
+                    "ratee_offset": cp.person_offsets().get(name),
+                    "rater_scale": cp.reviewer_scales().get(name),
+                    "rater_offset": cp.reviewer_offsets().get(name),
+                },
             )
             logger.info(
-                f"{datetime.now()} [save_calibration_params] Created {created} calibration params object for ballkid {ballkid} with defaults {default_vals}"
+                f"{datetime.now()} [save_calibration_parameters] params for ballkid {ballkid} updated with rcal metrics: {params}"
             )
-
-        cp.save()
 
 
 def get_postprocessed_rating(cp, rating, name):
@@ -252,10 +263,10 @@ class RatingsList(generics.ListAPIView):
     permission_classes = [IsChairperson]
 
     def get_queryset(self):
-        current_year = self.kwargs.get("year")
+        year = self.kwargs.get("year")
 
         return (
-            Rating.objects.filter(date__year=current_year)
+            Rating.objects.filter(date__year=year)
             .annotate(
                 ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
                 rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
@@ -279,10 +290,10 @@ class MyRatings(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        current_year = get_current_year()
+        year = get_current_year()
 
         return (
-            Rating.objects.filter(rater_id=pk, date__year=current_year)
+            Rating.objects.filter(rater_id=pk, date__year=year)
             .annotate(
                 ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
                 rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
@@ -342,6 +353,7 @@ class CalibratedRatings(APIView):
     def get(self, request, year):
         cp_dict, excluded = {}, {}
         ratings = Rating.objects.all()
+        year_ratings = ratings.filter(date__year=year)
 
         logger.info(
             f"{datetime.now()} [CalibratedRatings] Starting rating calibration for {len(ratings)} ratings"
@@ -352,7 +364,11 @@ class CalibratedRatings(APIView):
         for rating_name in RATING_CATEGORIES:
             with warnings.catch_warnings(record=True) as caught_warnings:
                 cp_dict[rating_name], excluded[rating_name] = calibrate(
-                    ratings, rating_name, min_rating=MIN_RATING, max_rating=MAX_RATING
+                    ratings,
+                    rating_name,
+                    year=year,
+                    min_rating=MIN_RATING,
+                    max_rating=MAX_RATING,
                 )
             if any((x.category == RcalWarning for x in caught_warnings)):
                 all_warnings.add(rating_name)
@@ -373,14 +389,14 @@ class CalibratedRatings(APIView):
                 rating.rating,
                 rating.rater.get_name(),
             )
-            for rating in ratings
+            for rating in year_ratings
         }
         logger.info(
             f"{datetime.now()} [CalibratedRatings] completed calibration for {len(calibrated)} ratings"
         )
 
         # Save calibration parameters for overall ratings only
-        save_calibration_parameters(cp_dict["overall"], calibrated)
+        save_calibration_parameters(cp_dict["overall"], calibrated, year)
 
         # Calibrate each rating to put together a list of calibrated ratings
         # to return
@@ -424,8 +440,7 @@ class CalibratedRatings(APIView):
                 "month": rating.date.month,
                 "day": rating.date.day,
             }
-            for rating in ratings
-            if rating.date.year == year
+            for rating in year_ratings
         ]
 
         # Chain multiple sorts to allow for one of them to be reversed but not the rest.
@@ -467,7 +482,6 @@ class CalibratedRatings(APIView):
         logger.info(
             f"{datetime.now()} [CalibratedRatings] post-processed calibrated ratings {postprocessed} "
         )
-        print(all_warnings, s)
         return Response(RatingSerializer(postprocessed, many=True).data, status=s)
 
 
@@ -503,4 +517,9 @@ class DeleteRating(APIView):
         rating = Rating.objects.get(pk=pk)
         logger.info(f"{datetime.now()} [DeleteRating] deleting rating {rating}")
         rating.delete()
+
+        # Update calibration parameters
+        cp, _ = calibrate(Rating.objects.all())
+        save_calibration_parameters(cp)
+
         return Response(status=status.HTTP_200_OK)

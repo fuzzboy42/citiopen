@@ -21,9 +21,7 @@ class TestViewsRating(TestCase):
 
     def test_queryset_to_rcal_empty(self):
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
-        self.assertEqual({}, queryset_to_rcal(ratings, min_date))
+        self.assertEqual({}, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_overall_zero(self):
         rating1 = Rating.objects.create(
@@ -37,11 +35,9 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {}
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_single_rating_per_rater_per_ratee(self):
         rating1 = Rating.objects.create(
@@ -55,14 +51,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Andrea Iosue", 0): 5,
         }
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_multiple_ratings_per_rater(self):
         rating1 = Rating.objects.create(
@@ -76,14 +70,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Captain Iosue", "Andrea Iosue", 0): 5,
         }
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_multiple_ratings_per_rater_across_buckets(self):
         rating1 = Rating.objects.create(
@@ -97,14 +89,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=5)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", self.days_per_bucket): 3.5,
             ("Captain Iosue", "Andrea Iosue", 0): 5,
         }
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_multiple_ratings_per_ratee(self):
         rating1 = Rating.objects.create(
@@ -118,14 +108,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Lacy Iosue", 0): 5,
         }
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_multiple_ratings_per_rater_per_ratee_averaged(self):
         rating1 = Rating.objects.create(
@@ -139,13 +127,11 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 4,
         }
 
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, min_date))
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_multiple_ratings_per_rater_per_ratee_nonaveraged(self):
         rating1 = Rating.objects.create(
@@ -159,15 +145,11 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): [3, 5],
         }
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, returnAveraged=False)
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, returnAveraged=False))
 
     def test_queryset_to_rcal_multiple_ratings_per_rater_per_ratee_nonaveraged_ordered(
         self,
@@ -183,15 +165,11 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today() - timedelta(days=1)
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): [5, 3],
         }
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, returnAveraged=False)
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, returnAveraged=False))
 
     def test_queryset_to_rcal_athleticism_empty(self):
         rating1 = Rating.objects.create(
@@ -205,13 +183,9 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {}
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="athleticism")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism"))
 
     def test_queryset_to_rcal_athleticism_zero(self):
         rating1 = Rating.objects.create(
@@ -229,13 +203,9 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {}
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="athleticism")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism"))
 
     def test_queryset_to_rcal_athleticism_nonzero(self):
         rating1 = Rating.objects.create(
@@ -254,16 +224,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 0.5,
             ("Joe Iosue", "Andrea Iosue", 0): 2,
         }
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="athleticism")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism"))
 
     def test_queryset_to_rcal_athleticism_nonzero_averaged(self):
         rating1 = Rating.objects.create(
@@ -282,15 +248,11 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 1.5,
         }
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="athleticism")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism"))
 
     def test_queryset_to_rcal_athleticism_nonzero_nonaveraged(self):
         rating1 = Rating.objects.create(
@@ -309,17 +271,13 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): [1, 2],
         }
 
         self.assertEqual(
             rcal_dict,
-            queryset_to_rcal(
-                ratings, min_date, rating_name="athleticism", returnAveraged=False
-            ),
+            queryset_to_rcal(ratings, rating_name="athleticism", returnAveraged=False),
         )
 
     def test_queryset_to_rcal_decision_zero(self):
@@ -338,13 +296,9 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {}
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="decision")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="decision"))
 
     def test_queryset_to_rcal_decision_nonzero(self):
         rating1 = Rating.objects.create(
@@ -363,16 +317,12 @@ class TestViewsRating(TestCase):
         )
 
         ratings = Rating.objects.all()
-        min_date = date.today()
-
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 0.5,
             ("Joe Iosue", "Andrea Iosue", 0): 2,
         }
 
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, min_date, rating_name="decision")
-        )
+        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="decision"))
 
     def test_calibrate(self):
         Rating.objects.create(
