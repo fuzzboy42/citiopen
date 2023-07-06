@@ -35,7 +35,7 @@ jobs:
         run: sh deploy.sh
 
       - name: Build backend
-        run: python manage.py collectstatic --no-input
+        run: python manage.py collectstatic --no-input --clear
 
       - name: Deploy
         env:
