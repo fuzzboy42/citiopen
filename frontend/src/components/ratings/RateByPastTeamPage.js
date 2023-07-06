@@ -11,6 +11,7 @@ import {
   RatingButton,
   getLocalStorage,
   BallkidCard,
+  setLocalStorage,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 
@@ -44,8 +45,10 @@ export default function RateByPastTeamPage(props) {
   const [unratedBallkids, setUnratedBallkids] = useState([]);
   const [pastTeams, setPastTeams] = useState({});
   const [updated, setUpdated] = useState(false);
-  const [showAll, setShowAll] = useState(true);
 
+  const [showUnrated, setShowUnrated] = useState(
+    getLocalStorage("showUnrated") ?? false
+  );
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );
@@ -79,8 +82,11 @@ export default function RateByPastTeamPage(props) {
       <div className="sxs">
         <Typography variant="body1">Show All Ballkids</Typography>
         <Switch
-          checked={!showAll}
-          onClick={(e) => setShowAll(!e.target.checked)}
+          checked={showUnrated}
+          onClick={(e) => {
+            setShowUnrated(e.target.checked);
+            setLocalStorage("showUnrated", e.target.checked);
+          }}
         />
         <Typography variant="body1">Show Ballkids to Rate</Typography>
       </div>
@@ -97,7 +103,7 @@ export default function RateByPastTeamPage(props) {
             <Grid container spacing={gridLayout ? 2 : 1}>
               {pastTeams[date].map((ballkidId) =>
                 renderBallkid(
-                  (showAll ? ballkids : unratedBallkids).find(
+                  (showUnrated ? unratedBallkids : ballkids).find(
                     (ballkid) => ballkid.id === ballkidId
                   ),
                   gridLayout,
