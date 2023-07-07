@@ -109,14 +109,16 @@ def recalc_court_analytics(ballkid=None, now=None):
         analytics = {
             (ballkid.id, court): [0, timedelta()]
             for ballkid in Ballkid.objects.filter(is_active=True)
-            for court, _ in COURT.choices
+            for court, _ in NUM_COURTS_TO_COURTS[5]
         }
 
     # If updating a specific ballkid, only get that ballkid's histories and only
     # create 1 analytic
     else:
         histories = TeamHistory.objects.filter(ballkid_id=ballkid.id)
-        analytics = {(ballkid.id, court): [0, timedelta()] for court, _ in COURT.choices}
+        analytics = {
+            (ballkid.id, court): [0, timedelta()] for court, _ in NUM_COURTS_TO_COURTS[5]
+        }
 
     logger.info(
         f"{datetime.now()} [recalc-court-analytics] # histories: {len(histories)}, first 10: {histories[:10]}"

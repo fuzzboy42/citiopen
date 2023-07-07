@@ -19,6 +19,7 @@ body {
   /* max-width: 1000px; */
 }
 
+/* Center of page (e.g. login screen) */
 .center {
   margin: 15px;
   position: absolute;
@@ -27,6 +28,7 @@ body {
   transform: translate(-50%, -50%);
 }
 
+/* Center within div e.g. loading spinner */
 .center-div {
   margin: 15px;
   position: relative;

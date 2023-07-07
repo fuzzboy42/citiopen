@@ -8,6 +8,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
 
 import Add from "@mui/icons-material/Add";
 
@@ -29,70 +30,98 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
 
   return (
     <div>
-      <TableContainer>
-        <Table style={{ tableLayout: "fixed" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" width="20px">
-                Time
-              </TableCell>
-              {courts.map((court) => (
-                <TableCell key={court} align="center" width="50px">
-                  {court}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {hours.map((hour) => (
-              <TableRow
-                key={hour}
-                sx={{ backgroundColor: isCurrentHour(hour) ? "lightblue" : "" }}
-              >
-                <TableCell align="center">{dayHourToStr(hour)}</TableCell>
-                {courts.map((court) => {
-                  const teamStr =
-                    hourCourtToTeam[hour + "-" + court] > 0
-                      ? hourCourtToTeam[hour + "-" + court]
-                      : "";
-
-                  return (
-                    <TableCell key={court} align="center">
-                      {readOnly ? (
-                        teamStr
-                      ) : (
-                        <TextField
-                          variant="standard"
-                          defaultValue={teamStr}
-                          InputProps={{
-                            inputProps: {
-                              style: { textAlign: "center" },
-                            },
-                          }}
-                          style={{ width: 25 }}
-                          onChange={(e) =>
-                            fetch("/api/update-schedule", {
-                              method: "PATCH",
-                              headers: getAuthHeader(),
-                              body: JSON.stringify({
-                                hour: hour,
-                                court: court,
-                                team: e.target.value,
-                              }),
-                            })
-                              .then((response) => response.json())
-                              .then((data) => setUpdated(true))
-                          }
-                        />
-                      )}
+      <Grid container>
+        <Grid item xs={11.5}>
+          <TableContainer>
+            <Table style={{ tableLayout: "fixed" }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" width="20px">
+                    Time
+                  </TableCell>
+                  {courts.map((court) => (
+                    <TableCell key={court} align="center" width="50px">
+                      {court}
                     </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {hours.map((hour) => (
+                  <TableRow
+                    key={hour}
+                    sx={{
+                      backgroundColor: isCurrentHour(hour) ? "lightblue" : "",
+                    }}
+                  >
+                    <TableCell align="center">{dayHourToStr(hour)}</TableCell>
+                    {courts.map((court) => {
+                      const teamStr =
+                        hourCourtToTeam[hour + "-" + court] > 0
+                          ? hourCourtToTeam[hour + "-" + court]
+                          : "";
+
+                      return (
+                        <TableCell key={court} align="center">
+                          {readOnly ? (
+                            teamStr
+                          ) : (
+                            <TextField
+                              variant="standard"
+                              defaultValue={teamStr}
+                              InputProps={{
+                                inputProps: {
+                                  style: { textAlign: "center" },
+                                },
+                              }}
+                              style={{ width: 25 }}
+                              onChange={(e) =>
+                                fetch("/api/update-schedule", {
+                                  method: "PATCH",
+                                  headers: getAuthHeader(),
+                                  body: JSON.stringify({
+                                    hour: hour,
+                                    court: court,
+                                    team: e.target.value,
+                                  }),
+                                })
+                                  .then((response) => response.json())
+                                  .then((data) => setUpdated(true))
+                              }
+                            />
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+        <Grid item xs={0.5}>
+          {readOnly ? (
+            ""
+          ) : (
+            <IconButton
+              sx={{ mt: 1 }}
+              onClick={() => {
+                fetch("/api/add-court", {
+                  method: "POST",
+                  headers: getAuthHeader(),
+                  body: JSON.stringify({
+                    date: date,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => setUpdated(true));
+              }}
+            >
+              <Add />
+            </IconButton>
+          )}
+        </Grid>
+      </Grid>
       {readOnly ? (
         ""
       ) : (

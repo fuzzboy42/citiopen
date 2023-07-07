@@ -26,9 +26,7 @@ def get_days_shifts(param):
         f"{datetime.now()} [get_days_shifts] input {param}; start range {start_hour} and end {end_hour}"
     )
 
-    return Schedule.objects.filter(start__gte=start_hour, start__lt=end_hour).order_by(
-        "id"
-    )
+    return Schedule.objects.filter(start__gte=start_hour, start__lt=end_hour)
 
 
 class GetSchedule(generics.ListAPIView):
@@ -37,7 +35,7 @@ class GetSchedule(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get("date")
-        return get_days_shifts(param)
+        return get_days_shifts(param).order_by("id")
 
 
 class CreateSchedule(APIView):
@@ -101,29 +99,47 @@ class AddHour(APIView):
     permission_classes = [IsChairperson]
 
     def post(self, request, format=None):
-        date = datetime.strptime(request.data["date"], SLASH_MONTH_DAY_YEAR_FORMAT_STR)
-        start_hour = datetime(year=date.year, month=date.month, day=date.day, hour=8)
-        end_hour = start_hour + timedelta(days=1)
-        shifts = Schedule.objects.filter(start__gte=start_hour, start__lt=end_hour)
+        param = request.data["date"]
+        shifts = get_days_shifts(param)
+        courts = shifts.values_list("court", flat=True).distinct()
 
         max_hour = shifts.aggregate(max=Max("start"))["max"]
         next_hour = max_hour + timedelta(hours=1)
 
         logger.info(
-            f"{datetime.now()} [AddHour] for date {date}, max_hour was {max_hour}"
+            f"{datetime.now()} [AddHour] for date {param}, max_hour was {max_hour}"
         )
 
-        for court in COURT.choices:
-            shift = Schedule(
+        for court in courts:
+            shift, created = Schedule.objects.get_or_create(
                 start=next_hour,
-                court=court[0],
+                court=court,
             )
-            shift.save()
-            logger.info(f"{datetime.now()} [AddHour] Created shift {shift}")
+            logger.info(f"{datetime.now()} [AddHour] Created {created} shift {shift}")
 
         return Response(
             {"Success": f"Added hour at {next_hour}"}, status=status.HTTP_200_OK
         )
+
+
+class AddCourt(APIView):
+    permission_classes = [IsChairperson]
+
+    def post(self, request, format=None):
+        param = request.data["date"]
+        shifts = get_days_shifts(param)
+        starts = shifts.values_list("start", flat=True).distinct()
+
+        logger.info(f"{datetime.now()} [AddCourt] for date {param} with starts {starts}")
+
+        for start in starts:
+            shift, created = Schedule.objects.get_or_create(
+                start=start,
+                court="",
+            )
+            logger.info(f"{datetime.now()} [AddCourt] Created {created} shift {shift}")
+
+        return Response({"Success": f"Added court"}, status=status.HTTP_200_OK)
 
 
 class UpdateSchedule(APIView):

@@ -16,7 +16,7 @@ class Schedule(models.Model):
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(blank=True, null=True)
     team = models.IntegerField(default=0)
-    court = models.CharField(max_length=10, choices=COURT.choices)
+    court = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return f"Team {self.team} on {self.court} at {self.start}"
