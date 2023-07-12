@@ -24,7 +24,12 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import MenuIcon from "@mui/icons-material/Menu";
 
-import { getLocalStorage, setLocalStorage, useIsMobile } from "./Utils";
+import {
+  getLocalStorage,
+  setLocalStorage,
+  useIsMobile,
+  TournamentBanner,
+} from "./Utils";
 
 const ballkidTabs = [
   { label: "By Name", url: "/" },
@@ -334,56 +339,58 @@ export default function Navbar(props) {
   }
 
   return (
-    // <Box sx={{ flexGrow: 1 }}>
-    <AppBar position="sticky">
-      <Toolbar>
-        <div className="justify" style={{ height: "100%" }}>
-          <div className="sxs">
-            <Box
-              className="sxs"
-              component={Link}
-              to="/"
-              sx={{ textDecoration: "none", color: "white" }}
-            >
-              <Icon>
-                <SportsTennis />
-              </Icon>
-              <Typography variant="h6" sx={{ mx: 2 }}>
-                Citi Open Ballkids
-              </Typography>
-            </Box>
+    <div>
+      {!props.isLoggedIn ? "" : <TournamentBanner />}
 
-            {!props.isLoggedIn || isMobile ? (
-              ""
+      <AppBar position="sticky">
+        <Toolbar>
+          <div className="justify" style={{ height: "100%" }}>
+            <div className="sxs">
+              <Box
+                className="sxs"
+                component={Link}
+                to="/"
+                sx={{ textDecoration: "none", color: "white" }}
+              >
+                <Icon>
+                  <SportsTennis />
+                </Icon>
+                <Typography variant="h6" sx={{ mx: 2 }}>
+                  Citi Open Ballkids
+                </Typography>
+              </Box>
+
+              {!props.isLoggedIn || isMobile ? (
+                ""
+              ) : (
+                <div className="sxs">
+                  {tabs.map((tab) => (
+                    <DesktopNavbarItem
+                      key={tab.label}
+                      tab={tab}
+                      useIconButton={false}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {!props.isLoggedIn ? (
+              <Button color="inherit" component={Link} to="/login">
+                Login
+              </Button>
+            ) : isMobile ? (
+              <MobileNavbar tabs={tabs} accountTab={accountTab} />
             ) : (
-              <div className="sxs">
-                {tabs.map((tab) => (
-                  <DesktopNavbarItem
-                    key={tab.label}
-                    tab={tab}
-                    useIconButton={false}
-                  />
-                ))}
-              </div>
+              <DesktopNavbarItem
+                tab={accountTab}
+                useIconButton={true}
+                setToken={props.setToken}
+              />
             )}
           </div>
-
-          {!props.isLoggedIn ? (
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
-          ) : isMobile ? (
-            <MobileNavbar tabs={tabs} accountTab={accountTab} />
-          ) : (
-            <DesktopNavbarItem
-              tab={accountTab}
-              useIconButton={true}
-              setToken={props.setToken}
-            />
-          )}
-        </div>
-      </Toolbar>
-    </AppBar>
-    // </Box>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 }

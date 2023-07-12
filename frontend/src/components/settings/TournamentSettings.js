@@ -16,6 +16,8 @@ export default function TournamentSettings(props) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const refreshStr = "Refresh to view updated banner state.";
+
   useEffect(() => {
     fetch("/api/get-tournament", {
       method: "GET",
@@ -68,15 +70,15 @@ export default function TournamentSettings(props) {
 
                       if (e.target.value === "") {
                         setSuccessMsg(
-                          "Banner removed for all ballkids and captains!"
+                          `Banner removed for all ballkids and captains! ${refreshStr}`
                         );
                       } else {
                         setSuccessMsg(
-                          "Banner updated for all ballkids and captains!"
+                          `Banner updated for all ballkids and captains! ${refreshStr}`
                         );
                       }
                     } else {
-                      setErrorMsg("Error updating banner.");
+                      setErrorMsg(`Error updating banner. ${refreshStr}`);
                     }
                   });
                 }

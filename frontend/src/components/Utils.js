@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useDrag } from "react-dnd";
 import { Link as RouterLink } from "react-router-dom";
@@ -22,6 +22,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
+import Snackbar from "@mui/material/Snackbar";
 
 import AspectRatio from "@mui/joy/AspectRatio";
 
@@ -175,6 +176,30 @@ export function SearchAndFilter({
         ))}
       </div>
     </Grid>
+  );
+}
+
+export function TournamentBanner({ updated, setUpdated }) {
+  const [banner, setBanner] = useState();
+
+  useEffect(() => {
+    fetch("/api/get-tournament", {
+      method: "GET",
+      headers: getAuthHeader(),
+    })
+      .then((response) => response.json())
+      .then((data) => setBanner(data.banner));
+  }, []);
+
+  return banner === undefined || banner === null || banner === "" ? (
+    ""
+  ) : (
+    // <Snackbar open={true} severity="warning" message={banner} />
+    <Snackbar open={true}>
+      <Alert severity="warning" variant="filled" sx={{ width: "100%" }}>
+        {banner}
+      </Alert>
+    </Snackbar>
   );
 }
 
