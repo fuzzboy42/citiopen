@@ -117,7 +117,7 @@ const nonchairpersonAccountTab = {
   subtabs: [
     { label: "My Profile", url: "/me" },
     // { label: "Game", url: "/game" },
-    // { label: "Account Settings", url: "/settings" },
+    { label: "Account Settings", url: "/settings" },
     { label: "Logout", url: "/login" },
   ],
 };
@@ -129,8 +129,8 @@ const chairpersonAccountTab = {
   subtabs: [
     { label: "My Profile", url: "/me" },
     // { label: "Game", url: "/game" },
+    { label: "Account Settings", url: "/settings" },
     { label: "Tournament Settings", url: "/tournament-settings" },
-    // { label: "Account Settings", url: "/settings" },
     { label: "Debug", url: "/debug" },
     { label: "Logout", url: "/login" },
   ],

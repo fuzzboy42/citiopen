@@ -8,7 +8,7 @@ urlpatterns = [
     path("users/<int:pk>", UserDetail.as_view(), name="user-detail"),
     path("get-token", GetTokenView.as_view(), name="get-token"),
     path("register", RegisterUserView.as_view(), name="register"),
-    path("change-password", ChangePasswordView.as_view(), name="change-password"),
+    # path("change-password", ChangePasswordView.as_view(), name="change-password"),
     path(
         "update-captain-status",
         UpdateCaptainStatus.as_view(),

@@ -40,6 +40,7 @@ import RateByCurrentTeamsPage from "./ratings/RateByCurrentTeamsPage";
 
 import { useToken, getLocalStorage, useIsMobile } from "./Utils";
 import GamePage from "./settings/GamePage";
+import AccountSettings from "./settings/AccountSettings";
 
 function chairpersonRoutes(isMobile, setToken) {
   return (
@@ -66,6 +67,7 @@ function chairpersonRoutes(isMobile, setToken) {
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/ratings" element={<RatingsPage />} />
       <Route path="/schedule" element={<SchedulePageChairperson />} />
+      <Route path="/settings" element={<AccountSettings />} />
       <Route
         path="/teams"
         element={
@@ -106,6 +108,7 @@ function captainRoutes(setToken) {
       <Route path="/rate-by-team" element={<RateByCurrentTeamsPage />} />
       <Route path="/rate-by-past-team" element={<RateByPastTeamPage />} />
       <Route path="/schedule" element={<SchedulePage />} />
+      <Route path="/settings" element={<AccountSettings />} />
       <Route path="/teams" element={<TeamsPage />} />
       <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />
@@ -122,6 +125,7 @@ function ballkidRoutes(setToken) {
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
       <Route path="/me" element={<MyProfile />} />
       <Route path="/schedule" element={<SchedulePage />} />
+      <Route path="/settings" element={<AccountSettings />} />
       <Route path="/teams" element={<TeamsPage />} />
       <Route path="/game" element={<GamePage />} />
       <Route path="*" element={<RouteNotFound />} />
