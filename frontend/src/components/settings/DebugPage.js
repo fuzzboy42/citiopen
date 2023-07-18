@@ -7,10 +7,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import Select from "@mui/material/Select";
 
 import TaskAlt from "@mui/icons-material/TaskAlt";
 import UploadFile from "@mui/icons-material/UploadFile";
@@ -19,7 +15,13 @@ import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { Alerts, getAuthHeader, useIsMobile, getToken } from "../Utils";
+import {
+  Alerts,
+  getAuthHeader,
+  useIsMobile,
+  getToken,
+  TabbedSections,
+} from "../Utils";
 import { RatingAndLabel } from "../ratings/RatingDialog";
 
 function CreateBallkid(props) {
@@ -1245,10 +1247,6 @@ function BulkCreation({ type }) {
 export default function DebugPage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [captains, setCaptains] = useState([]);
-  const [tabIndex, setTabIndex] = useState(0);
-  const [mobileSelection, setMobileSelection] = useState();
-
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetch("/api/all-list", { headers: getAuthHeader() })
@@ -1274,7 +1272,7 @@ export default function DebugPage(props) {
     id: ballkid.id,
   }));
 
-  const mapped = {
+  const sections = {
     "Create/Update Ballkid": <CreateBallkid />,
     "Create User": <CreateUser />,
     "Create Checkin History": (
@@ -1305,51 +1303,7 @@ export default function DebugPage(props) {
 
   return (
     <div className="page">
-      {isMobile ? (
-        <div>
-          <Select
-            native
-            value={mobileSelection}
-            sx={{ mb: 1 }}
-            onChange={(e) => setMobileSelection(e.target.value)}
-          >
-            {Object.keys(mapped).map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Select>
-          {mapped[mobileSelection]}
-        </div>
-      ) : (
-        <Box
-          sx={{
-            flexGrow: 1,
-            bgcolor: "background.paper",
-            display: "flex",
-            height: 400,
-            width: "95%",
-          }}
-        >
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={tabIndex}
-            onChange={(e, newVal) => setTabIndex(newVal)}
-            sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
-          >
-            {Object.keys(mapped).map((label, index) => (
-              <Tab key={index} label={label} />
-            ))}
-          </Tabs>
-
-          {Object.keys(mapped).map((label, index) => (
-            <div key={index} hidden={tabIndex !== index}>
-              {tabIndex === index && mapped[label]}
-            </div>
-          ))}
-        </Box>
-      )}
+      <TabbedSections sections={sections} />
     </div>
   );
 }

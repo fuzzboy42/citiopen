@@ -23,6 +23,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
 import Snackbar from "@mui/material/Snackbar";
+import Box from "@mui/material/Box";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Select from "@mui/material/Select";
 
 import AspectRatio from "@mui/joy/AspectRatio";
 
@@ -253,6 +257,59 @@ export function HideShowToggle({
       />
       <Typography variant="body1">Show</Typography>
     </div>
+  );
+}
+
+export function TabbedSections({ sections }) {
+  const [tabIndex, setTabIndex] = useState(0);
+  const [mobileSelection, setMobileSelection] = useState();
+
+  const isMobile = useIsMobile();
+
+  return isMobile ? (
+    <div>
+      <Select
+        native
+        value={mobileSelection}
+        sx={{ mb: 1 }}
+        onChange={(e) => setMobileSelection(e.target.value)}
+      >
+        {Object.keys(sections).map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </Select>
+      {sections[mobileSelection]}
+    </div>
+  ) : (
+    <Box
+      sx={{
+        flexGrow: 1,
+        bgcolor: "background.paper",
+        display: "flex",
+        height: 400,
+        width: "95%",
+      }}
+    >
+      <Tabs
+        orientation="vertical"
+        variant="scrollable"
+        value={tabIndex}
+        onChange={(e, newVal) => setTabIndex(newVal)}
+        sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
+      >
+        {Object.keys(sections).map((label, index) => (
+          <Tab key={index} label={label} />
+        ))}
+      </Tabs>
+
+      {Object.keys(sections).map((label, index) => (
+        <div key={index} hidden={tabIndex !== index}>
+          {tabIndex === index && sections[label]}
+        </div>
+      ))}
+    </Box>
   );
 }
 

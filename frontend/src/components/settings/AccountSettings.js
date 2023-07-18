@@ -3,13 +3,9 @@ import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
-import Select from "@mui/material/Select";
 
-import { Alerts, getAuthHeader, useIsMobile } from "../Utils";
+import { Alerts, TabbedSections, getAuthHeader } from "../Utils";
 
 function ChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
@@ -98,62 +94,12 @@ function ChangePassword() {
 }
 
 export default function AccountSettings(props) {
-  const [tabIndex, setTabIndex] = useState(0);
-  const [mobileSelection, setMobileSelection] = useState();
-
-  const isMobile = useIsMobile();
-
-  const mapped = {
+  const sections = {
     "Change Password": <ChangePassword />,
   };
-
   return (
     <div className="page">
-      {isMobile ? (
-        <div>
-          <Select
-            native
-            value={mobileSelection}
-            sx={{ mb: 1 }}
-            onChange={(e) => setMobileSelection(e.target.value)}
-          >
-            {Object.keys(mapped).map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Select>
-          {mapped[mobileSelection]}
-        </div>
-      ) : (
-        <Box
-          sx={{
-            flexGrow: 1,
-            bgcolor: "background.paper",
-            display: "flex",
-            height: 400,
-            width: "95%",
-          }}
-        >
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={tabIndex}
-            onChange={(e, newVal) => setTabIndex(newVal)}
-            sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
-          >
-            {Object.keys(mapped).map((label, index) => (
-              <Tab key={index} label={label} />
-            ))}
-          </Tabs>
-
-          {Object.keys(mapped).map((label, index) => (
-            <div key={index} hidden={tabIndex !== index}>
-              {tabIndex === index && mapped[label]}
-            </div>
-          ))}
-        </Box>
-      )}
+      <TabbedSections sections={sections} />
     </div>
   );
 }
