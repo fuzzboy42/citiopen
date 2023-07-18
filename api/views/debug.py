@@ -18,6 +18,8 @@ import csv
 import os
 import io
 import zipfile
+import random
+import string
 
 
 class CreateCheckinHistory(APIView):
@@ -244,6 +246,8 @@ class BulkCreateSignups(APIView):
             first_name = line["First Name"].strip().capitalize()
             last_name = line["Last Name"].strip().capitalize()
             is_captain = line["Are you a captain?"].strip() == "Yes"
+            is_chairperson = line["is_chairperson"].strip() == "TRUE"
+            is_out_of_town_rookie = line["is_out_of_town_rookie"].strip() == "TRUE"
             dob = datetime.strptime(
                 line[
                     "Date of Birth *You Must Be 14 years Old By Tournament Start (July 29th) To Apply*"
@@ -259,11 +263,19 @@ class BulkCreateSignups(APIView):
                 first_name=first_name,
                 last_name=last_name,
                 email=line["Email Address"].strip(),
-                password=make_password("password"),
+                password=make_password(
+                    "".join(random.sample(string.ascii_lowercase, 12))
+                ),
             )
             user.save()
 
-            group = Group.objects.get(name="captain" if is_captain else "ballkid")
+            group = Group.objects.get(
+                name="chairperson"
+                if is_chairperson
+                else "captain"
+                if is_captain
+                else "ballkid"
+            )
             user.groups.add(group)
 
             ballkids.append(
@@ -274,6 +286,8 @@ class BulkCreateSignups(APIView):
                     age=age,
                     is_active=True,
                     is_captain=is_captain,
+                    is_chairperson=is_chairperson,
+                    is_out_of_town=is_out_of_town_rookie,
                     num_years_experience=line[
                         "How many years have you been a Ballperson at the Citi Open (not counting the upcoming year)?"
                     ].strip()
@@ -298,7 +312,7 @@ class BulkCreateRatings(APIView):
 
     def post(self, request):
         author_to_name = {
-            "Emily": ("Emily", "Beck"),
+            "Emily": ("Emily", "Benton"),
             "MatthewK": ("Matthew", "Kolodner"),
             "Jeff": ("Jeff", "Zhang"),
             "Billy": ("Billy", "Owens"),
@@ -307,8 +321,8 @@ class BulkCreateRatings(APIView):
             "Carolyn": ("Carolyn", "Quetsch"),
             "Ryan": ("Ryan", "Gates"),
             "Michael": ("Michael", "White"),
-            "Joseph": ("Joey", "Ramsey"),
-            "Dan": ("Daniel", "Yi"),
+            "Joseph": ("Joseph", "Ramsey"),
+            "Dan": ("Dan", "Yi"),
             "Joe": ("Joe", "Iosue"),
             "Sharon": ("Sharon", "Sabasteanski"),
             "EvanCo": ("Evan", "Costanza"),

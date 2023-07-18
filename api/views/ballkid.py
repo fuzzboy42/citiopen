@@ -360,7 +360,7 @@ class AllBallkidsSortedList(generics.ListAPIView):
     permission_classes = [IsChairperson]
 
     def get_queryset(self):
-        return Ballkid.objects.filter(is_active=True).order_by(
+        return Ballkid.objects.filter(is_active=True, is_chairperson=False).order_by(
             "is_captain", "num_years_experience", "last_name", "first_name"
         )
 
