@@ -60,45 +60,47 @@ function BallkidsSection({ ballkids, gridLayout, setUpdated }) {
   return ballkids.length === 0 ? (
     <Typography variant="body1">There are no ballkids to rate.</Typography>
   ) : (
-    ballkids.map((ballkid) => (
-      <Grid
-        item
-        key={ballkid.id}
-        xs={gridLayout ? 6 : 12}
-        sm={gridLayout ? 4 : 12}
-        md={gridLayout ? 3 : 12}
-        lg={gridLayout ? 2 : 12}
-        xl={gridLayout ? 1 : 12}
-      >
-        <BallkidCard
-          ballkid={ballkid}
-          renderAdditional={
-            <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
-              {ballkid.id === getLocalStorage("ballkid_id") ? (
-                ""
-              ) : (
-                <RatingButton
-                  ballkid={ballkid}
-                  setUpdated={setUpdated}
-                  isMobile={isMobile}
-                />
-              )}
+    <Grid container spacing={gridLayout ? 2 : 1}>
+      {ballkids.map((ballkid) => (
+        <Grid
+          item
+          key={ballkid.id}
+          xs={gridLayout ? 6 : 12}
+          sm={gridLayout ? 4 : 12}
+          md={gridLayout ? 3 : 12}
+          lg={gridLayout ? 2 : 12}
+          xl={gridLayout ? 1 : 12}
+        >
+          <BallkidCard
+            ballkid={ballkid}
+            renderAdditional={
+              <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
+                {ballkid.id === getLocalStorage("ballkid_id") ? (
+                  ""
+                ) : (
+                  <RatingButton
+                    ballkid={ballkid}
+                    setUpdated={setUpdated}
+                    isMobile={isMobile}
+                  />
+                )}
 
-              {!isChairperson ? (
-                ""
-              ) : (
-                <Typography
-                  variant="subtitle2"
-                  sx={{ mt: gridLayout ? 0.5 : 0 }}
-                >
-                  Total ratings: {ballkid.num_ratings}
-                </Typography>
-              )}
-            </Box>
-          }
-        />
-      </Grid>
-    ))
+                {!isChairperson ? (
+                  ""
+                ) : (
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ mt: gridLayout ? 0.5 : 0 }}
+                  >
+                    Total ratings: {ballkid.num_ratings}
+                  </Typography>
+                )}
+              </Box>
+            }
+          />
+        </Grid>
+      ))}{" "}
+    </Grid>
   );
 }
 
@@ -176,22 +178,20 @@ export default function RateByNamePage(props) {
         )}
       </Grid>
 
-      <Grid container spacing={gridLayout ? 2 : 1}>
-        <SearchAndFilter
-          setSearchKeyword={setSearchKeyword}
-          filterGroup={filterGroup}
-          setFilterGroup={setFilterGroup}
-        />
-        <BallkidsSection
-          ballkids={filterBallkids(
-            getBallkidsToRender(ballkids, showUnrated, showTeam, myTeam),
-            searchKeyword,
-            filterGroup
-          )}
-          gridLayout={gridLayout}
-          setUpdated={setUpdated}
-        />
-      </Grid>
+      <SearchAndFilter
+        setSearchKeyword={setSearchKeyword}
+        filterGroup={filterGroup}
+        setFilterGroup={setFilterGroup}
+      />
+      <BallkidsSection
+        ballkids={filterBallkids(
+          getBallkidsToRender(ballkids, showUnrated, showTeam, myTeam),
+          searchKeyword,
+          filterGroup
+        )}
+        gridLayout={gridLayout}
+        setUpdated={setUpdated}
+      />
     </div>
   );
 }
