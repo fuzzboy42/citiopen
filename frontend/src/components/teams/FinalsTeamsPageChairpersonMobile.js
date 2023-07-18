@@ -16,8 +16,16 @@ export default function FinalsTeamsPageChairpersonMobile(props) {
     fetch("/api/sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
-        setAssigned(data.filter((ballkid) => ballkid.finals_team));
-        setUnassigned(data.filter((ballkid) => !ballkid.finals_team));
+        setAssigned(
+          data.filter(
+            (ballkid) => ballkid.finals_team && !ballkid.is_chairperson
+          )
+        );
+        setUnassigned(
+          data.filter(
+            (ballkid) => !ballkid.finals_team && !ballkid.is_chairperson
+          )
+        );
       })
       .then(() => setUpdated(false));
   }, [updated]);
