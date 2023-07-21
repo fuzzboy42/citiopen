@@ -358,7 +358,7 @@ export default function Navbar(props) {
                   <SportsTennis />
                 </Icon>
                 <Typography variant="h6" sx={{ mx: 2 }}>
-                  Citi Open Ballkids
+                  Mubadala Citi Open Ballcrew
                 </Typography>
               </Box>
 

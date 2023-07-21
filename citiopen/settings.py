@@ -155,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 DOMAIN = "localhost:3000"
-SITE_NAME = "Citi Open Ballkids"
+SITE_NAME = "Mubadala Citi Open Ballcrew"
 DJOSER = {
     "USER_ID_FIELD": "username",
     "LOGIN_FIELD": "email",
