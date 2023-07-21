@@ -7,16 +7,66 @@ import Button from "@mui/material/Button";
 import { Alerts, HideShowToggle, getAuthHeader } from "../Utils";
 import { TextField } from "@mui/material";
 
+function SetBanner({ banner, setSuccessMsg, setErrorMsg }) {
+  const [bannerDisabled, setBannerDisabled] = useState(true);
+  const [newBanner, setNewBanner] = useState(banner);
+
+  const refreshStr = "Refresh to view updated banner state.";
+
+  return (
+    <div className="sxs" style={{ width: "75%" }}>
+      <TextField
+        variant="standard"
+        defaultValue={banner}
+        style={{ width: "100%" }}
+        disabled={bannerDisabled}
+        sx={{ mx: 2 }}
+        multiline
+        onDoubleClick={() => setBannerDisabled(false)}
+        onChange={(e) => setNewBanner(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() =>
+          fetch("/api/get-tournament", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              banner: newBanner ?? "",
+            }),
+          }).then((response) => {
+            if (response.ok) {
+              setBannerDisabled(true);
+
+              if (newBanner === "") {
+                setSuccessMsg(
+                  `Banner removed for all ballkids and captains! ${refreshStr}`
+                );
+              } else {
+                setSuccessMsg(
+                  `Banner updated for all ballkids and captains! ${refreshStr}`
+                );
+              }
+            } else {
+              setErrorMsg(`Error updating banner. ${refreshStr}`);
+            }
+          })
+        }
+      >
+        Submit
+      </Button>
+    </div>
+  );
+}
+
 export default function TournamentSettings(props) {
   const [showTeams, setShowTeams] = useState(false);
   const [showFinalsTeams, setShowFinalsTeams] = useState(false);
   const [banner, setBanner] = useState();
-  const [bannerDisabled, setBannerDisabled] = useState(true);
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
-  const refreshStr = "Refresh to view updated banner state.";
 
   useEffect(() => {
     fetch("/api/get-tournament", {
@@ -45,44 +95,15 @@ export default function TournamentSettings(props) {
       </Typography>
 
       <Grid container spacing={2} sx={{ pr: 2 }}>
-        <Grid item xs={12} className="justify">
+        <Grid item xs={12} className="justify-top">
           <Typography variant="subtitle1">Set site-wide banner</Typography>
           {banner === undefined || banner === null ? (
             ""
           ) : (
-            <TextField
-              variant="standard"
-              defaultValue={banner}
-              style={{ width: "75%" }}
-              disabled={bannerDisabled}
-              onDoubleClick={() => setBannerDisabled(false)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  fetch("/api/get-tournament", {
-                    method: "PATCH",
-                    headers: getAuthHeader(),
-                    body: JSON.stringify({
-                      banner: e.target.value ?? "",
-                    }),
-                  }).then((response) => {
-                    if (response.ok) {
-                      setBannerDisabled(true);
-
-                      if (e.target.value === "") {
-                        setSuccessMsg(
-                          `Banner removed for all ballkids and captains! ${refreshStr}`
-                        );
-                      } else {
-                        setSuccessMsg(
-                          `Banner updated for all ballkids and captains! ${refreshStr}`
-                        );
-                      }
-                    } else {
-                      setErrorMsg(`Error updating banner. ${refreshStr}`);
-                    }
-                  });
-                }
-              }}
+            <SetBanner
+              banner={banner}
+              setSuccessMsg={setSuccessMsg}
+              setErrorMsg={setErrorMsg}
             />
           )}
         </Grid>
