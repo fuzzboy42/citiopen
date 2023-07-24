@@ -478,7 +478,8 @@ class UpdateBallkid(APIView):
                     continue
 
                 # Update the ballkid's field per the patch request
-                ballkid.set_field(field, serializer.data[field])
+                if serializer.data[field] is not None:
+                    ballkid.set_field(field, serializer.data[field])
 
                 # If updating whether or not the ballkid is a captain, also update
                 # account permissions for that ballkid
