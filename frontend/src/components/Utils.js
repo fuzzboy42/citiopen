@@ -350,6 +350,7 @@ export function ConfirmDialog({
   open,
   setOpen,
   setUpdated,
+  method = "PATCH",
 }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -375,7 +376,7 @@ export function ConfirmDialog({
           color="error"
           onClick={() =>
             fetch(url, {
-              method: "PATCH",
+              method: method,
               headers: getAuthHeader(),
               body: body,
             }).then((response) => {
@@ -385,7 +386,7 @@ export function ConfirmDialog({
                   setOpen(false);
                   setSuccessMsg("");
                   setUpdated(true);
-                }, 2000);
+                }, 1000);
               } else {
                 setErrorMsg("Error.");
               }

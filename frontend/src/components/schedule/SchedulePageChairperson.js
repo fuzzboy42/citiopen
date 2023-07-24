@@ -5,18 +5,14 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
 
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { ScheduleTable } from "./ScheduleTable";
-import { getAuthHeader, getToday, Alerts, HelpIcon } from "../Utils";
+import { getAuthHeader, getToday, ConfirmDialog, HelpIcon } from "../Utils";
 
 function CreateSchedule({ date, setUpdated }) {
   const [numCourts, setNumCourts] = useState(5);
@@ -120,60 +116,6 @@ function CreateSchedule({ date, setUpdated }) {
   );
 }
 
-function ConfirmDeleteScheduleDialog({ date, open, setOpen, setUpdated }) {
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Confirm Delete Schedule</DialogTitle>
-      <DialogContent>
-        <Alerts
-          successMsg={successMsg}
-          errorMsg={errorMsg}
-          setSuccessMsg={setSuccessMsg}
-          setErrorMsg={setErrorMsg}
-        />
-
-        <DialogContentText>
-          You are about to delete the schedule for {date}. This action cannot be
-          undone. Do you wish to proceed?
-        </DialogContentText>
-      </DialogContent>
-
-      <DialogActions>
-        <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() =>
-            fetch(`/api/delete-schedule?date=${date}`, {
-              method: "DELETE",
-              headers: getAuthHeader(),
-              body: JSON.stringify({
-                date: date,
-              }),
-            }).then((response) => {
-              if (response.ok) {
-                setSuccessMsg("Schedule deleted!");
-                setTimeout(() => {
-                  setOpen(false);
-                  setSuccessMsg("");
-                  setUpdated(true);
-                }, 2000);
-              } else {
-                setErrorMsg("Error deleting schedule.");
-              }
-            })
-          }
-        >
-          Confirm
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
 export default function SchedulePageChairperson(props) {
   const [shifts, setShifts] = useState([]);
   const [updated, setUpdated] = useState(false);
@@ -205,11 +147,17 @@ export default function SchedulePageChairperson(props) {
 
   return (
     <div className="page">
-      <ConfirmDeleteScheduleDialog
-        date={date}
+      <ConfirmDialog
+        message={`You are about to delete the schedule for ${date}. This action cannot be
+        undone.`}
+        url={`/api/delete-schedule?date=${date}`}
+        body={JSON.stringify({
+          date: date,
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}
+        method="DELETE"
       />
 
       <div className="sxs" sx={{ mb: 2 }}>
