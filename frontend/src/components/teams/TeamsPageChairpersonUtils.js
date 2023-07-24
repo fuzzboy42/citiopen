@@ -21,7 +21,7 @@ import {
   isCurrentHour,
   CourtAssignment,
   useIsMobile,
-  CheckoutConfirmDialog,
+  ConfirmDialog,
 } from "../Utils";
 import { ON_COURT_GREEN, MARGINS } from "../Consts";
 
@@ -180,11 +180,14 @@ function Team({ team, assigned, nextShifts, setUpdated, isNewTeam = false }) {
       xl={3}
       ref={dropRef}
     >
-      <CheckoutConfirmDialog
+      <ConfirmDialog
         message={`You are about to check out all ${assigned.length} ballkid${
           assigned.length > 1 ? "s" : ""
         } on Team ${team}.`}
-        group={team}
+        url={"/api/checkout-all"}
+        body={JSON.stringify({
+          checkout_group: team,
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}

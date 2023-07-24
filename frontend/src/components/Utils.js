@@ -343,9 +343,10 @@ export function CourtAssignment({ nextShifts }) {
   );
 }
 
-export function CheckoutConfirmDialog({
+export function ConfirmDialog({
   message,
-  group,
+  url,
+  body,
   open,
   setOpen,
   setUpdated,
@@ -355,7 +356,7 @@ export function CheckoutConfirmDialog({
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Confirm Checkout</DialogTitle>
+      <DialogTitle>Confirm</DialogTitle>
       <DialogContent>
         <Alerts
           successMsg={successMsg}
@@ -373,22 +374,20 @@ export function CheckoutConfirmDialog({
           variant="contained"
           color="error"
           onClick={() =>
-            fetch("/api/checkout-all", {
+            fetch(url, {
               method: "PATCH",
               headers: getAuthHeader(),
-              body: JSON.stringify({
-                checkout_group: group,
-              }),
+              body: body,
             }).then((response) => {
               if (response.ok) {
-                setSuccessMsg("Ballkids checked out!");
+                setSuccessMsg("Success!");
                 setTimeout(() => {
                   setOpen(false);
                   setSuccessMsg("");
                   setUpdated(true);
                 }, 2000);
               } else {
-                setErrorMsg("Error checking out ballkids.");
+                setErrorMsg("Error.");
               }
             })
           }

@@ -10,7 +10,7 @@ import {
   getAuthHeader,
   SearchAndFilter,
   filterBallkids,
-  CheckoutConfirmDialog,
+  ConfirmDialog,
   DraggableBallkidAndIcon,
 } from "../Utils";
 import { MARGINS } from "../Consts";
@@ -60,11 +60,14 @@ export function UnassignedDesktop({
       elevation={isOver ? 10 : 1}
       sx={{ pl: { xs: 0, sm: 3 }, ml: { xs: 0, sm: 3 }, pb: 2 }}
     >
-      <CheckoutConfirmDialog
+      <ConfirmDialog
         message={`You are about to check out all ${
           unassigned.length
         } unassigned ballkid${unassigned.length > 1 ? "s" : ""}.`}
-        group="unassigned"
+        url={"/api/checkout-all"}
+        body={JSON.stringify({
+          checkout_group: "unassigned",
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}

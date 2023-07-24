@@ -14,11 +14,6 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContentText from "@mui/material/DialogContentText";
 
 import Clear from "@mui/icons-material/Clear";
 import Dangerous from "@mui/icons-material/Dangerous";
@@ -27,7 +22,7 @@ import {
   filterBallkids,
   getAuthHeader,
   SearchAndFilter,
-  Alerts,
+  ConfirmDialog,
   DraggableBallkidAndIcon,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS } from "../Consts";
@@ -45,10 +40,14 @@ function CutStatusSection({ section, active, setUpdated }) {
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
       <ConfirmDialog
-        section={section}
         message={`You are about to cut all ${active.length} ballkid${
           active.length > 1 ? "s" : ""
         }. This will be publicly visible to all ballkids and captains.`}
+        url={"/api/cut-all"}
+        body={JSON.stringify({
+          cut_status: section,
+          should_cut: true,
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}
@@ -264,58 +263,6 @@ function ActiveSection({ active, sections, setUpdated }) {
         </TableContainer>
       )}
     </div>
-  );
-}
-
-function ConfirmDialog({ section, message, open, setOpen, setUpdated }) {
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Confirm Cuts</DialogTitle>
-      <DialogContent>
-        <Alerts
-          successMsg={successMsg}
-          errorMsg={errorMsg}
-          setSuccessMsg={setSuccessMsg}
-          setErrorMsg={setErrorMsg}
-        />
-
-        <DialogContentText>{message} Do you wish to proceed?</DialogContentText>
-      </DialogContent>
-
-      <DialogActions>
-        <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() =>
-            fetch("/api/cut-all", {
-              method: "PATCH",
-              headers: getAuthHeader(),
-              body: JSON.stringify({
-                cut_status: section,
-                should_cut: true,
-              }),
-            }).then((response) => {
-              if (response.ok) {
-                setSuccessMsg("Ballkids cut!");
-                setTimeout(() => {
-                  setOpen(false);
-                  setSuccessMsg("");
-                  setUpdated(true);
-                }, 2000);
-              } else {
-                setErrorMsg("Error cutting ballkids.");
-              }
-            })
-          }
-        >
-          Confirm
-        </Button>
-      </DialogActions>
-    </Dialog>
   );
 }
 

@@ -14,7 +14,7 @@ import {
   getAuthHeader,
   SearchAndFilter,
   filterBallkids,
-  CheckoutConfirmDialog,
+  ConfirmDialog,
   BallkidAndIcon,
 } from "../Utils";
 import { MARGINS } from "../Consts";
@@ -72,11 +72,14 @@ export function UnassignedMobile({
 
   return (
     <div>
-      <CheckoutConfirmDialog
+      <ConfirmDialog
         message={`You are about to check out all ${
           unassigned.length
         } unassigned ballkid${unassigned.length > 1 ? "s" : ""}.`}
-        group="unassigned"
+        url={"/api/checkout-all"}
+        body={JSON.stringify({
+          checkout_group: "unassigned",
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}

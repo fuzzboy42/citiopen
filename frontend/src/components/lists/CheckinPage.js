@@ -11,7 +11,7 @@ import {
   getLocalStorage,
   SearchAndFilter,
   filterBallkids,
-  CheckoutConfirmDialog,
+  ConfirmDialog,
   BallkidCard,
 } from "../Utils";
 import { MARGINS } from "../Consts";
@@ -120,11 +120,14 @@ export default function CheckinPage(props) {
 
   return (
     <div className="page">
-      <CheckoutConfirmDialog
+      <ConfirmDialog
         message={`You are about to check out all ${
           checkedIn.length
         } checked in ballkid${checkedIn.length > 1 ? "s" : ""}.`}
-        group="all"
+        url={"/api/checkout-all"}
+        body={JSON.stringify({
+          checkout_group: "all",
+        })}
         open={open}
         setOpen={setOpen}
         setUpdated={setUpdated}
