@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from datetime import datetime, timedelta
-from api.models.schedule import COURT
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+from phonenumber_field.modelfields import PhoneNumberField
 from api.utils import *
 from api.consts import *
 import logging
@@ -50,6 +50,9 @@ class Ballkid(models.Model):
     last_name = models.CharField(max_length=80)
     age = models.IntegerField(default=0)
     image = models.CharField(max_length=100, default=DEFAULT_IMAGE_FILE, blank=True)
+    phone = PhoneNumberField(null=True, blank=True)
+    emergency_name = models.CharField(max_length=160, blank=True, null=True)
+    emergency_phone = PhoneNumberField(null=True, blank=True)
     num_years_experience = models.IntegerField(default=0)
     is_out_of_town = models.BooleanField(default=False)
     is_captain = models.BooleanField(default=False)

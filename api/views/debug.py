@@ -248,6 +248,11 @@ class BulkCreateSignups(APIView):
             is_captain = line["Are you a captain?"].strip() == "Yes"
             is_chairperson = line["is_chairperson"].strip() == "TRUE"
             is_out_of_town_rookie = line["is_out_of_town_rookie"].strip() == "TRUE"
+            phone = line["Phone Number (XXX-XXX-XXXX)"].strip()
+            emergency_name = line["Emergency Contact Name"].strip()
+            emergency_phone = line[
+                "Emergency Contact Phone Number (XXX-XXX-XXXX)"
+            ].strip()
             dob = datetime.strptime(
                 line[
                     "Date of Birth *You Must Be 14 years Old By Tournament Start (July 29th) To Apply*"
@@ -296,6 +301,9 @@ class BulkCreateSignups(APIView):
                         line["What position are you?"].strip() or "Back"
                     ],
                     image=image if os.path.isfile(image) else DEFAULT_IMAGE_FILE,
+                    phone=phone,
+                    emergency_name=emergency_name,
+                    emergency_phone=emergency_phone,
                 )
             )
 

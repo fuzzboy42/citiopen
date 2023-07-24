@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "djoser",
     "import_export",
+    "phonenumber_field",
     # Django apps
     "django.contrib.admin",
     "django.contrib.auth",

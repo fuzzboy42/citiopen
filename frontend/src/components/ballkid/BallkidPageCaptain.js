@@ -77,6 +77,7 @@ export default function BallkidPageCaptain(props) {
           <Typography variant="body1">
             Years experience: {ballkid.num_years_experience}
           </Typography>
+          <Typography variant="body1">Phone number: {ballkid.phone}</Typography>
           <Typography variant="body1">
             Preferred position: {ballkid.preferred_position}
           </Typography>
