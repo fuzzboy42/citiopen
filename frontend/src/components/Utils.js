@@ -93,26 +93,26 @@ export function LayoutButtons({ gridLayout, setGridLayout }) {
   );
 }
 
-export function Alerts(props) {
+export function Alerts({ successMsg, errorMsg, setSuccessMsg, setErrorMsg }) {
   return (
-    <Collapse in={props.errorMsg !== "" || props.successMsg !== ""}>
-      {props.successMsg !== "" ? (
+    <Collapse in={errorMsg || successMsg}>
+      {successMsg !== "" ? (
         <Alert
           severity="success"
           onClose={() => {
-            props.setSuccessMsg("");
+            setSuccessMsg("");
           }}
         >
-          {props.successMsg}
+          {successMsg}
         </Alert>
       ) : (
         <Alert
           severity="error"
           onClose={() => {
-            props.setErrorMsg("");
+            setErrorMsg("");
           }}
         >
-          {props.errorMsg}
+          {errorMsg}
         </Alert>
       )}
     </Collapse>

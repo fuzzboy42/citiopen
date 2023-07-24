@@ -46,6 +46,7 @@ import {
   useIsMobile,
   getTimeFloat,
   getTimeStr,
+  Alerts,
   toPercent,
 } from "../Utils";
 import {
@@ -682,35 +683,56 @@ function ActiveOverflowMenu(props) {
   );
 }
 
-function Comments(props) {
+function Comments({
+  ballkid,
+  successMsg,
+  errorMsg,
+  setSuccessMsg,
+  setErrorMsg,
+}) {
   const [disabled, setDisabled] = useState(true);
+  const [comments, setComments] = useState(ballkid.comments);
 
   return (
     <div>
       <Typography variant="h6"> Comments: </Typography>
 
-      <TextField
-        variant="standard"
-        defaultValue={props.ballkid.comments}
-        style={{ width: "100%" }}
-        disabled={disabled}
-        onDoubleClick={() => setDisabled(false)}
-        onKeyDown={(e) => {
-          if ((e.key === "Enter") | (e.key === "Escape")) {
+      <div className="sxs">
+        <TextField
+          variant="standard"
+          value={comments}
+          style={{ width: "100%" }}
+          disabled={disabled}
+          onDoubleClick={() => setDisabled(false)}
+          onChange={(e) => setComments(e.target.value)}
+        />
+
+        <Button
+          size="small"
+          variant="outlined"
+          sx={{ ml: 1 }}
+          onClick={() =>
             fetch("/api/update-ballkid", {
               method: "PATCH",
               headers: getAuthHeader(),
               body: JSON.stringify({
-                first_name: props.ballkid.first_name,
-                last_name: props.ballkid.last_name,
-                comments: e.target.value ? e.target.value : "",
+                first_name: ballkid.first_name,
+                last_name: ballkid.last_name,
+                comments: comments,
               }),
+            }).then((response) => {
+              if (response.ok) {
+                setSuccessMsg("Comments saved!");
+                setDisabled(true);
+              } else {
+                setErrorMsg("Error saving comments.");
+              }
             })
-              .then((response) => response.json())
-              .then(() => setDisabled(true));
           }
-        }}
-      />
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 }
@@ -865,6 +887,9 @@ export default function BallkidPageChairperson(props) {
   const [finals, setFinals] = useState([]);
   const [cuts, setCuts] = useState([]);
 
+  const [successMsg, setSuccessMsg] = useState();
+  const [errorMsg, setErrorMsg] = useState();
+
   const isMobile = useIsMobile();
   var { pk } = useParams();
   pk = parseInt(pk ?? getLocalStorage("ballkid_id"));
@@ -892,6 +917,13 @@ export default function BallkidPageChairperson(props) {
     ""
   ) : (
     <div className="page">
+      <Alerts
+        successMsg={successMsg}
+        errorMsg={errorMsg}
+        setSuccessMsg={setSuccessMsg}
+        setErrorMsg={setErrorMsg}
+      />
+
       {renderHeader(ballkid, setUpdated, isMobile)}
 
       <Grid container>
@@ -939,7 +971,13 @@ export default function BallkidPageChairperson(props) {
           {!ballkid.is_active ? (
             ""
           ) : (
-            <Comments ballkid={ballkid} setUpdated={setUpdated} />
+            <Comments
+              ballkid={ballkid}
+              successMsg={successMsg}
+              errorMsg={errorMsg}
+              setSuccessMsg={setSuccessMsg}
+              setErrorMsg={setErrorMsg}
+            />
           )}
         </Grid>
       </Grid>
