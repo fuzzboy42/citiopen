@@ -122,6 +122,7 @@ export default function SchedulePageChairperson(props) {
   const [date, setDate] = useState(getToday());
 
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const helpMessage = (
     <DialogContentText>
@@ -167,8 +168,8 @@ export default function SchedulePageChairperson(props) {
         <HelpIcon page="Schedule" message={helpMessage} />
       </div>
 
-      <Box className="justify">
-        <Box className="sxs" sx={{ mb: 2 }}>
+      <Box className="justify" sx={{ mb: 2 }}>
+        <Box className="sxs">
           <Typography variant="body1">
             Showing schedule for: &thinsp;
           </Typography>
@@ -186,17 +187,26 @@ export default function SchedulePageChairperson(props) {
             />
           </LocalizationProvider>
         </Box>
-
         {shifts.length === 0 ? (
           ""
         ) : (
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setOpen(true)}
-          >
-            Delete Schedule
-          </Button>
+          <div className="sxs" style={{ float: "right" }}>
+            <Button
+              variant="outlined"
+              sx={{ m: 1 }}
+              onClick={() => setEditing(!editing)}
+            >
+              {editing ? "Save Schedule" : "Edit Schedule"}
+            </Button>
+
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpen(true)}
+            >
+              Delete Schedule
+            </Button>
+          </div>
         )}
       </Box>
 
@@ -207,6 +217,7 @@ export default function SchedulePageChairperson(props) {
           shifts={shifts}
           date={date}
           readOnly={false}
+          editing={editing}
           setUpdated={setUpdated}
         />
       )}

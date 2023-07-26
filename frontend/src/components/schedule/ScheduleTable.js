@@ -9,8 +9,9 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 
-import Add from "@mui/icons-material/Add";
+import AddCircle from "@mui/icons-material/AddCircle";
 import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
 import Delete from "@mui/icons-material/Delete";
@@ -18,11 +19,13 @@ import Delete from "@mui/icons-material/Delete";
 import { getAuthHeader, isCurrentHour, dayHourToStr } from "../Utils";
 import { Tooltip } from "@mui/material";
 
-function ActionIcons({ hour, setUpdated }) {
+function ActionIcons({ hour, editing, setUpdated }) {
   return (
     <div>
       <Tooltip title="Shift Schedule Up">
         <IconButton
+          color={editing ? "" : "primary"}
+          disabled={editing ? true : false}
           sx={{ m: 0, p: 0 }}
           onClick={() => {
             fetch("/api/shift-schedule", {
@@ -37,12 +40,14 @@ function ActionIcons({ hour, setUpdated }) {
               .then(() => setUpdated(true));
           }}
         >
-          <KeyboardDoubleArrowUp color="primary" />
+          <KeyboardDoubleArrowUp />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Shift Schedule Down">
         <IconButton
+          color={editing ? "" : "primary"}
+          disabled={editing ? true : false}
           sx={{ m: 0, p: 0 }}
           onClick={() => {
             fetch("/api/shift-schedule", {
@@ -57,7 +62,7 @@ function ActionIcons({ hour, setUpdated }) {
               .then(() => setUpdated(true));
           }}
         >
-          <KeyboardDoubleArrowDown color="primary" />
+          <KeyboardDoubleArrowDown />
         </IconButton>
       </Tooltip>
 
@@ -145,9 +150,56 @@ function CourtTextField({ court, date, setUpdated }) {
   );
 }
 
-export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
-  console.log(shifts);
+function AddCourtButton({ date, setUpdated }) {
+  return (
+    <Tooltip title="Add Court">
+      <IconButton
+        sx={{ mt: 1 }}
+        color="primary"
+        onClick={() => {
+          fetch("/api/add-court", {
+            method: "POST",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              date: date,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => setUpdated(true));
+        }}
+      >
+        <AddCircle />
+      </IconButton>
+    </Tooltip>
+  );
+}
 
+function AddHourButton({ date, courts, setUpdated }) {
+  return (
+    <Tooltip title="Add Hour">
+      <IconButton
+        sx={{ mt: 1 }}
+        color="primary"
+        onClick={(e) => {
+          fetch("/api/add-hour", {
+            method: "POST",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              date: date,
+              num_courts: courts.length,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => setUpdated(true));
+        }}
+      >
+        <AddCircle />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+export function ScheduleTable({ shifts, date, readOnly, editing, setUpdated }) {
   const hourCourtToTeam = Object.assign(
     {},
     ...shifts.map((shift) => ({
@@ -175,7 +227,7 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
                   </TableCell>
                   {courts.map((court) => (
                     <TableCell key={court} align="center" width="50px">
-                      {readOnly ? (
+                      {readOnly || !editing ? (
                         court
                       ) : (
                         <CourtTextField
@@ -198,7 +250,11 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
                     }}
                   >
                     <TableCell align="center">
-                      <ActionIcons hour={hour} setUpdated={setUpdated} />
+                      <ActionIcons
+                        hour={hour}
+                        editing={editing}
+                        setUpdated={setUpdated}
+                      />
                     </TableCell>
 
                     <TableCell align="center">{dayHourToStr(hour)}</TableCell>
@@ -210,8 +266,7 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
 
                       return (
                         <TableCell key={court} align="center">
-                          {teamStr}
-                          {/* {readOnly ? (
+                          {readOnly || !editing ? (
                             teamStr
                           ) : (
                             <TeamTextField
@@ -220,7 +275,7 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
                               court={court}
                               setUpdated={setUpdated}
                             />
-                          )} */}
+                          )}
                         </TableCell>
                       );
                     })}
@@ -235,24 +290,7 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
           {readOnly ? (
             ""
           ) : (
-            <Tooltip title="Add Court">
-              <IconButton
-                sx={{ mt: 1 }}
-                onClick={() => {
-                  fetch("/api/add-court", {
-                    method: "POST",
-                    headers: getAuthHeader(),
-                    body: JSON.stringify({
-                      date: date,
-                    }),
-                  })
-                    .then((response) => response.json())
-                    .then((data) => setUpdated(true));
-                }}
-              >
-                <Add />
-              </IconButton>
-            </Tooltip>
+            <AddCourtButton date={date} setUpdated={setUpdated} />
           )}
         </Grid>
       </Grid>
@@ -260,25 +298,7 @@ export function ScheduleTable({ shifts, date, readOnly, setUpdated }) {
       {readOnly ? (
         ""
       ) : (
-        <Tooltip title="Add Hour">
-          <IconButton
-            sx={{ mt: 1 }}
-            onClick={(e) => {
-              fetch("/api/add-hour", {
-                method: "POST",
-                headers: getAuthHeader(),
-                body: JSON.stringify({
-                  date: date,
-                  num_courts: courts.length,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => setUpdated(true));
-            }}
-          >
-            <Add />
-          </IconButton>
-        </Tooltip>
+        <AddHourButton date={date} courts={courts} setUpdated={setUpdated} />
       )}
     </div>
   );
