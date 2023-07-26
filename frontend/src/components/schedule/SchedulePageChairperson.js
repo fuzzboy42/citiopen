@@ -132,10 +132,17 @@ export default function SchedulePageChairperson(props) {
       default schedule based on the inputted parameters.
       <br /> <br />
       If there are shifts found for the selected date, you can view and edit the
-      teams assigned to which courts at which hour. To edit a team assignment,
-      simply change the team number in the text field of the corresponding cell.
-      Any team assignment changes auto-save. You can also add hours to the
-      schedule
+      schedule. When editing the schedule, you can update which team is assigned
+      to which court at what hour, add and delete hours, add and delete courts,
+      and change court names. To change a court name, enter edit mode, enter the
+      desired court name, and hit ENTER to save. To delete a court, enter edit
+      mode, delete the court name, and hit ENTER to save.
+      <br /> <br />
+      The schedule can be shifted up or down by 1 hour increments. You need to
+      be in view mode (not edit mode) to be able to shift the schedule.
+      <br /> <br />
+      The schedule can also be deleted for the day. This enables you to recreate
+      a default schedule with inputted parameters.
     </DialogContentText>
   );
 
