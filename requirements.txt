@@ -15,6 +15,8 @@ dj-email-url==1.0.6
 Django==4.1.5
 django-cache-url==3.4.4
 django-import-export==3.2.0
+django-phonenumber-field==7.1.0
+django-phonenumbers==1.0.1
 django-templated-mail==1.1.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==4.8.0
@@ -38,6 +40,7 @@ odfpy==1.4.1
 openpyxl==3.1.2
 packaging==23.0
 pathspec==0.10.3
+phonenumbers==8.13.17
 Pillow==9.5.0
 platformdirs==2.6.2
 psycopg2==2.9.5
