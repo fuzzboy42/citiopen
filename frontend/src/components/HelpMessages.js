@@ -349,12 +349,23 @@ export const checkinLeaderboard = (
   <DialogContentText>
     This page allows you to view the check-in leaderboard.
     <br /> <br />
-    The average total check-in time, average number of days, and average
-    check-in time per day is listed at the top. This is averaged across all
-    ballkids, captains, and chairpeople.
+    The average total check-in duration, average number of days, and average
+    check-in duration per day, average check-in time, and average check-out time
+    are listed at the top. Total Duration and # of Days are averaged across all
+    active ballkids, captains, and chairpeople, regardless of whether or not
+    they have any check-in history. Average Duration per Day, Average Check-in
+    Time, and Average Check-out Time are only averaged across ballkids,
+    captains, and chairpeople who have non-zero check-in history.
+    <br /> <br />
+    Note that even if the ballkid is still checked in, Average Duration per Day
+    and Average Check-out Time will populate as if the ballkid is checked out at
+    the current time. As such, with few days of data, Average Duration per Day
+    and Average Check-out Time are only reliable at the end of the day after all
+    ballkids are checked out. With more days of data, this inaccuracy should be
+    minor.
     <br /> <br />
     In the table, ballkids are by default listed in descending order of their
-    total check-in time. The table can be sorted or filtered by any of the
+    total check-in duration. The table can be sorted or filtered by any of the
     columns. The far left column is a simple rank.
   </DialogContentText>
 );
@@ -380,7 +391,8 @@ export const courtLeaderboard = (
     Note that court time only includes time when a ballkid is assigned to a
     team, a team is assigned to a court, and that shift has already occurred (or
     is currently ongoing). It does not include any future court time for shifts
-    that have not yet happened.
+    that have not yet happened. Time is represented in [<em>hrs </em>]:[
+    <em>mins </em>]
   </DialogContentText>
 );
 

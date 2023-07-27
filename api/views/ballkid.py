@@ -741,9 +741,16 @@ class GetAverageCheckinLeaderboard(APIView):
     def get(self, request):
         recalc_checkin_analytics()
 
-        averages = Ballkid.objects.filter(is_active=True).aggregate(
-            checkin_avg=Avg("checkinanalytics__duration"),
-            days_avg=Avg("checkinanalytics__count"),
+        averages = (
+            Ballkid.objects.filter(is_active=True)
+            .annotate(
+                checkin_time=Avg("checkinhistory__start__time"),
+            )
+            .aggregate(
+                checkin_avg=Avg("checkinanalytics__duration"),
+                days_avg=Avg("checkinanalytics__count"),
+                avg_checkin_time=Avg("checkin_time"),
+            )
         )
 
         return Response(averages, status=status.HTTP_200_OK)

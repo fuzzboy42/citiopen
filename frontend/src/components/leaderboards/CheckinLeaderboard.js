@@ -13,24 +13,31 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import {
   getAuthHeader,
-  getTimeStr,
+  getDurationStr,
   getTimeFloat,
   BallkidAndIcon,
   HelpIcon,
+  getTimeStr,
 } from "../Utils";
 import { Box } from "@mui/material";
 import { checkinLeaderboard } from "../HelpMessages";
 
 function renderAverages(averages) {
+  const totalDurationFloat = parseFloat(averages["checkin_avg"]) / 3600;
+  const totalDaysFloat = parseFloat(averages["days_avg"]);
+  const avgCheckinFloat = parseFloat(averages["avg_checkin_time"]) / 3600;
+
   return (
     <TableContainer sx={{ mt: 1, mb: 3 }}>
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell align="center"></TableCell>
-            <TableCell align="center">Total Time</TableCell>
+            <TableCell align="center">Total Duration</TableCell>
             <TableCell align="center"># of Days</TableCell>
-            <TableCell align="center">Average Time Per Day</TableCell>
+            <TableCell align="center">Average Duration per Day</TableCell>
+            <TableCell align="center">Average Check-in Time</TableCell>
+            <TableCell align="center">Average Check-out Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -39,15 +46,19 @@ function renderAverages(averages) {
               Average
             </TableCell>
             <TableCell align="center">
-              {getTimeStr(parseFloat(averages["checkin_avg"]) / 3600)}
+              {getDurationStr(totalDurationFloat)}
             </TableCell>
             <TableCell align="center">
-              {Number(averages["days_avg"]).toFixed(1)}
+              {Number(totalDaysFloat).toFixed(1)}
             </TableCell>
+            <TableCell align="center">
+              {getDurationStr(totalDurationFloat / totalDaysFloat)}
+            </TableCell>
+            <TableCell align="center">{getTimeStr(avgCheckinFloat)}</TableCell>
+
             <TableCell align="center">
               {getTimeStr(
-                parseFloat(averages["checkin_avg"] / averages["days_avg"]) /
-                  3600
+                avgCheckinFloat + totalDurationFloat / totalDaysFloat
               )}
             </TableCell>
           </TableRow>
@@ -55,35 +66,6 @@ function renderAverages(averages) {
       </Table>
     </TableContainer>
   );
-}
-
-function formatTimeStr(str) {
-  if (str === null || str === undefined || str === "") {
-    return "";
-  }
-
-  const index = str.indexOf(":");
-
-  const hour = str.slice(0, index);
-  const minute = str.slice(index + 1, index + 3);
-  console.log(str, index, hour, minute);
-
-  if (hour > 12) {
-    return `${hour - 12}:${minute} PM`;
-  }
-  return `${hour}:${minute} AM`;
-}
-
-function sumTime(str, timeFloat) {
-  if (str === null || str === undefined) {
-    return "";
-  }
-
-  const summed = getTimeFloat(str) + timeFloat;
-  const hour = Math.floor(summed) % 24;
-  const min = String(Math.round((summed % 1) * 60)).padStart(2, "0");
-
-  return `${hour}:${min}`;
 }
 
 export default function CheckinLeaderboard(props) {
@@ -117,11 +99,11 @@ export default function CheckinLeaderboard(props) {
       renderCell: (rowData) => <BallkidAndIcon ballkid={rowData.row.ballkid} />,
     },
     {
-      field: "time",
-      headerName: "Total Time",
+      field: "duration",
+      headerName: "Total Duration",
       width: 200,
-      valueGetter: (rowData) => getTimeFloat(rowData.row.time),
-      valueFormatter: (obj) => getTimeStr(obj.value),
+      valueGetter: (rowData) => getTimeFloat(rowData.row.duration),
+      valueFormatter: (obj) => getDurationStr(obj.value),
     },
     {
       field: "days",
@@ -130,30 +112,28 @@ export default function CheckinLeaderboard(props) {
       valueGetter: (rowData) => rowData.row.days,
     },
     {
-      field: "timePerDay",
-      headerName: "Average Time Per Day",
+      field: "durationPerDay",
+      headerName: "Average Duration per Day",
       width: 200,
       valueGetter: (rowData) =>
-        getTimeFloat(rowData.row.time) / rowData.row.days,
-      valueFormatter: (obj) => getTimeStr(obj.value),
+        getTimeFloat(rowData.row.duration) / rowData.row.days,
+      valueFormatter: (obj) => getDurationStr(obj.value),
     },
     {
       field: "avgCheckinTime",
       headerName: "Average Check-in Time",
       width: 200,
       valueGetter: (rowData) => rowData.row.avgCheckinTime,
-      valueFormatter: (obj) => formatTimeStr(obj.value),
+      valueFormatter: (obj) => getTimeStr(obj.value),
     },
     {
       field: "avgCheckoutTime",
       headerName: "Average Check-out Time",
       width: 200,
       valueGetter: (rowData) =>
-        sumTime(
-          rowData.row.avgCheckinTime,
-          getTimeFloat(rowData.row.time) / rowData.row.days
-        ),
-      valueFormatter: (obj) => formatTimeStr(obj.value),
+        getTimeFloat(rowData.row.avgCheckinTime) +
+        getTimeFloat(rowData.row.time) / rowData.row.days,
+      valueFormatter: (obj) => getTimeStr(obj.value),
     },
   ];
 
@@ -161,7 +141,7 @@ export default function CheckinLeaderboard(props) {
     id: ballkid.id,
     ballkid: ballkid,
     days: ballkid.checkin_days,
-    time: ballkid.checkin_duration,
+    duration: ballkid.checkin_duration,
     avgCheckinTime: ballkid.avg_checkin_time,
   }));
 
@@ -187,6 +167,15 @@ export default function CheckinLeaderboard(props) {
               density="compact"
             />
           </div>
+
+          <Typography sx={{ mt: 2 }} variant="body1">
+            Note: Even if the ballkid is still checked in, Average Duration per
+            Day and Average Check-out Time will populate as if the ballkid is
+            checked out at the current time. As such, with few days of data,
+            Average Duration per Day and Average Check-out Time are only
+            reliable at the end of the day after all ballkids are checked out.
+            With more days of data, this inaccuracy should be minor.
+          </Typography>
         </div>
       )}
     </div>

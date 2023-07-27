@@ -598,6 +598,35 @@ export function getDurationStr(timeFloat, verbose = true) {
   return verbose ? hours + " hrs " + mins + " mins" : hours + ":" + mins;
 }
 
+// Takes as input a string or float which represents the time. Outputs as
+// {hour}:{minute} AM/PM. If a string, assumes a format of {hour}:{minute}:{seconds}...
+// If a float, assumes that the time is given in hours.
+export function getTimeStr(input) {
+  if (
+    input === null ||
+    input === undefined ||
+    input === "" ||
+    Number.isNaN(input)
+  ) {
+    return "";
+  }
+
+  var military_hour, minute;
+
+  if (typeof input === "string" || input instanceof String) {
+    const index = input.indexOf(":");
+    military_hour = Number.parseInt(input.slice(0, index));
+    minute = input.slice(index + 1, index + 3);
+  } else {
+    military_hour = Math.floor(input) % 24;
+    minute = String(Math.round((input % 1) * 60)).padStart(2, "0");
+  }
+
+  const suffix = military_hour >= 12 ? " PM" : " AM";
+  const hour = ((military_hour + 11) % 12) + 1;
+  return `${hour}:${minute} ${suffix}`;
+}
+
 // Renders a float as a percent with 1 decimal point
 export function toPercent(val) {
   const percent = Number((val * 100).toFixed(1));

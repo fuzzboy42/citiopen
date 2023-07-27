@@ -280,9 +280,6 @@ export default function CourtLeaderboard(props) {
             Note: % [<em>Court Name </em>] = (Total time on [
             <em>Court Name </em>]) / (Total time on any court)
           </Typography>
-          <Typography variant="body1">
-            Note: Time is represented in [<em>hrs </em>]:[<em>mins </em>]
-          </Typography>
           {/* <Typography variant="body1">
         Note: Raw court time takes into account rain delays and courts ending
         early. Adjusted court time additionally takes into account number of
