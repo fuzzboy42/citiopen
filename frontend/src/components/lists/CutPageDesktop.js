@@ -19,6 +19,7 @@ import {
   getAuthHeader,
   SearchAndFilter,
   ConfirmDialog,
+  getLocalStorage,
   DraggableBallkidAndIcon,
   HelpIcon,
 } from "../Utils";
@@ -185,9 +186,12 @@ function renderBallkidsInSection(active, section, position, setUpdated) {
 }
 
 function ActiveSection({ active, setUpdated }) {
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
-
+  const [searchKeyword, setSearchKeyword] = useState(
+    getLocalStorage("searchKeyword") ?? ""
+  );
+  const [filterGroup, setFilterGroup] = useState(
+    getLocalStorage("filterGroup")
+  );
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
     drop: (ballkid) =>

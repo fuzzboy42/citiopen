@@ -165,7 +165,11 @@ export function SearchBox({ setSearchKeyword }) {
       fullWidth
       sx={{ py: 1 }}
       placeholder="Search by name..."
-      onChange={(e) => setSearchKeyword(e.target.value)}
+      defaultValue={getLocalStorage("searchKeyword")}
+      onChange={(e) => {
+        setSearchKeyword(e.target.value);
+        setLocalStorage("searchKeyword", e.target.value);
+      }}
     />
   );
 }
@@ -195,8 +199,9 @@ export function SearchAndFilter({
               }}
               onClick={() => {
                 filterGroup === filterName
-                  ? setFilterGroup(null)
-                  : setFilterGroup(filterName);
+                  ? setLocalStorage("filterGroup", null)
+                  : setLocalStorage("filterGroup", filterName);
+                setFilterGroup(getLocalStorage("filterGroup"));
               }}
             >
               {ICON_DICT[filterName]}

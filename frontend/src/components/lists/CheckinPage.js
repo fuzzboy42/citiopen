@@ -99,10 +99,14 @@ function renderCheckoutAllButton(setOpen) {
 export default function CheckinPage(props) {
   const [checkedIn, setCheckedIn] = useState([]);
   const [checkedOut, setCheckedOut] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
   const [open, setOpen] = useState(false);
 
+  const [searchKeyword, setSearchKeyword] = useState(
+    getLocalStorage("searchKeyword") ?? ""
+  );
+  const [filterGroup, setFilterGroup] = useState(
+    getLocalStorage("filterGroup")
+  );
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );

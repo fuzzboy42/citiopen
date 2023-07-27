@@ -110,9 +110,13 @@ function renderBallkids(ballkids, section, gridLayout, setUpdated) {
 export default function InactiveBallkidList(props) {
   const [archived, setArchived] = useState([]);
   const [cut, setCut] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
 
+  const [searchKeyword, setSearchKeyword] = useState(
+    getLocalStorage("searchKeyword") ?? ""
+  );
+  const [filterGroup, setFilterGroup] = useState(
+    getLocalStorage("filterGroup")
+  );
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );

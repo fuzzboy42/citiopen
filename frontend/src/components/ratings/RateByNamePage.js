@@ -109,6 +109,7 @@ function BallkidsSection({ ballkids, gridLayout, setUpdated }) {
 export default function RateByNamePage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [myTeam, setMyTeam] = useState();
+  const [updated, setUpdated] = useState(false);
 
   const isChairperson = getLocalStorage("group") === "chairperson";
 
@@ -118,11 +119,12 @@ export default function RateByNamePage(props) {
   const [showTeam, setShowTeam] = useState(
     getLocalStorage("showTeam") ?? (isChairperson ? false : true)
   );
-  const [updated, setUpdated] = useState(false);
-
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
-
+  const [searchKeyword, setSearchKeyword] = useState(
+    getLocalStorage("searchKeyword") ?? ""
+  );
+  const [filterGroup, setFilterGroup] = useState(
+    getLocalStorage("filterGroup")
+  );
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );

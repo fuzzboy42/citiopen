@@ -17,12 +17,17 @@ import { list, listNonchairperson } from "../HelpMessages";
 
 export default function BallkidList(props) {
   const [ballkids, setBallkids] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterGroup, setFilterGroup] = useState();
 
+  const [searchKeyword, setSearchKeyword] = useState(
+    getLocalStorage("searchKeyword") ?? ""
+  );
+  const [filterGroup, setFilterGroup] = useState(
+    getLocalStorage("filterGroup")
+  );
   const [gridLayout, setGridLayout] = useState(
     getLocalStorage("gridLayout") ?? true
   );
+
   const group = getLocalStorage("group");
   const filters = ["captain", "chairperson", "back", "net"];
 
