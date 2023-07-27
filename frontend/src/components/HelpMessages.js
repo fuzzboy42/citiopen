@@ -204,7 +204,10 @@ export const schedule = (
     the Debug Page to keep analytics fully accurate.
     <br /> <br />
     The schedule can be shifted up or down by 1 hour increments. You need to be
-    in view mode (not edit mode) to be able to shift the schedule.
+    in view mode (not edit mode) to be able to shift the schedule. You can also
+    end a court, which will clear team assignments on that court for all future
+    shifts and update the current shift's end time. Ending a court can also only
+    be in view mode.
     <br /> <br />
     The schedule can also be deleted for the day. This enables you to recreate a
     default schedule with inputted parameters.

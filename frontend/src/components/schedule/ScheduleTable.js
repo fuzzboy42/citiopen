@@ -14,6 +14,7 @@ import AddCircle from "@mui/icons-material/AddCircle";
 import RemoveCircle from "@mui/icons-material/RemoveCircle";
 import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
+import EventBusy from "@mui/icons-material/EventBusy";
 
 import { getAuthHeader, isCurrentHour, dayHourToStr } from "../Utils";
 import { Tooltip } from "@mui/material";
@@ -25,7 +26,7 @@ function ShiftScheduleButtons({ hour, setUpdated }) {
         <IconButton
           color="primary"
           sx={{ m: 0, p: 0 }}
-          onClick={() => {
+          onClick={() =>
             fetch("/api/shift-schedule", {
               method: "PATCH",
               headers: getAuthHeader(),
@@ -35,8 +36,8 @@ function ShiftScheduleButtons({ hour, setUpdated }) {
               }),
             })
               .then((response) => response.json())
-              .then(() => setUpdated(true));
-          }}
+              .then(() => setUpdated(true))
+          }
         >
           <KeyboardDoubleArrowUp />
         </IconButton>
@@ -233,14 +234,35 @@ export function ScheduleTable({ shifts, date, readOnly, editing, setUpdated }) {
                   </TableCell>
                   {courts.map((court) => (
                     <TableCell key={court} align="center" width="50px">
-                      {readOnly || !editing ? (
+                      {readOnly ? (
                         court
-                      ) : (
+                      ) : editing ? (
                         <CourtTextField
                           court={court}
                           date={date}
                           setUpdated={setUpdated}
                         />
+                      ) : (
+                        <div className="sxs">
+                          {court}
+                          <Tooltip title="End Court">
+                            <IconButton
+                              onClick={() =>
+                                fetch("/api/end-court", {
+                                  method: "PATCH",
+                                  headers: getAuthHeader(),
+                                  body: JSON.stringify({
+                                    court: court,
+                                  }),
+                                })
+                                  .then((response) => response.json())
+                                  .then(() => setUpdated(true))
+                              }
+                            >
+                              <EventBusy fontSize="small" color="warning" />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
                       )}
                     </TableCell>
                   ))}

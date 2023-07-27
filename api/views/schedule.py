@@ -223,6 +223,38 @@ class UpdateCourtName(APIView):
         )
 
 
+class EndCourt(APIView):
+    permission_classes = [IsChairperson]
+
+    def patch(self, request, format=None):
+        court = request.data["court"]
+        now = datetime.now()
+
+        remaining_shifts = Schedule.objects.filter(
+            court=court, start__gte=now, start__lt=now + timedelta(hours=12)
+        )
+
+        for shift in remaining_shifts:
+            logger.info(f"{datetime.now()} [EndCourt] clearing team from shift {shift}")
+            shift.team = 0
+            shift.save()
+
+        current_shifts = Schedule.objects.filter(
+            court=court, start__gt=now - timedelta(hours=1), start__lt=now
+        )
+        for shift in current_shifts:
+            logger.info(
+                f"{datetime.now()} [EndCourt] setting end to {now} for shift {shift}"
+            )
+            shift.end = now
+            shift.save()
+
+        return Response(
+            {"Success": f"Ended court {court} at {now}"},
+            status=status.HTTP_200_OK,
+        )
+
+
 class GetNextShifts(APIView):
     permission_classes = [IsAuthenticated]
 
