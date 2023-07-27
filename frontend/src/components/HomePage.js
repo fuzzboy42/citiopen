@@ -41,14 +41,11 @@ import RateByCurrentTeamsPage from "./ratings/RateByCurrentTeamsPage";
 import { useToken, getLocalStorage, useIsMobile } from "./Utils";
 import GamePage from "./settings/GamePage";
 import AccountSettings from "./settings/AccountSettings";
-import AboutPageChairperson from "./settings/AboutPageChairperson";
-import AboutPage from "./settings/AboutPage";
 
 function chairpersonRoutes(isMobile, setToken) {
   return (
     <Routes>
       <Route exact path="/" element={<BallkidList />} />
-      <Route path="/about" element={<AboutPageChairperson />} />
       <Route path="/ballkid/:pk" element={<BallkidPageChairperson />} />
       <Route path="/checkin" element={<CheckinPage />} />
       <Route
@@ -102,7 +99,6 @@ function captainRoutes(setToken) {
   return (
     <Routes>
       <Route exact path="/" element={<BallkidList />} />
-      <Route path="/about" element={<AboutPage />} />
       <Route path="/ballkid/:pk" element={<BallkidPageCaptain />} />
       <Route path="/finals-teams" element={<FinalsTeamsPage />} />
       <Route path="/login" element={<LoginPage setToken={setToken} />} />
@@ -124,7 +120,6 @@ function ballkidRoutes(setToken) {
   return (
     <Routes>
       <Route exact path="/" element={<BallkidList />} />
-      <Route path="/about" element={<AboutPage />} />
       <Route path="/ballkid/:pk" element={<BallkidPage />} />
       <Route path="/finals-teams" element={<FinalsTeamsPage />} />
       <Route path="/login" element={<LoginPage setToken={setToken} />} />

@@ -118,7 +118,6 @@ const nonchairpersonAccountTab = {
     { label: "My Profile", url: "/me" },
     // { label: "Game", url: "/game" },
     { label: "Account Settings", url: "/settings" },
-    // { label: "About", url: "/about" },
     { label: "Logout", url: "/login" },
   ],
 };
@@ -132,7 +131,6 @@ const chairpersonAccountTab = {
     // { label: "Game", url: "/game" },
     { label: "Account Settings", url: "/settings" },
     { label: "Tournament Settings", url: "/tournament-settings" },
-    // { label: "About", url: "/about" },
     { label: "Debug", url: "/debug" },
     { label: "Logout", url: "/login" },
   ],
