@@ -729,6 +729,7 @@ class GetCheckinLeaderboard(generics.ListAPIView):
             .annotate(
                 checkin_duration=F("checkinanalytics__duration"),
                 checkin_days=F("checkinanalytics__count"),
+                avg_checkin_time=Avg("checkinhistory__start__time"),
             )
             .order_by("-checkin_duration")
         )

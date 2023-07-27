@@ -8,6 +8,7 @@ class BallkidSerializer(serializers.ModelSerializer):
     # Checkin leaderboard fields
     checkin_duration = serializers.DurationField(required=False)
     checkin_days = serializers.IntegerField(required=False)
+    avg_checkin_time = serializers.CharField(required=False)
     # Rating leaderboard fields
     num_ratings = serializers.IntegerField(required=False)
     raw_avg = serializers.FloatField(required=False)

@@ -57,6 +57,35 @@ function renderAverages(averages) {
   );
 }
 
+function formatTimeStr(str) {
+  if (str === null || str === undefined || str === "") {
+    return "";
+  }
+
+  const index = str.indexOf(":");
+
+  const hour = str.slice(0, index);
+  const minute = str.slice(index + 1, index + 3);
+  console.log(str, index, hour, minute);
+
+  if (hour > 12) {
+    return `${hour - 12}:${minute} PM`;
+  }
+  return `${hour}:${minute} AM`;
+}
+
+function sumTime(str, timeFloat) {
+  if (str === null || str === undefined) {
+    return "";
+  }
+
+  const summed = getTimeFloat(str) + timeFloat;
+  const hour = Math.floor(summed) % 24;
+  const min = String(Math.round((summed % 1) * 60)).padStart(2, "0");
+
+  return `${hour}:${min}`;
+}
+
 export default function CheckinLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
   const [averages, setAverages] = useState();
@@ -108,6 +137,24 @@ export default function CheckinLeaderboard(props) {
         getTimeFloat(rowData.row.time) / rowData.row.days,
       valueFormatter: (obj) => getTimeStr(obj.value),
     },
+    {
+      field: "avgCheckinTime",
+      headerName: "Average Check-in Time",
+      width: 200,
+      valueGetter: (rowData) => rowData.row.avgCheckinTime,
+      valueFormatter: (obj) => formatTimeStr(obj.value),
+    },
+    {
+      field: "avgCheckoutTime",
+      headerName: "Average Check-out Time",
+      width: 200,
+      valueGetter: (rowData) =>
+        sumTime(
+          rowData.row.avgCheckinTime,
+          getTimeFloat(rowData.row.time) / rowData.row.days
+        ),
+      valueFormatter: (obj) => formatTimeStr(obj.value),
+    },
   ];
 
   const rows = ballkids.map((ballkid) => ({
@@ -115,6 +162,7 @@ export default function CheckinLeaderboard(props) {
     ballkid: ballkid,
     days: ballkid.checkin_days,
     time: ballkid.checkin_duration,
+    avgCheckinTime: ballkid.avg_checkin_time,
   }));
 
   return (
