@@ -45,7 +45,7 @@ import {
   getLocalStorage,
   useIsMobile,
   getTimeFloat,
-  getTimeStr,
+  getDurationStr,
   Alerts,
   toPercent,
 } from "../Utils";
@@ -810,13 +810,13 @@ export function AggregateMetrics({ pk }) {
                 </TableCell>
 
                 <TableCell align="center">
-                  {getTimeStr(getTimeFloat(metrics.checkin_duration))}
+                  {getDurationStr(getTimeFloat(metrics.checkin_duration))}
                 </TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
                   <TableCell align="center">
-                    {getTimeStr(parseFloat(averages.checkin_avg) / 3600)}
+                    {getDurationStr(parseFloat(averages.checkin_avg) / 3600)}
                   </TableCell>
                 )}
               </TableRow>
@@ -840,7 +840,7 @@ export function AggregateMetrics({ pk }) {
                 </TableCell>
 
                 <TableCell align="center">
-                  {getTimeStr(
+                  {getDurationStr(
                     getTimeFloat(metrics.checkin_duration) /
                       metrics.checkin_days
                   )}
@@ -849,7 +849,7 @@ export function AggregateMetrics({ pk }) {
                   ""
                 ) : (
                   <TableCell align="center">
-                    {getTimeStr(
+                    {getDurationStr(
                       parseFloat(averages.checkin_avg) /
                         3600 /
                         averages.days_avg
@@ -862,13 +862,13 @@ export function AggregateMetrics({ pk }) {
                   Total Time on Court
                 </TableCell>
                 <TableCell align="center">
-                  {getTimeStr(getTimeFloat(metrics.court_duration))}
+                  {getDurationStr(getTimeFloat(metrics.court_duration))}
                 </TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
                   <TableCell align="center">
-                    {getTimeStr(parseFloat(averages.court_avg) / 3600)}
+                    {getDurationStr(parseFloat(averages.court_avg) / 3600)}
                   </TableCell>
                 )}
               </TableRow>

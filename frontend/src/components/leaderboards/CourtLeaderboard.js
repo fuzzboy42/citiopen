@@ -15,7 +15,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import {
   getAuthHeader,
-  getTimeStr,
+  getDurationStr,
   getTimeFloat,
   BallkidAndIcon,
   toPercent,
@@ -75,7 +75,7 @@ function renderAverages(averages, showPercent) {
                   ? `${Number(
                       (courtTimes[court]["percent"] * 100).toFixed(1)
                     )}%`
-                  : getTimeStr(
+                  : getDurationStr(
                       parseFloat(courtTimes[court]["raw"]) / 3600,
                       false
                     )}
@@ -137,7 +137,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
     {
       field: "stadium",
@@ -153,7 +153,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
     {
       field: "harris",
@@ -169,7 +169,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
     {
       field: "grandstand",
@@ -185,7 +185,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
     {
       field: "four",
@@ -200,7 +200,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
     {
       field: "five",
@@ -215,7 +215,7 @@ export default function CourtLeaderboard(props) {
           ? obj.value
             ? toPercent(obj.value)
             : "0%"
-          : getTimeStr(obj.value, false),
+          : getDurationStr(obj.value, false),
     },
   ];
 

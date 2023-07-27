@@ -6,7 +6,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import {
   getAuthHeader,
-  getTimeStr,
+  getDurationStr,
   getLocalStorage,
   BallkidAndIcon,
 } from "../Utils";
@@ -37,7 +37,7 @@ export default function MatchLeaderboard(props) {
       field: "time",
       headerName: "Total Time",
       width: 300,
-      renderCell: (rowData) => getTimeStr(rowData.row.time),
+      renderCell: (rowData) => getDurationStr(rowData.row.time),
     },
     {
       field: "days",

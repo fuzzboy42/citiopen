@@ -585,7 +585,7 @@ export function getTimeFloat(timeStr) {
 
 // Takes as input a float which represents the total duration in # hours
 // as a float. Outputs as {hours} hrs {minutes} mins
-export function getTimeStr(timeFloat, verbose = true) {
+export function getDurationStr(timeFloat, verbose = true) {
   if (timeFloat === null || isNaN(timeFloat)) {
     timeFloat = 0;
   }
