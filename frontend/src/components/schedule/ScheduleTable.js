@@ -9,6 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 
 import AddCircle from "@mui/icons-material/AddCircle";
 import RemoveCircle from "@mui/icons-material/RemoveCircle";
@@ -232,40 +233,42 @@ export function ScheduleTable({ shifts, date, readOnly, editing, setUpdated }) {
                   <TableCell align="center" width="20px">
                     Time
                   </TableCell>
-                  {courts.map((court) => (
-                    <TableCell key={court} align="center" width="50px">
-                      {readOnly ? (
-                        court
-                      ) : editing ? (
+                  {courts.map((court) =>
+                    readOnly ? (
+                      <TableCell key={court} align="center" width="50px">
+                        {court}
+                      </TableCell>
+                    ) : editing ? (
+                      <TableCell key={court} align="center" width="50px">
                         <CourtTextField
                           court={court}
                           date={date}
                           setUpdated={setUpdated}
                         />
-                      ) : (
-                        <div className="sxs">
-                          {court}
-                          <Tooltip title="End Court">
-                            <IconButton
-                              onClick={() =>
-                                fetch("/api/end-court", {
-                                  method: "PATCH",
-                                  headers: getAuthHeader(),
-                                  body: JSON.stringify({
-                                    court: court,
-                                  }),
-                                })
-                                  .then((response) => response.json())
-                                  .then(() => setUpdated(true))
-                              }
-                            >
-                              <EventBusy fontSize="small" color="warning" />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      )}
-                    </TableCell>
-                  ))}
+                      </TableCell>
+                    ) : (
+                      <TableCell key={court} align="center" width="50px">
+                        {court}
+                        <Tooltip title="End Court">
+                          <IconButton
+                            onClick={() =>
+                              fetch("/api/end-court", {
+                                method: "PATCH",
+                                headers: getAuthHeader(),
+                                body: JSON.stringify({
+                                  court: court,
+                                }),
+                              })
+                                .then((response) => response.json())
+                                .then(() => setUpdated(true))
+                            }
+                          >
+                            <EventBusy fontSize="small" color="warning" />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
 
