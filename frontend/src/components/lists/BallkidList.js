@@ -25,7 +25,7 @@ export default function BallkidList(props) {
     getLocalStorage("filterGroup")
   );
   const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? true
+    getLocalStorage("gridLayout") ?? false
   );
 
   const group = getLocalStorage("group");
