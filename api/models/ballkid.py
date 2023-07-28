@@ -491,7 +491,7 @@ class FinalsHistory(models.Model):
         )
 
     def __str__(self):
-        return f"{self.ballkid.get_name()} worked {self.match_type} for finals in {self.year}"
+        return f"{self.ballkid.get_name()} worked {self.match_type} {self.count} times in years {self.years}"
 
 
 class CutHistory(models.Model):
