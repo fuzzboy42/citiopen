@@ -402,6 +402,47 @@ class BulkCreateRatings(APIView):
         )
 
 
+class BulkCreateFinals(APIView):
+    permission_classes = [IsChairperson]
+
+    def post(self, request):
+        match_type_dict = {"MS": MATCH_TYPE.MS, "MD": MATCH_TYPE.MD, "WS": MATCH_TYPE.WS}
+
+        finals = []
+
+        file = request.FILES["file"]
+        reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
+
+        for line in reader:
+            first_name = line["First Name"]
+            last_name = line["Last Name"]
+            try:
+                ballkid = Ballkid.objects.get(first_name=first_name, last_name=last_name)
+            except Exception:
+                continue
+
+            for match_type in match_type_dict.keys():
+                count = line[match_type]
+                years = line[f"{match_type}_Years"]
+
+                final = FinalsHistory(
+                    ballkid=ballkid,
+                    match_type=match_type_dict[match_type],
+                    count=count if count != "" else 0,
+                    years=[int(year.strip()) for year in years.split(",")]
+                    if years != ""
+                    else [],
+                )
+                finals.append(final)
+
+        FinalsHistory.objects.bulk_create(finals)
+
+        return Response(
+            {"Success": f"Bulk created {len(finals)} finals"},
+            status=status.HTTP_200_OK,
+        )
+
+
 class DownloadData(APIView):
     permission_classes = [IsChairperson]
 

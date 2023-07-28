@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 from datetime import datetime, timedelta
 from phonenumber_field.modelfields import PhoneNumberField
 from api.utils import *
@@ -479,13 +480,14 @@ class Ballkid(models.Model):
 
 class FinalsHistory(models.Model):
     ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE)
-    year = models.IntegerField()
     match_type = models.CharField(max_length=20, choices=MATCH_TYPE.choices)
+    count = models.IntegerField()
+    years = ArrayField(models.IntegerField(), blank=True, null=True)
 
     class Meta:
         unique_together = (
             "ballkid",
-            "year",
+            "match_type",
         )
 
     def __str__(self):
