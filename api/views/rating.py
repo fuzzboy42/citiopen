@@ -166,7 +166,7 @@ def calibrate(ratings, rating_name="overall", year=get_current_year()):
     return cp, excluded, None
 
 
-def save_calibration_parameters(cp, calibrated=None, year=get_current_year()):
+def save_calibration_parameters(cp, calibrated=None):
     """
     Save calibration params as a CalibrationParams object.
 
@@ -180,34 +180,38 @@ def save_calibration_parameters(cp, calibrated=None, year=get_current_year()):
     )
 
     # Update all non-calibration related parameters
-    year_ratings = Rating.objects.filter(date__year=year)
+    ratings = Rating.objects.all()
+    year_ratings = Rating.objects.filter(date__year=get_current_year())
 
-    raters = year_ratings.values_list("rater", flat=True).distinct()
-    ratees = year_ratings.values_list("ratee", flat=True).distinct()
-    keys = raters.union(ratees)
+    # raters = ratings.values_list("rater", flat=True).distinct()
+    # ratees = ratings.values_list("ratee", flat=True).distinct()
+    # keys = raters.union(ratees)
+    # logger.info(
+    #     f"{datetime.now()} [save_calibration_parameters] union of raters {raters} and ratees {ratees}: {keys}"
+    # )
 
-    logger.info(
-        f"{datetime.now()} [save_calibration_parameters] union of raters {raters} and ratees {ratees}: {keys}"
-    )
+    ballkids = Ballkid.objects.filter(is_active=True)
 
-    for ballkid_id in keys:
-        try:
-            ballkid = Ballkid.objects.get(id=ballkid_id)
-            name = ballkid.get_name()
-        except ObjectDoesNotExist:
-            logger.warning(
-                f"{datetime.now()} [save_calibration_params] Could not find ballkid {name}"
-            )
-            continue
+    # for ballkid_id in keys:
+    #     try:
+    #         ballkid = Ballkid.objects.get(id=ballkid_id)
+    #         name = ballkid.get_name()
+    #     except ObjectDoesNotExist:
+    #         logger.warning(
+    #             f"{datetime.now()} [save_calibration_params] Could not find ballkid {name}"
+    #         )
+    #         continue
+
+    for ballkid in ballkids:
+        name = ballkid.get_name()
 
         ratee_ratings = year_ratings.filter(ratee=ballkid)
-        rater_ratings = year_ratings.filter(rater=ballkid)
+        rater_ratings = ratings.filter(rater=ballkid)
+        rater_year_ratings = year_ratings.filter(rater=ballkid)
 
-        num_ratee_ratings = ratee_ratings.filter(date__year=year).count()
-        num_rater_ratings = rater_ratings.filter(date__year=year).count()
-        num_raters = (
-            ratee_ratings.filter(date__year=year).values_list("rater").distinct().count()
-        )
+        num_ratee_ratings = ratee_ratings.count()
+        num_rater_ratings = rater_year_ratings.count()
+        num_raters = ratee_ratings.values_list("rater").distinct().count()
         ratee_raw_avg = ratee_ratings.aggregate(val=Avg("rating"))["val"]
         ratee_raw_stdev = ratee_ratings.aggregate(val=StdDev("rating"))["val"]
         rater_raw_avg = rater_ratings.aggregate(val=Avg("rating"))["val"]
@@ -406,7 +410,7 @@ class CalibratedRatings(APIView):
         )
 
         # Save calibration parameters for overall ratings only
-        save_calibration_parameters(cp_dict["overall"], calibrated, year)
+        save_calibration_parameters(cp_dict["overall"], calibrated)
 
         # Calibrate each rating to put together a list of calibrated ratings
         # to return
@@ -512,9 +516,12 @@ class GetAverageCalibrationParams(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request):
-        avgs = CalibrationParams.objects.aggregate(
-            Avg("rater_offset"), Avg("rater_scale")
-        )
+        avgs = CalibrationParams.objects.filter(
+            ballkid__is_active=True,
+            rater_scale__lt=100,
+            rater_offset__lt=100,
+            rater_offset__gt=-100,
+        ).aggregate(Avg("rater_offset"), Avg("rater_scale"))
         logger.info(f"{datetime.now()} [GetAverageCalibrationParams] avg {avgs}")
         return Response(avgs)
 
