@@ -52,7 +52,7 @@ export default function RateByPastTeamPage(props) {
     getLocalStorage("showUnrated") ?? false
   );
   const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? true
+    getLocalStorage("gridLayout") ?? false
   );
   const pk = getLocalStorage("ballkid_id");
 

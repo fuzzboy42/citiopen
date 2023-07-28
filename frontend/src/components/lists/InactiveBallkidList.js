@@ -118,7 +118,7 @@ export default function InactiveBallkidList(props) {
     getLocalStorage("filterGroup")
   );
   const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? true
+    getLocalStorage("gridLayout") ?? false
   );
   const [updated, setUpdated] = useState(false);
 

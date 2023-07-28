@@ -126,7 +126,7 @@ export default function RateByNamePage(props) {
     getLocalStorage("filterGroup")
   );
   const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? true
+    getLocalStorage("gridLayout") ?? false
   );
   const pk = getLocalStorage("ballkid_id");
 
