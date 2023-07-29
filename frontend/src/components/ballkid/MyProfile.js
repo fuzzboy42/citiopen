@@ -17,7 +17,6 @@ import {
 } from "./BallkidPageChairperson";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
 import { CaptainHistoryChart } from "./CaptainHistoryChart";
-import { CourtHistoryChart } from "./CourtHistoryChart";
 import { MARGINS } from "../Consts";
 
 function RatingSection({ ballkid }) {

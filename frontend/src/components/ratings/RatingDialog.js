@@ -9,6 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import Rating from "@mui/material/Rating";
 import Link from "@mui/material/Link";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -62,6 +63,8 @@ export default function RatingDialog({ open, setOpen, ballkid, setUpdated }) {
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const handleClose = (e) => {
     setOpen(false);
@@ -204,8 +207,10 @@ export default function RatingDialog({ open, setOpen, ballkid, setUpdated }) {
 
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button
+        <LoadingButton
+          loading={loading}
           onClick={(e) => {
+            setLoading(true);
             fetch("/api/create-rating", {
               method: "POST",
               headers: getAuthHeader(),
@@ -239,11 +244,12 @@ export default function RatingDialog({ open, setOpen, ballkid, setUpdated }) {
               } else {
                 setErrorMsg("Error submitting rating.");
               }
+              setLoading(false);
             });
           }}
         >
           Submit
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
