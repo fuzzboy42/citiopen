@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { Button, Grid, Typography, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import LoadingButton from "@mui/lab/LoadingButton";
+
 import { Alerts } from "../Utils";
 
-function handleSubmit(email, navigate, setErrorMsg) {
+function handleSubmit(email, navigate, setErrorMsg, setLoading) {
   fetch("/accounts/users/reset_password/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -16,6 +21,7 @@ function handleSubmit(email, navigate, setErrorMsg) {
         "Email not found to be associated with an account! Please enter another email."
       );
     }
+    setLoading(false);
   });
 }
 
@@ -24,6 +30,8 @@ export default function ForgotPasswordPage(props) {
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -66,19 +74,34 @@ export default function ForgotPasswordPage(props) {
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleSubmit(email, navigate, setErrorMsg);
+                  setLoading(true);
+                  handleSubmit(
+                    email.toLowerCase(),
+                    navigate,
+                    setErrorMsg,
+                    setLoading
+                  );
                 }
               }}
             />
           </Grid>
           <Grid item xs={12}>
-            <Button
+            <LoadingButton
+              loading={loading}
               color="primary"
               variant="contained"
-              onClick={(e) => handleSubmit(email, navigate, setErrorMsg)}
+              onClick={(e) => {
+                setLoading(true);
+                handleSubmit(
+                  email.toLowerCase(),
+                  navigate,
+                  setErrorMsg,
+                  setLoading
+                );
+              }}
             >
               Submit
-            </Button>
+            </LoadingButton>
           </Grid>
         </Grid>
       </div>
