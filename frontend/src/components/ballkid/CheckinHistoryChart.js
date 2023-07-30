@@ -86,8 +86,8 @@ export function CheckinHistoryChart({ pk }) {
       y: {
         stacked: true,
         reverse: true,
-        min: 8,
-        max: 28,
+        min: 6,
+        max: 26,
         ticks: {
           callback: function (label) {
             return (
