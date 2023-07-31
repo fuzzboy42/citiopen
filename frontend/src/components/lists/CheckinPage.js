@@ -18,6 +18,7 @@ import {
   ConfirmDialog,
   BallkidCard,
   HelpIcon,
+  useIsMobile,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import { checkin } from "../HelpMessages";
@@ -73,7 +74,11 @@ function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
     ballkidComments !== "" && ballkidComments !== null
   );
 
-  return ballkid.is_checked_in ? (
+  const isMobile = useIsMobile();
+
+  return isMobile ? (
+    ""
+  ) : ballkid.is_checked_in ? (
     !isCheckoutComments ? (
       ""
     ) : (
