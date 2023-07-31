@@ -149,7 +149,7 @@ function renderTeamCardHeader(
           ""
         ) : (
           <Button size="small" onClick={(e) => setClearOpen(true)}>
-            Clear
+            End Team
           </Button>
         )}
       </div>
@@ -211,7 +211,7 @@ function Team({ team, assigned, nextShifts, setUpdated, isNewTeam = false }) {
       <ConfirmDialog
         message={`You are about to check out all ${assigned.length} ballkid${
           assigned.length > 1 ? "s" : ""
-        } on Team ${team}.`}
+        } on Team ${team} and delete all future shifts for Team ${team} from the schedule.`}
         url={"/api/checkout-all"}
         body={{
           checkout_group: team,
@@ -222,9 +222,11 @@ function Team({ team, assigned, nextShifts, setUpdated, isNewTeam = false }) {
       />
 
       <ConfirmDialog
-        message={`You are about to clear Team ${team} and unassign all ${
+        message={`You are about to clear Team ${team}, unassign all ${
           assigned.length
-        } ballkid${assigned.length > 1 ? "s" : ""}.`}
+        } ballkid${
+          assigned.length > 1 ? "s" : ""
+        }, and delete all future shifts for Team ${team} from the schedule.`}
         url={"/api/clear-team"}
         body={{
           current_team: team,

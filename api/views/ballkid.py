@@ -325,6 +325,27 @@ def annotate_durations(ballkids):
     )
 
 
+def unassign_future_shifts(team, now=datetime.now()):
+    # Delete all future shifts for this team
+    remaining_shifts = Schedule.objects.filter(
+        start__gte=now, start__lt=now + timedelta(hours=12), team=team
+    )
+    for shift in remaining_shifts:
+        logger.info(f"[unassign_future_shifts] Unassigning team from shift {shift}")
+        shift.team = 0
+        shift.save()
+
+    # Update end of current shift
+    current_shift = Schedule.objects.filter(
+        start__lte=now, start__gt=now - timedelta(hours=1)
+    ).first()
+    current_shift.end = now
+    current_shift.save()
+    logger.info(
+        f"[unassign_future_shifts] Current shift {current_shift} end updated to {now}"
+    )
+
+
 class BallkidsList(generics.ListAPIView):
     serializer_class = BallkidSerializer
     permission_classes = [IsAuthenticated]
@@ -508,10 +529,12 @@ class CheckoutAll(APIView):
 
         else:
             try:
-                queryset = Ballkid.objects.filter(current_team=int(group))
+                team = int(group)
+                queryset = Ballkid.objects.filter(current_team=team)
                 logger.info(
                     f"[CheckoutAll] checking out team {group} ballkids: {queryset}"
                 )
+                unassign_future_shifts(team)
 
             except Exception:
                 logger.warn(f"[CheckoutAll] Unrecognized checkout group {group}")
@@ -600,12 +623,10 @@ class ClearTeam(APIView):
                 ballkid.validate()
                 ballkid.save()
 
-            return Response(f"Team {team} cleared", status=status.HTTP_200_OK)
+        if team_type == "current_team":
+            unassign_future_shifts(team)
 
-        return Response(
-            f"Team {team} does not exist, already clear",
-            status=status.HTTP_200_OK,
-        )
+        return Response(f"Team {team} cleared", status=status.HTTP_200_OK)
 
 
 class GetFinalsHistory(generics.ListAPIView):
