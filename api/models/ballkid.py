@@ -79,8 +79,8 @@ class Ballkid(models.Model):
     finals_position = models.CharField(
         max_length=10, choices=POSITION.choices, default=POSITION.B
     )
-    # checkout_comments = models.CharField(max_length=50, null=True, blank=True)
-    # schedule_comments = models.CharField(max_length=100, null=True, blank=True)
+    checkout_comments = models.TextField(null=True, blank=True)
+    schedule_comments = models.TextField(null=True, blank=True)
     comments = models.TextField(default="", blank=True)
 
     # TODO: consider adding this in the future but need to
@@ -403,6 +403,10 @@ class Ballkid(models.Model):
             self.is_captain = value
         elif field == "comments":
             self.comments = value
+        elif field == "checkout_comments":
+            self.checkout_comments = value
+        elif field == "schedule_comments":
+            self.schedule_comments = value
         else:
             raise Exception(f"Unrecognized field {field}")
 

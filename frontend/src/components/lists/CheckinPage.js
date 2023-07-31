@@ -5,6 +5,8 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
+import Done from "@mui/icons-material/Done";
+
 import {
   LayoutButtons,
   getAuthHeader,
@@ -17,8 +19,9 @@ import {
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import { checkin } from "../HelpMessages";
+import { IconButton, TextField } from "@mui/material";
 
-function renderCheckinButton(firstName, lastName, isCheckedIn, setUpdated) {
+function renderCheckinButton(ballkid, isCheckedIn, setUpdated) {
   const checkinString = isCheckedIn ? "Check Out" : "Check In";
   const color = isCheckedIn ? "error" : "success";
   const newCheckinStatus = isCheckedIn ? false : true;
@@ -36,8 +39,8 @@ function renderCheckinButton(firstName, lastName, isCheckedIn, setUpdated) {
           method: "PATCH",
           headers: getAuthHeader(),
           body: JSON.stringify({
-            first_name: firstName,
-            last_name: lastName,
+            first_name: ballkid.first_name,
+            last_name: ballkid.last_name,
             is_checked_in: newCheckinStatus,
           }),
         })
@@ -47,6 +50,81 @@ function renderCheckinButton(firstName, lastName, isCheckedIn, setUpdated) {
     >
       {checkinString}
     </Button>
+  );
+}
+
+function Comments({ ballkid, isCheckoutComments, setUpdated }) {
+  const defaultComment = isCheckoutComments ? "End" : "";
+  const ballkidComments = isCheckoutComments
+    ? ballkid.checkout_comments
+    : ballkid.schedule_comments;
+
+  const [comments, setComments] = useState(ballkidComments ?? defaultComment);
+  const [disabled, setDisabled] = useState(
+    ballkidComments !== "" && ballkidComments !== null
+  );
+
+  return ballkid.is_checked_in ? (
+    !isCheckoutComments ? (
+      ""
+    ) : (
+      <Typography
+        sx={{ mx: 1, px: 1 }}
+        bgcolor={ballkidComments === "End" ? "" : "orange"}
+      >
+        {ballkidComments}
+      </Typography>
+    )
+  ) : (
+    <Box className="sxs" sx={{ mr: 3 }}>
+      <Typography>
+        {isCheckoutComments ? "Check-out Time:" : "Last Day: "}
+      </Typography>
+      &thinsp;
+      <TextField
+        variant="standard"
+        disabled={disabled}
+        sx={{ maxWidth: isCheckoutComments ? "40px" : "100px", mx: 0.5 }}
+        value={comments}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onChange={(e) => setComments(e.target.value)}
+        onDoubleClick={() => setDisabled(false)}
+      />
+      <IconButton
+        variant="outlined"
+        size="small"
+        color="primary"
+        disabled={disabled}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          setDisabled(true);
+          e.stopPropagation();
+          e.preventDefault();
+
+          const bodyDict = isCheckoutComments
+            ? { checkout_comments: comments }
+            : { schedule_comments: comments };
+
+          fetch("/api/update-ballkid", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              first_name: ballkid.first_name,
+              last_name: ballkid.last_name,
+              ...bodyDict,
+            }),
+          })
+            .then((response) => response.json())
+            .then(() => setUpdated(true));
+        }}
+      >
+        <Done />
+      </IconButton>
+    </Box>
   );
 }
 
@@ -72,13 +150,19 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
           <BallkidCard
             ballkid={ballkid}
             renderAdditional={
-              <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
-                {renderCheckinButton(
-                  ballkid.first_name,
-                  ballkid.last_name,
-                  isCheckedIn,
-                  setUpdated
-                )}
+              // <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
+              <Box className="sxs">
+                <Comments
+                  ballkid={ballkid}
+                  isCheckoutComments={false}
+                  setUpdated={setUpdated}
+                />
+                <Comments
+                  ballkid={ballkid}
+                  isCheckoutComments={true}
+                  setUpdated={setUpdated}
+                />
+                {renderCheckinButton(ballkid, isCheckedIn, setUpdated)}
               </Box>
             }
           />
