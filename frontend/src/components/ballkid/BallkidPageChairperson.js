@@ -471,7 +471,7 @@ function RatingSection({ ballkid }) {
       <Grid item xs={12}>
         <Typography variant="h6">Ratings:</Typography>
       </Grid>
-      {!ballkid.is_captain
+      {ballkidGroup === "ballkid"
         ? ""
         : renderRatingsCaptainSection(ballkid, ballkidGroup, params, average)}
 
