@@ -9,9 +9,11 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
 
 import Close from "@mui/icons-material/Close";
 import SwapVert from "@mui/icons-material/SwapVert";
+import HighlightOff from "@mui/icons-material/HighlightOff";
 
 import {
   getAuthHeader,
@@ -29,49 +31,80 @@ import { teams } from "../HelpMessages.js";
 
 function renderSwitchButton(ballkid, setUpdated) {
   return (
-    <Button
-      variant="outlined"
-      size="small"
-      onClick={(e) =>
-        fetch("/api/update-ballkid", {
-          method: "PATCH",
-          headers: getAuthHeader(),
-          body: JSON.stringify({
-            first_name: ballkid.first_name,
-            last_name: ballkid.last_name,
-            position: ballkid.position === "Back" ? "Net" : "Back",
-          }),
-        })
-          .then((response) => response.json())
-          .then(() => setUpdated(true))
-      }
-      sx={{ minWidth: 0 }}
-    >
-      <SwapVert />
-    </Button>
+    <Tooltip title="Switch">
+      <IconButton
+        // variant="outlined"
+        size="small"
+        sx={{ p: 0.5 }}
+        onClick={(e) =>
+          fetch("/api/update-ballkid", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              first_name: ballkid.first_name,
+              last_name: ballkid.last_name,
+              position: ballkid.position === "Back" ? "Net" : "Back",
+            }),
+          })
+            .then((response) => response.json())
+            .then(() => setUpdated(true))
+        }
+      >
+        <SwapVert color="secondary" />
+      </IconButton>
+    </Tooltip>
   );
 }
 
 function renderUnassignButton(ballkid, setUpdated) {
   return (
-    <IconButton
-      size="small"
-      onClick={(e) => {
-        fetch("/api/update-ballkid", {
-          method: "PATCH",
-          headers: getAuthHeader(),
-          body: JSON.stringify({
-            first_name: ballkid.first_name,
-            last_name: ballkid.last_name,
-            current_team: 0,
-          }),
-        })
-          .then((response) => response.json())
-          .then(() => setUpdated(true));
-      }}
-    >
-      <Close />
-    </IconButton>
+    <Tooltip title="Unassign">
+      <IconButton
+        size="small"
+        sx={{ p: 0.5 }}
+        onClick={(e) => {
+          fetch("/api/update-ballkid", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              first_name: ballkid.first_name,
+              last_name: ballkid.last_name,
+              current_team: 0,
+            }),
+          })
+            .then((response) => response.json())
+            .then(() => setUpdated(true));
+        }}
+      >
+        <Close color="primary" />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function renderCheckoutButton(ballkid, setUpdated) {
+  return (
+    <Tooltip title="Checkout">
+      <IconButton
+        size="small"
+        sx={{ p: 0.5 }}
+        onClick={(e) => {
+          fetch("/api/update-ballkid", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              first_name: ballkid.first_name,
+              last_name: ballkid.last_name,
+              is_checked_in: false,
+            }),
+          })
+            .then((response) => response.json())
+            .then(() => setUpdated(true));
+        }}
+      >
+        <HighlightOff color="error" />
+      </IconButton>
+    </Tooltip>
   );
 }
 
@@ -86,7 +119,7 @@ function renderBallkidsOnTeam(ballkids, setUpdated) {
             {!ballkid.preferred_position.includes("/")
               ? ""
               : renderSwitchButton(ballkid, setUpdated)}
-
+            {renderCheckoutButton(ballkid, setUpdated)}
             {renderUnassignButton(ballkid, setUpdated)}
           </div>
         </div>
