@@ -29,6 +29,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
+
 import AspectRatio from "@mui/joy/AspectRatio";
 
 import GridView from "@mui/icons-material/GridView";
@@ -38,7 +40,6 @@ import Help from "@mui/icons-material/Help";
 
 import RatingDialog from "./ratings/RatingDialog";
 import { END_DATE, START_DATE, ICON_DICT, TOOLTIP_DICT } from "./Consts";
-import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
 export function Icons({ ballkid, margin, isTeamsPage = false }) {
   const group = getLocalStorage("group");

@@ -5,6 +5,8 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
+
 import Done from "@mui/icons-material/Done";
 
 import {
@@ -21,18 +23,22 @@ import { MARGINS } from "../Consts";
 import { checkin } from "../HelpMessages";
 import { IconButton, TextField } from "@mui/material";
 
-function renderCheckinButton(ballkid, isCheckedIn, setUpdated) {
+function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
   const checkinString = isCheckedIn ? "Check Out" : "Check In";
   const color = isCheckedIn ? "error" : "success";
   const newCheckinStatus = isCheckedIn ? false : true;
 
+  const [loading, setLoading] = useState(false);
+
   return (
-    <Button
+    <LoadingButton
       variant="outlined"
+      loading={loading}
       color={color}
       size="small"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => {
+        setLoading(true);
         e.stopPropagation();
         e.preventDefault();
         fetch("/api/update-ballkid", {
@@ -45,11 +51,14 @@ function renderCheckinButton(ballkid, isCheckedIn, setUpdated) {
           }),
         })
           .then((response) => response.json())
-          .then(() => setUpdated(true));
+          .then(() => {
+            setUpdated(true);
+            setLoading(false);
+          });
       }}
     >
       {checkinString}
-    </Button>
+    </LoadingButton>
   );
 }
 
@@ -158,9 +167,15 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
                 textAlign="center"
                 sx={{ mt: gridLayout ? 1 : 0 }}
               >
-                {gridLayout
-                  ? renderCheckinButton(ballkid, isCheckedIn, setUpdated)
-                  : ""}
+                {gridLayout ? (
+                  <CheckinButton
+                    ballkid={ballkid}
+                    isCheckedIn={isCheckedIn}
+                    setUpdated={setUpdated}
+                  />
+                ) : (
+                  ""
+                )}
                 <Comments
                   ballkid={ballkid}
                   isCheckoutComments={false}
@@ -173,9 +188,15 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
                   gridLayout={gridLayout}
                   setUpdated={setUpdated}
                 />
-                {gridLayout
-                  ? ""
-                  : renderCheckinButton(ballkid, isCheckedIn, setUpdated)}
+                {gridLayout ? (
+                  ""
+                ) : (
+                  <CheckinButton
+                    ballkid={ballkid}
+                    isCheckedIn={isCheckedIn}
+                    setUpdated={setUpdated}
+                  />
+                )}
               </Box>
             }
           />

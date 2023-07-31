@@ -20,6 +20,8 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
+
 import AspectRatio from "@mui/joy/AspectRatio";
 
 import MoreVert from "@mui/icons-material/MoreVert";
@@ -73,7 +75,11 @@ function renderHeader(ballkid, setUpdated, isMobile) {
       Inactive
     </Typography>
   ) : (
-    renderCheckin(ballkid, setUpdated, isMobile)
+    <CheckinSection
+      ballkid={ballkid}
+      setUpdated={setUpdated}
+      isMobile={isMobile}
+    />
   );
 
   return (
@@ -92,7 +98,9 @@ function renderHeader(ballkid, setUpdated, isMobile) {
   );
 }
 
-function renderCheckin(ballkid, setUpdated, isMobile) {
+function CheckinSection({ ballkid, setUpdated, isMobile }) {
+  const [loading, setLoading] = useState(false);
+
   return (
     <Box
       textAlign="center"
@@ -105,10 +113,12 @@ function renderCheckin(ballkid, setUpdated, isMobile) {
       >
         {ballkid.is_checked_in ? "Checked In" : "Checked Out"}
       </Typography>
-      <Button
+      <LoadingButton
         variant="outlined"
+        loading={loading}
         color={ballkid.is_checked_in ? "error" : "success"}
         onClick={(e) => {
+          setLoading(true);
           fetch("/api/update-ballkid", {
             method: "PATCH",
             headers: getAuthHeader(),
@@ -119,11 +129,14 @@ function renderCheckin(ballkid, setUpdated, isMobile) {
             }),
           })
             .then((response) => response.json())
-            .then(() => setUpdated(true));
+            .then(() => {
+              setUpdated(true);
+              setLoading(false);
+            });
         }}
       >
         {ballkid.is_checked_in ? "Check Out" : "Check In"}
-      </Button>
+      </LoadingButton>
     </Box>
   );
 }
@@ -711,7 +724,7 @@ function Comments({ ballkid, commentType, setSuccessMsg, setErrorMsg }) {
             ? "Today's Check-out Comments:"
             : commentType === "schedule"
             ? "Week's Schedule Comments:"
-            : "Chairperson Comments:"}
+            : "Other Chairperson Comments:"}
         </Typography>
         <Button
           size="small"
