@@ -8,10 +8,13 @@ import Beenhere from "@mui/icons-material/Beenhere";
 import Place from "@mui/icons-material/Place";
 import RateReview from "@mui/icons-material/RateReview";
 import ThumbsUpDown from "@mui/icons-material/ThumbsUpDown";
+import { TournamentBanner } from "../Utils";
 
 export default function Leaderboards(props) {
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Typography variant="h4" sx={{ mb: 2 }}>
         Leaderboards
       </Typography>

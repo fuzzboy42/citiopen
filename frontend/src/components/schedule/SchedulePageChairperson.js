@@ -11,7 +11,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { ScheduleTable } from "./ScheduleTable";
-import { getAuthHeader, getToday, ConfirmDialog, HelpIcon } from "../Utils";
+import {
+  getAuthHeader,
+  getToday,
+  ConfirmDialog,
+  HelpIcon,
+  TournamentBanner,
+} from "../Utils";
 import { schedule } from "../HelpMessages";
 
 function CreateSchedule({ date, setUpdated }) {
@@ -133,6 +139,8 @@ export default function SchedulePageChairperson(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <ConfirmDialog
         message={`You are about to delete the schedule for ${date}. This action cannot be
         undone.`}

@@ -4,7 +4,12 @@ import Typography from "@mui/material/Typography";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { BallkidAndIcon, HelpIcon, getAuthHeader } from "../Utils";
+import {
+  BallkidAndIcon,
+  HelpIcon,
+  TournamentBanner,
+  getAuthHeader,
+} from "../Utils";
 import { Box } from "@mui/material";
 import { ratingsBallkidLeaderboard } from "../HelpMessages";
 
@@ -75,6 +80,8 @@ export default function BallkidLeaderboard(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Box className="sxs" sx={{ mb: 1 }}>
         <Typography variant="h4">Ratings Leaderboard - Ballkid</Typography>
         &thinsp;

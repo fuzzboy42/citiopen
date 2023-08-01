@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Grid from "@mui/material/Grid";
 
-import { getAuthHeader } from "../Utils";
+import { TournamentBanner, getAuthHeader } from "../Utils";
 import { MATCH_TYPES } from "../Consts";
 import { UnassignedDesktop } from "./TeamsPageChairpersonDesktop";
 import { Header, renderTeams } from "./FinalsTeamsPageChairpersonUtils";
@@ -34,6 +34,8 @@ export default function FinalsTeamsPageChairpersonDesktop(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Grid container className="justify-top">
         <Grid
           item

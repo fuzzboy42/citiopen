@@ -19,6 +19,7 @@ import {
   BallkidCard,
   HelpIcon,
   useIsMobile,
+  TournamentBanner,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import { checkin } from "../HelpMessages";
@@ -245,6 +246,8 @@ export default function CheckinPage(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <ConfirmDialog
         message={`You are about to check out all ${
           checkedIn.length

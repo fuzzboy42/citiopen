@@ -21,6 +21,7 @@ import {
   ConfirmDialog,
   DraggableBallkidAndIcon,
   HelpIcon,
+  TournamentBanner,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -279,6 +280,8 @@ export default function CutPageDesktop(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Grid container className="justify-top">
         <Grid
           item

@@ -26,6 +26,7 @@ import {
   ConfirmDialog,
   DraggableBallkidAndIcon,
   HelpIcon,
+  TournamentBanner,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -285,6 +286,8 @@ export default function CutPageMobile(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Box className="sxs" sx={{ mb: 1 }}>
         <Typography variant="h4">Cut Page</Typography>
         &thinsp;

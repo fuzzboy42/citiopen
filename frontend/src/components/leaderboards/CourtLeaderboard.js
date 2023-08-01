@@ -20,6 +20,7 @@ import {
   BallkidAndIcon,
   toPercent,
   HelpIcon,
+  TournamentBanner,
 } from "../Utils";
 import { courtLeaderboard } from "../HelpMessages";
 
@@ -233,6 +234,8 @@ export default function CourtLeaderboard(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Box className="sxs" sx={{ mb: 1 }}>
         <Typography variant="h4">Court Time Leaderboard</Typography>
         &thinsp;

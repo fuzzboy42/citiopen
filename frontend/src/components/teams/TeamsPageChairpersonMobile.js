@@ -16,6 +16,7 @@ import {
   filterBallkids,
   ConfirmDialog,
   DraggableBallkidAndIcon,
+  TournamentBanner,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
@@ -201,6 +202,8 @@ export default function TeamsPageChairpersonMobile(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Header />
       <Teams
         assigned={assigned}

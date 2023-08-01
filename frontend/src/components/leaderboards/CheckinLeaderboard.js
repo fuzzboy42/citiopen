@@ -18,6 +18,7 @@ import {
   BallkidAndIcon,
   HelpIcon,
   getTimeStr,
+  TournamentBanner,
 } from "../Utils";
 import { Box } from "@mui/material";
 import { checkinLeaderboard } from "../HelpMessages";
@@ -147,6 +148,8 @@ export default function CheckinLeaderboard(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Box className="sxs" sx={{ mb: 1 }}>
         <Typography variant="h4">Check-in Leaderboard</Typography>
         &thinsp;

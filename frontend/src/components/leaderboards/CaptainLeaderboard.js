@@ -5,7 +5,12 @@ import Link from "@mui/material/Link";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { BallkidAndIcon, HelpIcon, getAuthHeader } from "../Utils";
+import {
+  BallkidAndIcon,
+  HelpIcon,
+  TournamentBanner,
+  getAuthHeader,
+} from "../Utils";
 import { Box } from "@mui/material";
 import { ratingsCaptainLeaderboard } from "../HelpMessages";
 
@@ -75,6 +80,8 @@ export default function CaptainLeaderboard(props) {
 
   return (
     <div className="page">
+      <TournamentBanner />
+
       <Box className="sxs" sx={{ mb: 1 }}>
         <Typography variant="h4">Ratings Leaderboard - Captain</Typography>
         &thinsp;
