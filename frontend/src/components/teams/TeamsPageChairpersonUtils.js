@@ -113,8 +113,20 @@ function renderBallkidsOnTeam(ballkids, setUpdated) {
     <div>
       {ballkids.map((ballkid) => (
         <div key={`ballkid${ballkid.id}`} className="justify">
-          {<DraggableBallkidAndIcon ballkid={ballkid} />}
-
+          <div className="sxs">
+            <DraggableBallkidAndIcon ballkid={ballkid} />
+            {ballkid.checkout_comments === "End" ? (
+              ""
+            ) : (
+              <Typography
+                sx={{ mx: 1, px: 1 }}
+                bgcolor="orange"
+                variant="body2"
+              >
+                {ballkid.checkout_comments}
+              </Typography>
+            )}
+          </div>
           <div className="sxs">
             {!ballkid.preferred_position.includes("/")
               ? ""
