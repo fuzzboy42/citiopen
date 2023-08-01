@@ -657,10 +657,11 @@ class GetPastTeams(APIView):
             captain_id=pk, duration__gte=timedelta(minutes=MIN_CAPTAIN_DURATION)
         )
         current = CaptainHistory.objects.filter(captain_id=pk, end=None)
+        show_teams = Tournament.objects.get(year=2023).show_teams
+        union = (thresholded | current) if show_teams else thresholded
 
         histories = (
-            (thresholded | current)
-            .annotate(date=TruncDay("start"))
+            union.annotate(date=TruncDay("start"))
             .values("date", "ballkid_id")
             .order_by("-date", "ballkid__last_name", "ballkid__first_name")
         )
