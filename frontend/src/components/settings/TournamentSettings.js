@@ -73,7 +73,6 @@ function Banner({
       : tournament.banner3;
 
   const [banner, setBanner] = useState(startBanner);
-  const [savedBanner, setSavedBanner] = useState(startBanner);
 
   return (
     <Box className="sxs">
@@ -107,11 +106,11 @@ function Banner({
           }).then((response) => {
             if (response.ok) {
               setDisabled(true);
-              setSavedBanner(banner);
+              setUpdated(true);
+
               setSuccessMsg(
                 "Banner updated for all ballkids and captains! Refresh page to view updated banners."
               );
-              setUpdated(true);
             } else {
               setErrorMsg("Error updating banner.");
             }
@@ -119,16 +118,6 @@ function Banner({
         }}
       >
         Publish
-      </Button>
-
-      <Button
-        size="small"
-        onClick={() => {
-          setDisabled(true);
-          setBanner(savedBanner);
-        }}
-      >
-        Cancel
       </Button>
     </Box>
   );
@@ -170,7 +159,7 @@ function BannerSection({ setSuccessMsg, setErrorMsg }) {
         </Button>
       </div>
 
-      <Box style={{ width: "70%" }} sx={{ ml: 2 }}>
+      <Box style={{ width: "75%" }} sx={{ ml: 2 }}>
         {[1, 2, 3].map((index) =>
           disabled ? (
             <Typography key={`disabled-${index}`} color="gray">
@@ -195,6 +184,13 @@ function BannerSection({ setSuccessMsg, setErrorMsg }) {
           )
         )}
       </Box>
+      {disabled ? (
+        ""
+      ) : (
+        <Button size="small" onClick={() => setDisabled(true)}>
+          Cancel
+        </Button>
+      )}
     </Grid>
   );
 }
