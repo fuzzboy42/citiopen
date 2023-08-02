@@ -244,12 +244,7 @@ export default function TournamentSettings(props) {
 
             <HideShowToggle
               teamType={teamType.trim()}
-              showTeams={
-                teamType === ""
-                  ? tournament.show_teams
-                  : tournament.show_finals_teams
-              }
-              setShowTeams={
+              defaultShow={
                 teamType === ""
                   ? tournament.show_teams
                   : tournament.show_finals_teams

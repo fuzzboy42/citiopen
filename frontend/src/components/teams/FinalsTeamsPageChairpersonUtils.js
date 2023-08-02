@@ -186,7 +186,7 @@ export function renderTeams(assigned, teams, setUpdated) {
 }
 
 export function Header() {
-  const [showFinalsTeams, setShowFinalsTeams] = useState(false);
+  const [tournament, setTournament] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -197,10 +197,12 @@ export function Header() {
       headers: getAuthHeader(),
     })
       .then((response) => response.json())
-      .then((data) => setShowFinalsTeams(data["show_finals_teams"]));
+      .then((data) => setTournament(data));
   });
 
-  return (
+  return tournament === null || tournament === undefined ? (
+    ""
+  ) : (
     <div>
       <Alerts
         successMsg={successMsg}
@@ -208,16 +210,17 @@ export function Header() {
         setSuccessMsg={setSuccessMsg}
         setErrorMsg={setErrorMsg}
       />
+
       <div className="justify" sx={{ mb: 1 }}>
         <div className="sxs">
           <Typography variant="h4">Finals Teams</Typography>
           &thinsp;
           <HelpIcon page="Finals Teams" message={finalsTeams} />
         </div>
+
         <HideShowToggle
           teamType="finals"
-          showTeams={showFinalsTeams}
-          setShowTeams={setShowFinalsTeams}
+          defaultShow={tournament["show_finals_teams"]}
           setSuccessMsg={setSuccessMsg}
           setErrorMsg={setErrorMsg}
         />

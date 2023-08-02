@@ -342,7 +342,7 @@ export function Teams({ assigned, teams, nextShifts, setUpdated }) {
 }
 
 export function Header() {
-  const [showTeams, setShowTeams] = useState(false);
+  const [tournament, setTournament] = useState();
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -353,10 +353,12 @@ export function Header() {
       headers: getAuthHeader(),
     })
       .then((response) => response.json())
-      .then((data) => setShowTeams(data["show_teams"]));
+      .then((data) => setTournament(data));
   });
 
-  return (
+  return tournament === null || tournament === undefined ? (
+    ""
+  ) : (
     <div>
       <Alerts
         successMsg={successMsg}
@@ -364,6 +366,7 @@ export function Header() {
         setSuccessMsg={setSuccessMsg}
         setErrorMsg={setErrorMsg}
       />
+
       <Box className="justify" sx={{ mb: 1 }}>
         <Box className="sxs">
           <Typography variant="h4">Current Teams</Typography>
@@ -373,8 +376,7 @@ export function Header() {
 
         <HideShowToggle
           teamType=""
-          showTeams={showTeams}
-          setShowTeams={setShowTeams}
+          defaultShow={tournament["show_teams"]}
           setSuccessMsg={setSuccessMsg}
           setErrorMsg={setErrorMsg}
         />

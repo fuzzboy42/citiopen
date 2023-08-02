@@ -277,11 +277,12 @@ export function TournamentBanner() {
 
 export function HideShowToggle({
   teamType,
-  showTeams,
-  setShowTeams,
+  defaultShow,
   setSuccessMsg,
   setErrorMsg,
 }) {
+  const [showTeams, setShowTeams] = useState(defaultShow);
+
   const teamStr = teamType === "finals" ? "Finals teams" : "Teams";
   const showMessage = `${teamStr} are now visible to ballkids and captains.`;
   const hideMessage = `${teamStr} are now hidden from ballkids and captains.`;
