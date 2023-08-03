@@ -144,9 +144,13 @@ def calibrate(ratings, rating_name="overall", year=get_current_year()):
     test = {k: v for k, v in test.items() if k[0] not in excluded}
 
     try:
+        ignore_outliers = Tournament.objects.get(year=2023).rcal_ignore_outliers
+
         cp = calibrate_parameters(train, rating_delta=(MAX_RATING - MIN_RATING))
         cp.rescale_parameters(
-            test, (MIN_RATING, MAX_RATING), ignore_outliers=CALIBRATE_STDEV
+            test,
+            (MIN_RATING, MAX_RATING),
+            ignore_outliers=ignore_outliers,
         )
         cp.set_reviewer_scales({r: 1 for r in excluded})
         cp.set_reviewer_offsets({r: 0 for r in excluded})
@@ -154,7 +158,9 @@ def calibrate(ratings, rating_name="overall", year=get_current_year()):
     except RcalException as e:
         return None, excluded, e
 
-    logger.info(f"[calibrate] completed calibration excluding {excluded}")
+    logger.info(
+        f"[calibrate] completed calibration excluding {excluded} with ignore_outliers {ignore_outliers}"
+    )
     return cp, excluded, None
 
 
@@ -359,7 +365,8 @@ class CalibratedRatings(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request, year):
-        cp_dict, excluded = {}, {}
+        cp_dict = {rating_name: None for rating_name in RATING_CATEGORIES}
+        excluded = {rating_name: set() for rating_name in RATING_CATEGORIES}
         ratings = Rating.objects.all()
         year_ratings = ratings.filter(date__year=year)
 
@@ -368,15 +375,21 @@ class CalibratedRatings(APIView):
         )
 
         # Keep track of which rating categories throw Rcal exceptions
-        failed_categories = {}
+        failed_categories = {rating_name: None for rating_name in RATING_CATEGORIES}
 
         # Try calibration for all rating categories
-        for rating_name in RATING_CATEGORIES:
-            (
-                cp_dict[rating_name],
-                excluded[rating_name],
-                failed_categories[rating_name],
-            ) = calibrate(ratings, rating_name, year=year)
+        # for rating_name in RATING_CATEGORIES:
+        #     (
+        #         cp_dict[rating_name],
+        #         excluded[rating_name],
+        #         failed_categories[rating_name],
+        #     ) = calibrate(ratings, rating_name, year=year)
+
+        (
+            cp_dict["overall"],
+            excluded["overall"],
+            failed_categories["overall"],
+        ) = calibrate(ratings, "overall", year=year)
 
         logger.warning(
             f"[CalibratedRatings] rating categories with failed rating categories {failed_categories}"

@@ -20,7 +20,6 @@ HOUR_MINUTE_SECOND_FORMAT_STR = "%I:%M:%S %p"
 
 MIN_RATING = 0.5
 MAX_RATING = 5
-CALIBRATE_STDEV = 2
 RATING_CATEGORIES = [
     "overall",
     "athleticism",
