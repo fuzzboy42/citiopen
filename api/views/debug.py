@@ -321,76 +321,126 @@ class BulkCreateSignups(APIView):
 class BulkCreateRatings(APIView):
     permission_classes = [IsChairperson]
 
-    def post(self, request):
-        author_to_name = {
-            "Emily": ("Emily", "Benton"),
-            "MatthewK": ("Matthew", "Kolodner"),
-            "Jeff": ("Jeff", "Zhang"),
-            "Billy": ("Billy", "Owens"),
-            "Jonathan": ("Jonathan", "Chen"),
-            "Ben": ("Ben", "Parzow"),
-            "Carolyn": ("Carolyn", "Quetsch"),
-            "Ryan": ("Ryan", "Gates"),
-            "Michael": ("Michael", "White"),
-            "Joseph": ("Joseph", "Ramsey"),
-            "Dan": ("Dan", "Yi"),
-            "Joe": ("Joe", "Iosue"),
-            "Sharon": ("Sharon", "Sabasteanski"),
-            "EvanCo": ("Evan", "Costanza"),
-            "Diana": ("Diana", "Lozanova"),
-            "Zachary": ("Zachary", "Spahr"),
-            "Benji": ("Benjy", "Apelbaum"),
-            "MichaelS": ("Michael", "Shapiro"),
-            "John": ("John", "Niswander"),
-            "Stuart": ("Stuart", "Berlin"),
-            "Debbie": ("Deborah", "Berlin"),
-            "Matthew": ("Matthew", "Nicholson"),
-        }
+    """Function for parsing and bulk creating 2022 reviews"""
+    # def post(self, request):
+    #     author_to_name = {
+    #         "Emily": ("Emily", "Benton"),
+    #         "MatthewK": ("Matthew", "Kolodner"),
+    #         "Jeff": ("Jeff", "Zhang"),
+    #         "Billy": ("Billy", "Owens"),
+    #         "Jonathan": ("Jonathan", "Chen"),
+    #         "Ben": ("Ben", "Parzow"),
+    #         "Carolyn": ("Carolyn", "Quetsch"),
+    #         "Ryan": ("Ryan", "Gates"),
+    #         "Michael": ("Michael", "White"),
+    #         "Joseph": ("Joseph", "Ramsey"),
+    #         "Dan": ("Dan", "Yi"),
+    #         "Joe": ("Joe", "Iosue"),
+    #         "Sharon": ("Sharon", "Sabasteanski"),
+    #         "EvanCo": ("Evan", "Costanza"),
+    #         "Diana": ("Diana", "Lozanova"),
+    #         "Zachary": ("Zachary", "Spahr"),
+    #         "Benji": ("Benjy", "Apelbaum"),
+    #         "MichaelS": ("Michael", "Shapiro"),
+    #         "John": ("John", "Niswander"),
+    #         "Stuart": ("Stuart", "Berlin"),
+    #         "Debbie": ("Deborah", "Berlin"),
+    #         "Matthew": ("Matthew", "Nicholson"),
+    #     }
 
+    #     ratings = []
+
+    #     file = request.FILES["file"]
+    #     reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
+
+    #     for line in reader:
+    #         rater_name = (
+    #             author_to_name[line["Author"]]
+    #             if line["Author"] in author_to_name
+    #             else ("", "")
+    #         )
+    #         ratee_name = line["Ballperson"]
+
+    #         rater = Ballkid.objects.filter(
+    #             first_name=rater_name[0], last_name=rater_name[1]
+    #         ).first()
+    #         ratee = Ballkid.objects.filter(
+    #             first_name=ratee_name.split()[0], last_name=ratee_name.split()[1]
+    #         ).first()
+
+    #         if rater and ratee and line["Overall"]:
+    #             date = datetime.strptime(
+    #                 f'{line["Timestamp"]} 2022', "%A, %B %d, %I:%M %p %Y"
+    #             )
+
+    #             rating = Rating(
+    #                 ratee=ratee,
+    #                 rater=rater,
+    #                 date=date,
+    #                 rating=float(line["Overall"]) / 2.0,
+    #                 rolling_rating=float(line["Rolling"]) / 2.0
+    #                 if line["Rolling"]
+    #                 else None,
+    #                 athleticism_rating=float(line["Athleticism"]) / 2.0
+    #                 if line["Athleticism"]
+    #                 else None,
+    #                 effort_rating=float(line["Effort"]) / 2.0 if line["Effort"] else None,
+    #                 awareness_rating=float(line["Awareness"]) / 2.0
+    #                 if line["Awareness"]
+    #                 else None,
+    #                 decision_rating=float(line["Decisionmaking"]) / 2.0
+    #                 if line["Decisionmaking"]
+    #                 else None,
+    #                 comments=line["Note"],
+    #             )
+    #             ratings.append(rating)
+
+    #     Rating.objects.bulk_create(ratings)
+
+    #     return Response(
+    #         {"Success": f"Bulk created {len(ratings)} ratings"},
+    #         status=status.HTTP_200_OK,
+    #     )
+
+    """" Function for parsing and bulk creating 2023 reviews """
+
+    def post(self, request):
         ratings = []
 
         file = request.FILES["file"]
         reader = csv.DictReader(io.StringIO(file.read().decode("utf-8")))
 
         for line in reader:
-            rater_name = (
-                author_to_name[line["Author"]]
-                if line["Author"] in author_to_name
-                else ("", "")
-            )
-            ratee_name = line["Ballperson"]
+            rater_name = line["Rater"]
+            ratee_name = line["Ballkid"]
 
             rater = Ballkid.objects.filter(
-                first_name=rater_name[0], last_name=rater_name[1]
+                first_name=rater_name.split()[0], last_name=rater_name.split()[1]
             ).first()
             ratee = Ballkid.objects.filter(
                 first_name=ratee_name.split()[0], last_name=ratee_name.split()[1]
             ).first()
 
-            if rater and ratee and line["Overall"]:
-                date = datetime.strptime(
-                    f'{line["Timestamp"]} 2022', "%A, %B %d, %I:%M %p %Y"
-                )
+            if rater and ratee and line["Overall Rating"]:
+                date = datetime.strptime(line["Date"], "%Y-%m-%d")
 
                 rating = Rating(
                     ratee=ratee,
                     rater=rater,
                     date=date,
-                    rating=float(line["Overall"]) / 2.0,
-                    rolling_rating=float(line["Rolling"]) / 2.0
-                    if line["Rolling"]
-                    else None,
-                    athleticism_rating=float(line["Athleticism"]) / 2.0
+                    rating=float(line["Overall Rating"]),
+                    rolling_rating=float(line["Rolling"]) if line["Rolling"] else None,
+                    athleticism_rating=float(line["Athleticism"])
                     if line["Athleticism"]
                     else None,
-                    effort_rating=float(line["Effort"]) / 2.0 if line["Effort"] else None,
-                    awareness_rating=float(line["Awareness"]) / 2.0
+                    effort_rating=float(line["Effort"]) if line["Effort"] else None,
+                    awareness_rating=float(line["Awareness"])
                     if line["Awareness"]
                     else None,
-                    decision_rating=float(line["Decisionmaking"]) / 2.0
-                    if line["Decisionmaking"]
+                    decision_rating=float(line["Decision-making"])
+                    if line["Decision-making"]
                     else None,
-                    comments=line["Note"],
+                    comments=line["Comments"],
                 )
                 ratings.append(rating)
 
@@ -441,20 +491,21 @@ class BulkCreateFinals(APIView):
             {"Success": f"Bulk created {len(finals)} finals"},
             status=status.HTTP_200_OK,
         )
-    
+
+
 class BulkCreateCuts(APIView):
     permission_classes = [IsChairperson]
 
     def post(self, request):
         day_to_date = {
-            'Monday' : datetime(2022, 8, 1), 
-            'Tuesday' : datetime(2022, 8, 2), 
-            'Wednesday' : datetime(2022, 8, 3), 
-            'Thursday' : datetime(2022, 8, 4), 
-            'Friday' : datetime(2022, 8, 5), 
-            'Saturday' : datetime(2022, 8, 6), 
+            "Monday": datetime(2022, 8, 1),
+            "Tuesday": datetime(2022, 8, 2),
+            "Wednesday": datetime(2022, 8, 3),
+            "Thursday": datetime(2022, 8, 4),
+            "Friday": datetime(2022, 8, 5),
+            "Saturday": datetime(2022, 8, 6),
         }
-        
+
         cuts = []
 
         file = request.FILES["file"]
@@ -468,15 +519,15 @@ class BulkCreateCuts(APIView):
             except Exception:
                 continue
 
-            day = line['Last Day']
-            if day == '': 
+            day = line["Last Day"]
+            if day == "":
                 continue
 
             cut = CutHistory(
                 ballkid=ballkid,
                 year=2022,
                 furthest_day=day,
-                furthest_date = day_to_date[day]
+                furthest_date=day_to_date[day],
             )
             cuts.append(cut)
 
