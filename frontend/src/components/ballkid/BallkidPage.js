@@ -10,6 +10,7 @@ import { Icons, TournamentBanner, getAuthHeader, useIsMobile } from "../Utils";
 
 export default function BallkidPage(props) {
   const [ballkid, setBallkid] = useState(null);
+  const [showTeams, setShowTeams] = useState(false);
 
   const isMobile = useIsMobile();
   const { pk } = useParams();
@@ -18,6 +19,13 @@ export default function BallkidPage(props) {
     fetch("/api/get-ballkid/" + pk, { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setBallkid(data));
+
+    fetch("/api/get-tournament", {
+      method: "GET",
+      headers: getAuthHeader(),
+    })
+      .then((response) => response.json())
+      .then((data) => setShowTeams(data["show_teams"]));
   }, [pk]);
 
   return ballkid == null ? (
@@ -65,12 +73,16 @@ export default function BallkidPage(props) {
               <Typography variant="body1">
                 Position: {ballkid.position}
               </Typography>
-              <Typography variant="body1">
-                Current Team:{" "}
-                {ballkid.current_team === 0
-                  ? "Unassigned"
-                  : ballkid.current_team}
-              </Typography>
+              {!showTeams ? (
+                ""
+              ) : (
+                <Typography variant="body1">
+                  Current Team:{" "}
+                  {ballkid.current_team === 0
+                    ? "Unassigned"
+                    : ballkid.current_team}
+                </Typography>
+              )}
               <br />
             </div>
           )}
