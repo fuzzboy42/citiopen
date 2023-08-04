@@ -30,7 +30,7 @@ import {
   TournamentBanner,
 } from "../Utils";
 import { renderCopyButtons } from "./CutPageDesktop";
-import { CUT_STATUSES, MARGINS } from "../Consts";
+import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
 
 function CutStatusSection({ section, active, setUpdated }) {
@@ -40,8 +40,6 @@ function CutStatusSection({ section, active, setUpdated }) {
   const cutAllStr = section.includes("Cut") ? "Cut All" : "Keep All";
   const cutAllColor = section.includes("Cut") ? "error" : "success";
   const cutAllVariant = section.includes("Cut") ? "contained" : "outlined";
-
-  const positions = ["Back", "Net"];
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
@@ -90,7 +88,7 @@ function CutStatusSection({ section, active, setUpdated }) {
             </Button>
           </div>
 
-          {positions.map((position) => (
+          {POSITIONS.map((position) => (
             <div key={position}>
               <Divider sx={{ mt: 1, mb: 1 }} />
               <div className="sxs">

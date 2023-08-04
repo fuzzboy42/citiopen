@@ -24,7 +24,7 @@ import {
   TournamentBanner,
   Alerts,
 } from "../Utils";
-import { CUT_STATUSES, MARGINS } from "../Consts";
+import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
 
 function CutStatusSection({ section, active, setUpdated }) {
@@ -34,8 +34,6 @@ function CutStatusSection({ section, active, setUpdated }) {
   const cutAllStr = section.includes("Cut") ? "Cut All" : "Keep All";
   const cutAllColor = section.includes("Cut") ? "error" : "success";
   const cutAllVariant = section.includes("Cut") ? "contained" : "outlined";
-
-  const positions = ["Back", "Net"];
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
@@ -101,7 +99,7 @@ function CutStatusSection({ section, active, setUpdated }) {
             </Button>
           </div>
 
-          {positions.map((position) => (
+          {POSITIONS.map((position) => (
             <div key={position}>
               <Divider sx={{ mt: 1, mb: 1 }} />
               <div className="sxs">
@@ -307,6 +305,89 @@ export function renderCopyButtons(active, emails, setSuccessMsg) {
     </Box>
   );
 }
+
+function SelfCutCard({ active, setUpdated }) {
+  const [open, setOpen] = useState(false);
+
+  const [{ isOver }, dropRef] = useDrop({
+    accept: "ballkid",
+    drop: (ballkid) =>
+      fetch("/api/update-ballkid", {
+        method: "PATCH",
+        headers: getAuthHeader(),
+        body: JSON.stringify({
+          first_name: ballkid.first_name,
+          last_name: ballkid.last_name,
+        }),
+      })
+        .then((response) => response.json())
+        .then(() => setUpdated(true)),
+    collect: (monitor) => ({ isOver: monitor.isOver() }),
+  });
+
+  return (
+    <Grid item xs={12} sm={12} md={6} lg={6} xl={3} ref={dropRef}>
+      <ConfirmDialog
+        message={`You are about to cut all ${active.length} ballkid${
+          active.length > 1 ? "s" : ""
+        }. This will be publicly visible to all ballkids and captains.`}
+        url={"/api/cut-all"}
+        body={{
+          should_cut: true,
+          self_cut: true,
+        }}
+        open={open}
+        setOpen={setOpen}
+        setUpdated={setUpdated}
+      />
+
+      <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
+        <CardContent>
+          <div className="justify">
+            <div className="sxs">
+              <Typography variant="h6">Self-Cut</Typography>
+              &ensp;
+              <Typography variant="subtitle1">({active.length})</Typography>
+            </div>
+
+            <Button
+              size="small"
+              color="error"
+              variant="contained"
+              onClick={(e) => setOpen(true)}
+            >
+              Cut All
+            </Button>
+          </div>
+
+          {POSITIONS.map((position) => (
+            <div key={position}>
+              <Divider sx={{ mt: 1, mb: 1 }} />
+              <div className="sxs">
+                <Typography variant="subtitle1">{position}s</Typography>
+                <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                  (
+                  {
+                    active.filter((ballkid) => ballkid.position === position)
+                      .length
+                  }
+                  )
+                </Typography>
+              </div>
+              {renderBallkidsInSection(
+                active,
+                "Possibly Cut",
+                position,
+                setUpdated
+              )}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+}
+
 export default function CutPageDesktop(props) {
   const [active, setActive] = useState([]);
   const [emails, setEmails] = useState([]);
@@ -369,6 +450,8 @@ export default function CutPageDesktop(props) {
                 setUpdated={setUpdated}
               />
             ))}
+
+            <SelfCutCard active={active} setUpdated={setUpdated} />
           </Grid>
         </Grid>
 

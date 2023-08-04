@@ -16,12 +16,11 @@ import {
   HelpIcon,
   TournamentBanner,
 } from "../Utils";
-import { ON_COURT_GREEN } from "../Consts";
+import { ON_COURT_GREEN, POSITIONS } from "../Consts";
 import { Box } from "@mui/material";
 import { rateByCurrentTeam } from "../HelpMessages";
 
 function Team({ team, assigned, nextShifts, setUpdated }) {
-  const positions = ["Back", "Net"];
   const isCurrentlyOn =
     nextShifts.length > 0 && isCurrentHour(nextShifts[0]["start"]);
 
@@ -41,7 +40,7 @@ function Team({ team, assigned, nextShifts, setUpdated }) {
 
             <CourtAssignment nextShifts={nextShifts} />
           </div>
-          {positions.map((position) => (
+          {POSITIONS.map((position) => (
             <div key={position}>
               <Divider sx={{ mt: 1, mb: 1 }} />
 
