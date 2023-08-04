@@ -22,6 +22,7 @@ import {
   DraggableBallkidAndIcon,
   HelpIcon,
   TournamentBanner,
+  Alerts,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -269,6 +270,9 @@ export default function CutPageDesktop(props) {
   const [active, setActive] = useState([]);
   const [updated, setUpdated] = useState(false);
 
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const sections = Object.keys(CUT_STATUSES).map((key) => CUT_STATUSES[key]);
 
   useEffect(() => {
@@ -281,6 +285,13 @@ export default function CutPageDesktop(props) {
   return (
     <div className="page">
       <TournamentBanner />
+
+      <Alerts
+        successMsg={successMsg}
+        errorMsg={errorMsg}
+        setSuccessMsg={setSuccessMsg}
+        setErrorMsg={setErrorMsg}
+      />
 
       <Grid container className="justify-top">
         <Grid
@@ -316,6 +327,7 @@ export default function CutPageDesktop(props) {
                       )
                       .join("\n");
                     navigator.clipboard.writeText(names);
+                    setSuccessMsg("Successfully copied non-cut ballkid names!");
                   }}
                 >
                   Copy all keep ballkid names
