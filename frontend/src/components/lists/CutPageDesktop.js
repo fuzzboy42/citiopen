@@ -291,10 +291,42 @@ export default function CutPageDesktop(props) {
           xl={9}
           style={{ maxHeight: "85vh", overflow: "auto" }}
         >
-          <Box className="sxs" sx={{ mb: 1 }}>
-            <Typography variant="h4">Cut Page</Typography>
-            &thinsp;
-            <HelpIcon page="Cut" message={cut} />
+          <Box className="justify-top">
+            <Box className="sxs" sx={{ mb: 1 }}>
+              <Typography variant="h4">Cut Page</Typography>
+              &thinsp;
+              <HelpIcon page="Cut" message={cut} />
+            </Box>
+
+            <Box>
+              <Box sx={{ my: 0.2 }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    const names = active
+                      .filter(
+                        (ballkid) =>
+                          ballkid.cut_status === "Definitely Keep" ||
+                          ballkid.cut_status === "Possibly Keep"
+                      )
+                      .map(
+                        (ballkid) =>
+                          `${ballkid.first_name} ${ballkid.last_name}`
+                      )
+                      .join("\n");
+                    navigator.clipboard.writeText(names);
+                  }}
+                >
+                  Copy all keep ballkid names
+                </Button>
+              </Box>
+              <Box sx={{ my: 0.2 }} style={{ float: "right" }}>
+                <Button size="small" variant="outlined">
+                  Copy all ballkid emails
+                </Button>
+              </Box>
+            </Box>
           </Box>
 
           <Grid container spacing={2}>

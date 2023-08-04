@@ -319,11 +319,7 @@ class MyRatings(generics.ListAPIView):
                 month=F("date__month"),
                 day=F("date__day"),
             )
-            .order_by(
-                "-date",
-                "ratee__last_name",
-                "ratee__first_name",
-            )
+            .order_by("-date", "ratee__last_name", "ratee__first_name")
         )
 
 
