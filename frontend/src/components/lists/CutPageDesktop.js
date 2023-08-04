@@ -276,7 +276,8 @@ export function renderCopyButtons(active, emails, setSuccessMsg) {
               .filter(
                 (ballkid) =>
                   ballkid.cut_status === "Definitely Keep" ||
-                  ballkid.cut_status === "Possibly Keep"
+                  ballkid.cut_status === "Possibly Keep" ||
+                  ballkid.cut_status === ""
               )
               .map((ballkid) => `${ballkid.first_name} ${ballkid.last_name}`)
               .join("\n");
@@ -390,6 +391,7 @@ function SelfCutCard({ active, setUpdated }) {
 
 export default function CutPageDesktop(props) {
   const [active, setActive] = useState([]);
+  const [ballkids, setBallkids] = useState([]);
   const [emails, setEmails] = useState([]);
   const [updated, setUpdated] = useState(false);
 
@@ -402,6 +404,10 @@ export default function CutPageDesktop(props) {
     fetch("/api/all-sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setActive(data.filter((ballkid) => !ballkid.is_cut)));
+
+    fetch("/api/list", { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setBallkids(data));
 
     fetch("/api/all-emails", { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -436,7 +442,7 @@ export default function CutPageDesktop(props) {
               <HelpIcon page="Cut" message={cut} />
             </Box>
 
-            {renderCopyButtons(active, emails, setSuccessMsg)}
+            {renderCopyButtons(ballkids, emails, setSuccessMsg)}
           </Box>
 
           <Grid container spacing={2}>
@@ -451,7 +457,7 @@ export default function CutPageDesktop(props) {
               />
             ))}
 
-            <SelfCutCard active={active} setUpdated={setUpdated} />
+            {/* <SelfCutCard active={active} setUpdated={setUpdated} /> */}
           </Grid>
         </Grid>
 
