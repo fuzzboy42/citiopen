@@ -268,6 +268,7 @@ function ActiveSection({ active, setUpdated }) {
 
 export default function CutPageDesktop(props) {
   const [active, setActive] = useState([]);
+  const [emails, setEmails] = useState([]);
   const [updated, setUpdated] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState("");
@@ -278,7 +279,11 @@ export default function CutPageDesktop(props) {
   useEffect(() => {
     fetch("/api/all-sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setActive(data.filter((ballkid) => !ballkid.is_cut)))
+      .then((data) => setActive(data.filter((ballkid) => !ballkid.is_cut)));
+
+    fetch("/api/all-emails", { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) => setEmails(data["emails"]))
       .then(() => setUpdated(false));
   }, [updated]);
 
@@ -333,8 +338,18 @@ export default function CutPageDesktop(props) {
                   Copy all keep ballkid names
                 </Button>
               </Box>
+
               <Box sx={{ my: 0.2 }} style={{ float: "right" }}>
-                <Button size="small" variant="outlined">
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    navigator.clipboard.writeText(emails);
+                    setSuccessMsg(
+                      "Successfully copied all currently active, non-cut ballkid email!"
+                    );
+                  }}
+                >
                   Copy all ballkid emails
                 </Button>
               </Box>

@@ -11,6 +11,7 @@ ballkid_urls = [
     path("all-list", AllBallkidsList.as_view(), name="all-list"),
     path("all-list/<int:pk>", AllBallkidsList.as_view(), name="all-list-ratings"),
     path("all-sorted-list", AllBallkidsSortedList.as_view(), name="all-sorted-list"),
+    path("all-emails", AllEmailsList.as_view(), name="all-emails"),
     path("sorted-list", BallkidsSortedList.as_view(), name="sorted-list"),
     path(
         "sorted-list/<int:pk>", BallkidsSortedList.as_view(), name="sorted-list-ratings"
