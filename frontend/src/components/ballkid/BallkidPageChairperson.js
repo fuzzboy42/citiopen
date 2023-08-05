@@ -335,6 +335,7 @@ export function renderBallkidCutHistory(cuts) {
               <TableRow>
                 <TableCell align="center">Year</TableCell>
                 <TableCell align="center">Furthest Day</TableCell>
+                <TableCell align="center">Self-Cut?</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -342,6 +343,9 @@ export function renderBallkidCutHistory(cuts) {
                 <TableRow key={cut.id}>
                   <TableCell align="center">{cut.year}</TableCell>
                   <TableCell align="center">{cut.furthest_day}</TableCell>
+                  <TableCell align="center">
+                    {cut.self_cut ? "Yes" : "No"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
