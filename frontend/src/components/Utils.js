@@ -581,6 +581,19 @@ export function CommentsText({ comments, commentType, gridLayout = false }) {
         </Typography>
       );
 
+    case "num_years_experience":
+      return comments === 0 ? (
+        ""
+      ) : (
+        <Typography
+          sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
+          bgcolor="orange"
+          variant="body2"
+        >
+          {comments}
+        </Typography>
+      );
+
     default:
       break;
   }

@@ -19,6 +19,7 @@ import {
   DraggableBallkidAndIcon,
   ConfirmDialog,
   HelpIcon,
+  CommentsText,
 } from "../Utils";
 import { finalsTeams } from "../HelpMessages";
 import { POSITIONS } from "../Consts";
@@ -112,7 +113,13 @@ function renderBallkidsOnTeam(assigned, setUpdated) {
     <div>
       {assigned.map((ballkid) => (
         <div key={`ballkid${ballkid.id}`} className="justify">
-          {<DraggableBallkidAndIcon ballkid={ballkid} />}
+          <div className="sxs">
+            <DraggableBallkidAndIcon ballkid={ballkid} />
+            <CommentsText
+              comments={ballkid.num_years_experience}
+              commentType={"num_years_experience"}
+            />
+          </div>
 
           <div className="sxs">
             {!ballkid.preferred_position.includes("/") ? (

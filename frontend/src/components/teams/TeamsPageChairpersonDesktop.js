@@ -148,7 +148,10 @@ export function UnassignedDesktop({
                             >
                               <DraggableBallkidAndIcon ballkid={ballkid} />
                               {isFinalsPage ? (
-                                ""
+                                <CommentsText
+                                  comments={ballkid.num_years_experience}
+                                  commentType={"num_years_experience"}
+                                />
                               ) : (
                                 <CommentsText
                                   comments={ballkid.checkout_comments}

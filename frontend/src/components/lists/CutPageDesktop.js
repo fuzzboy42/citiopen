@@ -24,6 +24,7 @@ import {
   HelpIcon,
   TournamentBanner,
   Alerts,
+  CommentsText,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -137,7 +138,14 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
           ""
         ) : (
           <div key={`ballkid${ballkid.id}`} className="justify">
-            {<DraggableBallkidAndIcon ballkid={ballkid} />}
+            <div className="sxs">
+              <DraggableBallkidAndIcon ballkid={ballkid} />
+
+              <CommentsText
+                comments={ballkid.num_years_experience}
+                commentType={"num_years_experience"}
+              />
+            </div>
             <div className="sxs">
               {section === "Self-Cut" ? (
                 ""
@@ -267,8 +275,12 @@ function ActiveSection({ active, setUpdated }) {
                 xl={4}
               >
                 {sliced.map((ballkid) => (
-                  <Grid key={ballkid.id} item sx={{ px: 1 }}>
-                    {<DraggableBallkidAndIcon ballkid={ballkid} />}
+                  <Grid key={ballkid.id} item sx={{ px: 1 }} className="sxs">
+                    <DraggableBallkidAndIcon ballkid={ballkid} />
+                    <CommentsText
+                      comments={ballkid.num_years_experience}
+                      commentType={"num_years_experience"}
+                    />
                   </Grid>
                 ))}
               </Grid>

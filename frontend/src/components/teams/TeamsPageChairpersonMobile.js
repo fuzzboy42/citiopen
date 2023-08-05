@@ -17,6 +17,7 @@ import {
   ConfirmDialog,
   DraggableBallkidAndIcon,
   TournamentBanner,
+  CommentsText,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
@@ -131,7 +132,20 @@ export function UnassignedMobile({
                   (ballkid) => (
                     <TableRow key={ballkid.id}>
                       <TableCell component="th" scope="row">
-                        <DraggableBallkidAndIcon ballkid={ballkid} />
+                        <div className="sxs">
+                          <DraggableBallkidAndIcon ballkid={ballkid} />
+                          {isFinalsPage ? (
+                            <CommentsText
+                              comments={ballkid.num_years_experience}
+                              commentType={"num_years_experience"}
+                            />
+                          ) : (
+                            <CommentsText
+                              comments={ballkid.checkout_comments}
+                              commentType={"checkout"}
+                            />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>{ballkid.preferred_position}</TableCell>
                       <TableCell align="right">
