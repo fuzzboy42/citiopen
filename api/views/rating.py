@@ -132,8 +132,11 @@ def calibrate(ratings, rating_name="overall", year=get_current_year()):
     )
     year_ratings = ratings.filter(date__year=year)
 
-    train = queryset_to_rcal(ratings, rating_name, returnAveraged=True)
+    # train = queryset_to_rcal(ratings, rating_name, returnAveraged=True)
+    # test = queryset_to_rcal(year_ratings, rating_name, returnAveraged=False)
+
     test = queryset_to_rcal(year_ratings, rating_name, returnAveraged=False)
+    train = {key: sum(val) / len(val) for key, val in test.items()}
 
     train, excluded = remove_nonoverlapping_reviewers(train)
 
