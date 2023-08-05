@@ -405,7 +405,7 @@ class SelfCutList(generics.ListAPIView):
     permission_classes = [IsChairperson]
 
     def get_queryset(self):
-        ballkids = Ballkid.objects.filter(is_active=True)
+        ballkids = Ballkid.objects.filter(is_active=True, is_cut=False)
         for ballkid in ballkids:
             if ballkid.schedule_comments:
                 try:
@@ -529,12 +529,17 @@ class UpdateBallkid(APIView):
             )
 
             for field in serializer.data:
-                if field in ["first_name", "last_name", "user"]:
+                if field in ["first_name", "last_name", "user", "self_cut"]:
                     continue
 
                 # Update the ballkid's field per the patch request
                 if serializer.data[field] is not None:
-                    ballkid.set_field(field, serializer.data[field])
+                    self_cut = (
+                        serializer.data["self_cut"]
+                        if "self_cut" in serializer.data
+                        else False
+                    )
+                    ballkid.set_field(field, serializer.data[field], self_cut=self_cut)
 
                 # If updating whether or not the ballkid is a captain, also update
                 # account permissions for that ballkid
@@ -596,22 +601,31 @@ class CutAll(APIView):
 
     def patch(self, request, format=None):
         should_cut = request.data["should_cut"]
-        cut_status = request.data["cut_status"]
+        self_cut = request.data["self_cut"] if "self_cut" in request.data else False
 
-        queryset = Ballkid.objects.filter(cut_status=cut_status)
+        if self_cut:
+            current_day = datetime.strftime((datetime.now() - timedelta(hours=10)), "%A")
+            queryset = Ballkid.objects.filter(
+                is_active=True, is_cut=False, last_day=current_day
+            ).order_by("last_name", "first_name")
+
+        else:
+            cut_status = request.data["cut_status"]
+            queryset = Ballkid.objects.filter(cut_status=cut_status)
+
         logger.info(
-            f"[CutAll] setting all ballkids {queryset} to cut status {should_cut}"
+            f"[CutAll] setting all ballkids {queryset} to cut status {should_cut} with self_cut {self_cut}"
         )
 
         for ballkid in queryset:
-            ballkid.set_field("is_cut", should_cut)
+            ballkid.set_field("is_cut", should_cut, self_cut=self_cut)
             ballkid.set_field("cut_status", "")
             ballkid.validate()
             ballkid.save()
 
         return Response(
             {
-                "Success": f"All ballkids in cut status tier {cut_status} were handled for cut_all: {should_cut}"
+                "Success": f"All ballkids {queryset} were handled for cut_all: {should_cut}"
             },
             status=status.HTTP_200_OK,
         )

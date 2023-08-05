@@ -177,6 +177,7 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
                           first_name: ballkid.first_name,
                           last_name: ballkid.last_name,
                           is_cut: true,
+                          self_cut: section === "Self-Cut",
                         }),
                       })
                         .then((response) => response.json())
@@ -321,7 +322,7 @@ export function renderCopyButtons(active, emails, setSuccessMsg) {
   );
 }
 
-export function SelfCutCard({ setUpdated }) {
+export function SelfCutCard({ updated, setUpdated }) {
   const [selfCut, setSelfCut] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -329,26 +330,10 @@ export function SelfCutCard({ setUpdated }) {
     fetch("/api/self-cut-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => setSelfCut(data));
-  }, []);
-
-  const [{ isOver }, dropRef] = useDrop({
-    accept: "ballkid",
-    drop: (ballkid) =>
-      fetch("/api/update-ballkid", {
-        method: "PATCH",
-        headers: getAuthHeader(),
-        body: JSON.stringify({
-          first_name: ballkid.first_name,
-          last_name: ballkid.last_name,
-        }),
-      })
-        .then((response) => response.json())
-        .then(() => setUpdated(true)),
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
-  });
+  }, [updated]);
 
   return (
-    <Grid item xs={12} sm={12} md={6} lg={6} xl={3} ref={dropRef}>
+    <Grid item xs={12} sm={12} md={6} lg={6} xl={3}>
       <ConfirmDialog
         message={`You are about to cut all ${selfCut.length} ballkid${
           selfCut.length > 1 ? "s" : ""
@@ -363,7 +348,7 @@ export function SelfCutCard({ setUpdated }) {
         setUpdated={setUpdated}
       />
 
-      <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
+      <Card sx={{ mb: 2 }} elevation={1}>
         <CardContent>
           <div className="justify">
             <div className="sxs">
@@ -480,7 +465,7 @@ export default function CutPageDesktop(props) {
               />
             ))}
 
-            <SelfCutCard setUpdated={setUpdated} />
+            <SelfCutCard updated={updated} setUpdated={setUpdated} />
           </Grid>
         </Grid>
 

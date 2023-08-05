@@ -180,7 +180,7 @@ export default function CutPageMobile() {
           />
         ))}
 
-        <SelfCutCard setUpdated={setUpdated} />
+        <SelfCutCard updated={updated} setUpdated={setUpdated} />
       </Grid>
 
       <SearchAndFilter

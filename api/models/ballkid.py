@@ -362,7 +362,7 @@ class Ballkid(models.Model):
                 f"[handle_cut_history] Deleted {num_deleted} cut history entries: {elems}"
             )
 
-    def set_field(self, field, value):
+    def set_field(self, field, value, self_cut=False):
         """
         Sets corresponding field to the value provided. Calls specialty handle
         functions as relevant (e.g. handle_checkin_history, handle_team_history)
@@ -404,7 +404,7 @@ class Ballkid(models.Model):
         elif field == "is_active":
             self.is_active = value
         elif field == "is_cut":
-            self.handle_cut_history(value)
+            self.handle_cut_history(value, self_cut=self_cut)
             self.is_cut = value
         elif field == "cut_status":
             self.cut_status = value
