@@ -163,12 +163,7 @@ export default function CheckinLeaderboard(props) {
           {averages !== undefined ? renderAverages(averages) : ""}
 
           <div style={{ height: 500 }}>
-            <DataGrid
-              columns={columns}
-              rows={rows}
-              pageSize={25}
-              density="compact"
-            />
+            <DataGrid columns={columns} rows={rows} density="compact" />
           </div>
 
           <Typography sx={{ mt: 2 }} variant="body1">

@@ -324,7 +324,6 @@ export default function RatingsGrid({ ratings, setUpdated }) {
         <DataGrid
           columns={columns}
           rows={rows}
-          pageSize={25}
           density="compact"
           components={{
             Toolbar: GridToolbar,
