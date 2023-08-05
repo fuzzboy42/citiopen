@@ -108,8 +108,9 @@ export function CutStatusSection({ section, active, setUpdated }) {
                 <Typography variant="subtitle2" sx={{ ml: 1 }}>
                   (
                   {
-                    active.filter((ballkid) => ballkid.position === position)
-                      .length
+                    active.filter((ballkid) =>
+                      ballkid.preferred_position.startsWith(position)
+                    ).length
                   }
                   )
                 </Typography>
@@ -132,7 +133,9 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
   return (
     <div>
       {active.map((ballkid) =>
-        ballkid.position === position ? (
+        !ballkid.preferred_position.startsWith(position) ? (
+          ""
+        ) : (
           <div key={`ballkid${ballkid.id}`} className="justify">
             {<DraggableBallkidAndIcon ballkid={ballkid} />}
             <div className="sxs">
@@ -190,8 +193,6 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
               )}
             </div>
           </div>
-        ) : (
-          ""
         )
       )}
     </div>
@@ -375,8 +376,9 @@ export function SelfCutCard({ updated, setUpdated }) {
                 <Typography variant="subtitle2" sx={{ ml: 1 }}>
                   (
                   {
-                    selfCut.filter((ballkid) => ballkid.position === position)
-                      .length
+                    selfCut.filter((ballkid) =>
+                      ballkid.preferred_position.startsWith(position)
+                    ).length
                   }
                   )
                 </Typography>
