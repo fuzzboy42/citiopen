@@ -463,14 +463,14 @@ export function ConfirmDialog({
   );
 }
 
-export function DraggableBallkidAndIcon({ ballkid }) {
+export function DraggableBallkidAndIcon({ ballkid, type = "" }) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "ballkid",
     item: { ...ballkid },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   }));
 
-  return (
+  const base = (
     <div
       ref={drag}
       style={{
@@ -494,8 +494,40 @@ export function DraggableBallkidAndIcon({ ballkid }) {
       </div>
     </div>
   );
-}
+  switch (type) {
+    case "":
+      return base;
 
+    case "checkout":
+      return (
+        <div className="sxs">
+          {base}
+          <CommentsText
+            comments={ballkid.checkout_comments}
+            commentType={"checkout"}
+          />
+        </div>
+      );
+
+    case "rank":
+      return (
+        <div className="sxs">
+          {base}
+          <CommentsText
+            comments={[ballkid.rank, ballkid.num_ratings]}
+            commentType={"rank"}
+          />
+          <CommentsText
+            comments={ballkid.num_years_experience}
+            commentType={"num_years_experience"}
+          />
+        </div>
+      );
+
+    default:
+      return base;
+  }
+}
 export function BallkidAndIcon({ ballkid }) {
   return (
     <div className="sxs">
@@ -601,7 +633,6 @@ export function CommentsText({ comments, commentType, gridLayout = false }) {
       );
 
     case "rank":
-      console.log(comments[1]);
       return comments.length !== 2 ? (
         ""
       ) : (

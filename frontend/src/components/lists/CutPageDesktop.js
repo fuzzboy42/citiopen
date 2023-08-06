@@ -24,7 +24,6 @@ import {
   HelpIcon,
   TournamentBanner,
   Alerts,
-  CommentsText,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -138,19 +137,8 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
           ""
         ) : (
           <div key={`ballkid${ballkid.id}`} className="justify">
-            <div className="sxs">
-              <DraggableBallkidAndIcon ballkid={ballkid} />
+            <DraggableBallkidAndIcon ballkid={ballkid} type="rank" />
 
-              <CommentsText
-                comments={[ballkid.rank, ballkid.num_ratings]}
-                commentType={"rank"}
-              />
-
-              <CommentsText
-                comments={ballkid.num_years_experience}
-                commentType={"num_years_experience"}
-              />
-            </div>
             <div className="sxs">
               {section === "Self-Cut" ? (
                 ""
@@ -280,18 +268,8 @@ function ActiveSection({ active, setUpdated }) {
                 xl={4}
               >
                 {sliced.map((ballkid) => (
-                  <Grid key={ballkid.id} item sx={{ px: 1 }} className="sxs">
-                    <DraggableBallkidAndIcon ballkid={ballkid} />
-
-                    <CommentsText
-                      comments={[ballkid.rank, ballkid.num_ratings]}
-                      commentType={"rank"}
-                    />
-
-                    <CommentsText
-                      comments={ballkid.num_years_experience}
-                      commentType={"num_years_experience"}
-                    />
+                  <Grid key={ballkid.id} item sx={{ px: 1 }}>
+                    <DraggableBallkidAndIcon ballkid={ballkid} type="rank" />
                   </Grid>
                 ))}
               </Grid>
@@ -433,10 +411,7 @@ export default function CutPageDesktop(props) {
   useEffect(() => {
     fetch("/api/all-sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => {
-        setActive(data.filter((ballkid) => !ballkid.is_cut));
-        console.log(data);
-      });
+      .then((data) => setActive(data.filter((ballkid) => !ballkid.is_cut)));
 
     fetch("/api/all-emails", { headers: getAuthHeader() })
       .then((response) => response.json())

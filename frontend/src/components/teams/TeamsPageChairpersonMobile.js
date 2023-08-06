@@ -17,7 +17,6 @@ import {
   ConfirmDialog,
   DraggableBallkidAndIcon,
   TournamentBanner,
-  CommentsText,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
@@ -132,20 +131,10 @@ export function UnassignedMobile({
                   (ballkid) => (
                     <TableRow key={ballkid.id}>
                       <TableCell component="th" scope="row">
-                        <div className="sxs">
-                          <DraggableBallkidAndIcon ballkid={ballkid} />
-                          {isFinalsPage ? (
-                            <CommentsText
-                              comments={ballkid.num_years_experience}
-                              commentType={"num_years_experience"}
-                            />
-                          ) : (
-                            <CommentsText
-                              comments={ballkid.checkout_comments}
-                              commentType={"checkout"}
-                            />
-                          )}
-                        </div>
+                        <DraggableBallkidAndIcon
+                          ballkid={ballkid}
+                          type={isFinalsPage ? "rank" : "checkout"}
+                        />
                       </TableCell>
                       <TableCell>{ballkid.preferred_position}</TableCell>
                       <TableCell align="right">
@@ -187,7 +176,7 @@ export default function TeamsPageChairpersonMobile(props) {
   const [updated, setUpdated] = useState(false);
 
   useEffect(() => {
-    fetch("/api/sorted-list", { headers: getAuthHeader() })
+    fetch("/api/all-sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
         setAssigned(

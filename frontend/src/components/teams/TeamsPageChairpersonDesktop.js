@@ -13,7 +13,6 @@ import {
   ConfirmDialog,
   DraggableBallkidAndIcon,
   TournamentBanner,
-  CommentsText,
 } from "../Utils";
 import { MARGINS, POSITIONS } from "../Consts";
 import {
@@ -140,24 +139,11 @@ export function UnassignedDesktop({
                           xl={4}
                         >
                           {sliced.map((ballkid) => (
-                            <Grid
-                              key={ballkid.id}
-                              item
-                              sx={{ px: 1 }}
-                              className="sxs"
-                            >
-                              <DraggableBallkidAndIcon ballkid={ballkid} />
-                              {isFinalsPage ? (
-                                <CommentsText
-                                  comments={ballkid.num_years_experience}
-                                  commentType={"num_years_experience"}
-                                />
-                              ) : (
-                                <CommentsText
-                                  comments={ballkid.checkout_comments}
-                                  commentType={"checkout"}
-                                />
-                              )}
+                            <Grid key={ballkid.id} item sx={{ px: 1 }}>
+                              <DraggableBallkidAndIcon
+                                ballkid={ballkid}
+                                type={isFinalsPage ? "rank" : "checkout"}
+                              />
                             </Grid>
                           ))}
                         </Grid>
@@ -181,7 +167,7 @@ export default function TeamsPageChairpersonDesktop(props) {
   const [updated, setUpdated] = useState(false);
 
   useEffect(() => {
-    fetch("/api/sorted-list", { headers: getAuthHeader() })
+    fetch("/api/all-sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
       .then((data) => {
         setAssigned(

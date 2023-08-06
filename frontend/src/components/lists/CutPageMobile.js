@@ -20,7 +20,6 @@ import {
   HelpIcon,
   Alerts,
   TournamentBanner,
-  CommentsText,
 } from "../Utils";
 import {
   SelfCutCard,
@@ -108,13 +107,7 @@ function ActiveSection({ active, sections, setUpdated }) {
                 ) : (
                   <TableRow key={ballkid.id}>
                     <TableCell component="th" scope="row">
-                      <div className="sxs">
-                        <DraggableBallkidAndIcon ballkid={ballkid} />
-                        <CommentsText
-                          comments={ballkid.num_years_experience}
-                          commentType={"num_years_experience"}
-                        />
-                      </div>
+                      <DraggableBallkidAndIcon ballkid={ballkid} type="rank" />
                     </TableCell>
                     <TableCell>{ballkid.preferred_position}</TableCell>
                     <TableCell align="right">
