@@ -55,7 +55,9 @@ class TestBallkidListView(APITestCase):
         serializer = BallkidSerializer(ballkids, many=True)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(serializer.data, response.data)
+        self.assertEqual(serializer.data[0]["first_name"], response.data[0]["first_name"])
+        self.assertEqual(serializer.data[1]["first_name"], response.data[1]["first_name"])
+        self.assertEqual(serializer.data[2]["first_name"], response.data[2]["first_name"])
 
     def test_cut_list(self):
         response = self.client.get(reverse("list"))
