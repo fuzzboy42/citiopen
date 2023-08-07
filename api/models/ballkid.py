@@ -40,6 +40,7 @@ class DAY_OF_WEEK(models.TextChoices):
     FRIDAY = "Friday"
     SATURDAY = "Saturday"
     SUNDAY = "Sunday"
+    END = "End"
 
 
 class Ballkid(models.Model):
@@ -415,8 +416,8 @@ class Ballkid(models.Model):
             self.comments = value
         elif field == "checkout_comments":
             self.checkout_comments = value
-        elif field == "schedule_comments":
-            self.schedule_comments = value
+        elif field == "last_day":
+            self.last_day = value
         else:
             raise Exception(f"Unrecognized field {field}")
 

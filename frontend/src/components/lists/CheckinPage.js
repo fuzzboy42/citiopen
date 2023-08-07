@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
 
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
@@ -65,25 +66,18 @@ function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
   );
 }
 
-function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
-  const defaultComment = isCheckoutComments ? "End" : "";
-  const ballkidComments = isCheckoutComments
-    ? ballkid.checkout_comments
-    : ballkid.schedule_comments;
-
-  const [comments, setComments] = useState(ballkidComments ?? defaultComment);
+function CheckoutComments({ ballkid, gridLayout, setUpdated }) {
+  const [comments, setComments] = useState(ballkid.checkout_comments ?? "End");
   const [disabled, setDisabled] = useState(
-    ballkidComments !== "" && ballkidComments !== null
+    ballkid.checkout_comments !== "" && ballkid.checkout_comments !== null
   );
 
-  const isMobile = useIsMobile();
-
-  return isMobile ? (
+  return useIsMobile() ? (
     ""
   ) : ballkid.is_checked_in ? (
     <CommentsText
       comments={ballkid.checkout_comments}
-      commentType={isCheckoutComments ? "checkout" : ""}
+      commentType="checkout"
       gridLayout={gridLayout}
     />
   ) : (
@@ -91,14 +85,12 @@ function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
       className="sxs"
       sx={{ mr: gridLayout ? 0 : 3, mt: gridLayout ? 1 : 0 }}
     >
-      <Typography>
-        {isCheckoutComments ? "Check-out Time:" : "Last Day: "}
-      </Typography>
+      <Typography>Check-out Time:</Typography>
       &thinsp;
       <TextField
         variant="standard"
         disabled={disabled}
-        sx={{ maxWidth: isCheckoutComments ? "40px" : "100px", mx: 0.5 }}
+        sx={{ maxWidth: "40px", mx: 0.5 }}
         value={comments}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => {
@@ -119,9 +111,79 @@ function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
           e.stopPropagation();
           e.preventDefault();
 
-          const bodyDict = isCheckoutComments
-            ? { checkout_comments: comments }
-            : { schedule_comments: comments };
+          fetch("/api/update-ballkid", {
+            method: "PATCH",
+            headers: getAuthHeader(),
+            body: JSON.stringify({
+              first_name: ballkid.first_name,
+              last_name: ballkid.last_name,
+              checkout_comments: comments,
+            }),
+          })
+            .then((response) => response.json())
+            .then(() => setUpdated(true));
+        }}
+      >
+        <Done />
+      </IconButton>
+    </Box>
+  );
+}
+
+function LastDayComments({ ballkid, gridLayout, setUpdated }) {
+  const [comments, setComments] = useState(ballkid.last_day ?? "End");
+  const [disabled, setDisabled] = useState(
+    ballkid.last_day !== "" && ballkid.last_day !== null
+  );
+
+  return useIsMobile() || ballkid.is_checked_in ? (
+    ""
+  ) : (
+    <Box
+      className="sxs"
+      sx={{ mr: gridLayout ? 0 : 3, mt: gridLayout ? 1 : 0 }}
+    >
+      <Typography>Last Day:</Typography>
+      &thinsp;
+      <TextField
+        select
+        value={comments}
+        disabled={disabled}
+        variant="standard"
+        sx={{ mx: 0.5 }}
+        style={{ minWidth: 125 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onChange={(e) => setComments(e.target.value)}
+        onDoubleClick={() => setDisabled(false)}
+      >
+        {[
+          "End",
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ].map((value) => (
+          <MenuItem key={value} value={value}>
+            {value}
+          </MenuItem>
+        ))}
+      </TextField>
+      <IconButton
+        variant="outlined"
+        size="small"
+        color="primary"
+        disabled={disabled}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          setDisabled(true);
+          e.stopPropagation();
+          e.preventDefault();
 
           fetch("/api/update-ballkid", {
             method: "PATCH",
@@ -129,7 +191,7 @@ function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
             body: JSON.stringify({
               first_name: ballkid.first_name,
               last_name: ballkid.last_name,
-              ...bodyDict,
+              last_day: comments,
             }),
           })
             .then((response) => response.json())
@@ -178,15 +240,13 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
                 ) : (
                   ""
                 )}
-                <Comments
+                <LastDayComments
                   ballkid={ballkid}
-                  isCheckoutComments={false}
                   gridLayout={gridLayout}
                   setUpdated={setUpdated}
                 />
-                <Comments
+                <CheckoutComments
                   ballkid={ballkid}
-                  isCheckoutComments={true}
                   gridLayout={gridLayout}
                   setUpdated={setUpdated}
                 />
@@ -305,12 +365,10 @@ export default function CheckinPage(props) {
         setUpdated
       )}
 
-      <Grid item className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Checked Out
-        </Typography>
+      <Grid item className="sxs" sx={MARGINS}>
+        <Typography variant="h5">Checked Out</Typography>
         &ensp;
-        <Typography variant="h6" sx={MARGINS}>
+        <Typography variant="h6">
           ({filterBallkids(checkedOut, searchKeyword, filterGroup).length})
         </Typography>
       </Grid>
