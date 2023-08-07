@@ -81,15 +81,11 @@ function Comments({ ballkid, isCheckoutComments, gridLayout, setUpdated }) {
   return isMobile ? (
     ""
   ) : ballkid.is_checked_in ? (
-    !isCheckoutComments ? (
-      ""
-    ) : (
-      <CommentsText
-        comments={comments}
-        commentType={"checkout"}
-        gridLayout={gridLayout}
-      />
-    )
+    <CommentsText
+      comments={ballkid.checkout_comments}
+      commentType={isCheckoutComments ? "checkout" : ""}
+      gridLayout={gridLayout}
+    />
   ) : (
     <Box
       className="sxs"

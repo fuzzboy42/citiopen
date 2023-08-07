@@ -608,12 +608,10 @@ export function HelpIcon({ page, message }) {
 export function CommentsText({ comments, commentType, gridLayout = false }) {
   switch (commentType) {
     case "checkout":
-      return comments === "End" ? (
-        ""
-      ) : (
+      return (
         <Typography
           sx={{ mx: 0.5, px: 0.5, my: gridLayout ? 1 : 0 }}
-          bgcolor="orange"
+          bgcolor={comments === "End" ? "" : "orange"}
           variant="body2"
         >
           {comments}
