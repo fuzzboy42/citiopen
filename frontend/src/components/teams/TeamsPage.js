@@ -78,14 +78,14 @@ export default function TeamsPage(props) {
   useEffect(() => {
     fetch("/api/sorted-list", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => {
+      .then((data) =>
         setAssigned(
           data.filter(
             (ballkid) =>
               ballkid.is_checked_in === true && ballkid.current_team > 0
           )
-        );
-      });
+        )
+      );
 
     fetch("/api/calc-num-teams", { headers: getAuthHeader() })
       .then((response) => response.json())

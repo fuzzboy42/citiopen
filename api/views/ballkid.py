@@ -406,10 +406,21 @@ class BallkidsSortedList(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
+        group = self.request.user.groups.first().name
 
-        ballkids = (
-            Ballkid.objects.filter(is_active=True, is_cut=False)
-            .annotate(
+        ballkids = Ballkid.objects.filter(is_active=True, is_cut=False).order_by(
+            "-is_chairperson",
+            "-is_captain",
+            "-num_years_experience",
+            "last_name",
+            "first_name",
+        )
+
+        if group == "captain" or group == "chairperson":
+            ballkids = ballkids if not pk else annotate_ratings(ballkids, pk)
+
+        if group == "chairperson":
+            ballkids = ballkids.annotate(
                 num_ratings=Count(
                     "ratee", filter=Q(ratee__date__year=get_current_year())
                 ),
@@ -423,18 +434,11 @@ class BallkidsSortedList(generics.ListAPIView):
                     ).desc(),
                 ),
             )
-            .order_by(
-                "-is_chairperson",
-                "-is_captain",
-                "-num_years_experience",
-                "last_name",
-                "first_name",
-            )
-        )
 
-        queryset = ballkids if not pk else annotate_ratings(ballkids, pk)
-        logger.info(f"[BallkidsSortedList] pk: {pk}; ballkids: {queryset}")
-        return queryset
+        logger.info(
+            f"[BallkidsSortedList] group: {group} with pk: {pk}, returning ballkids: {ballkids}"
+        )
+        return ballkids
 
 
 class BallkidsInactiveList(generics.ListAPIView):
