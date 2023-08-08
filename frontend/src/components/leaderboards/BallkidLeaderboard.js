@@ -12,6 +12,7 @@ import {
 } from "../Utils";
 import { Box } from "@mui/material";
 import { ratingsBallkidLeaderboard } from "../HelpMessages";
+import { DATA_GRID_HEIGHT } from "../Consts";
 
 export default function BallkidLeaderboard(props) {
   const [ballkids, setBallkids] = useState([]);
@@ -91,7 +92,7 @@ export default function BallkidLeaderboard(props) {
         />
       </Box>
 
-      <div style={{ height: 500 }}>
+      <div style={{ height: DATA_GRID_HEIGHT }}>
         <DataGrid columns={columns} rows={rows} density="compact" />
       </div>
     </div>

@@ -23,6 +23,7 @@ import {
   TournamentBanner,
 } from "../Utils";
 import { courtLeaderboard } from "../HelpMessages";
+import { DATA_GRID_HEIGHT } from "../Consts";
 
 function renderAverages(averages, showPercent) {
   const courtTimes = {
@@ -266,7 +267,7 @@ export default function CourtLeaderboard(props) {
         <div>
           {averages !== undefined ? renderAverages(averages, showPercent) : ""}
 
-          <div style={{ height: 500 }}>
+          <div style={{ height: DATA_GRID_HEIGHT }}>
             <DataGrid columns={columns} rows={rows} density="compact" />
           </div>
 

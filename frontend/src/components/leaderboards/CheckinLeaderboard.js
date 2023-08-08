@@ -22,6 +22,7 @@ import {
 } from "../Utils";
 import { Box } from "@mui/material";
 import { checkinLeaderboard } from "../HelpMessages";
+import { DATA_GRID_HEIGHT } from "../Consts";
 
 function renderAverages(averages) {
   const totalDurationFloat = parseFloat(averages["checkin_avg"]) / 3600;
@@ -162,7 +163,7 @@ export default function CheckinLeaderboard(props) {
         <div>
           {averages !== undefined ? renderAverages(averages) : ""}
 
-          <div style={{ height: 500 }}>
+          <div style={{ height: DATA_GRID_HEIGHT }}>
             <DataGrid columns={columns} rows={rows} density="compact" />
           </div>
 

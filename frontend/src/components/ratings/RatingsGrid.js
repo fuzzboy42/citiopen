@@ -13,6 +13,7 @@ import Delete from "@mui/icons-material/Delete";
 
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { getLocalStorage, ConfirmDialog } from "../Utils";
+import { DATA_GRID_HEIGHT } from "../Consts";
 
 export default function RatingsGrid({ ratings, setUpdated }) {
   const [open, setOpen] = useState(false);
@@ -320,7 +321,7 @@ export default function RatingsGrid({ ratings, setUpdated }) {
         method="DELETE"
       />
 
-      <div style={{ height: 500 }}>
+      <div style={{ height: DATA_GRID_HEIGHT }}>
         <DataGrid
           columns={columns}
           rows={rows}
