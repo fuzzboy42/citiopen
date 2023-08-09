@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,7 +10,8 @@ import {
   Legend,
 } from "chart.js";
 import { Scatter } from "react-chartjs-2";
-import { CHART_COLORS, CHART_GRAY } from "../Consts";
+import { CHART_GRAY } from "../Consts";
+import { getAuthHeader } from "../Utils";
 
 ChartJS.register(
   CategoryScale,
@@ -22,12 +23,17 @@ ChartJS.register(
   Legend
 );
 
-export function RaterParamsChart({
-  offset,
-  scale,
-  average_offset,
-  average_scale,
-}) {
+export function RaterParamsChart({ captainData }) {
+  const [average, setAverage] = useState({});
+
+  useEffect(() => {
+    fetch("/api/average-calibration-parameters", {
+      headers: getAuthHeader(),
+    })
+      .then((response) => response.json())
+      .then((data) => setAverage(data));
+  }, []);
+
   const options = {
     responsive: true,
     showLine: true,
@@ -63,21 +69,15 @@ export function RaterParamsChart({
 
   const data = {
     datasets: [
-      {
-        label: "Captain",
-
-        data: [
-          { x: 0.5, y: scale * 0.5 + offset },
-          { x: 5, y: scale * 5 + offset },
-        ],
-        borderColor: CHART_COLORS[11],
-        backgroundColor: `${CHART_COLORS[11]}50`,
-      },
+      ...captainData,
       {
         label: "Average",
         data: [
-          { x: 0.5, y: average_scale * 0.5 + average_offset },
-          { x: 5, y: average_scale * 5 + average_offset },
+          {
+            x: 0.5,
+            y: average.rater_scale__avg * 0.5 + average.rater_offset__avg,
+          },
+          { x: 5, y: average.rater_scale__avg * 5 + average.rater_offset__avg },
         ],
         borderDash: [10, 5],
         borderColor: CHART_GRAY,
@@ -96,5 +96,9 @@ export function RaterParamsChart({
     ],
   };
 
-  return <Scatter options={options} data={data} />;
+  return average === undefined || average === null ? (
+    ""
+  ) : (
+    <Scatter options={options} data={data} />
+  );
 }

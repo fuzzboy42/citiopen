@@ -57,6 +57,7 @@ import {
   NUM_RATERS_WARNING_THRESHOLD,
   NUM_RATINGS_WARNING_THRESHOLD,
   MARGINS,
+  CHART_COLORS,
 } from "../Consts";
 
 function renderHeader(ballkid, setUpdated, isMobile) {
@@ -356,7 +357,7 @@ export function renderBallkidCutHistory(cuts) {
   );
 }
 
-function renderRatingsCaptainSection(ballkid, ballkidGroup, params, average) {
+function renderRatingsCaptainSection(ballkid, ballkidGroup, params) {
   const pk = getLocalStorage("ballkid_id");
 
   return (
@@ -392,10 +393,18 @@ function renderRatingsCaptainSection(ballkid, ballkidGroup, params, average) {
           </Typography>
 
           <RaterParamsChart
-            offset={params.rater_offset}
-            scale={params.rater_scale}
-            average_offset={average.rater_offset__avg}
-            average_scale={average.rater_scale__avg}
+            captainData={[
+              {
+                label: "Captain",
+
+                data: [
+                  { x: 0.5, y: params.rater_scale * 0.5 + params.rater_offset },
+                  { x: 5, y: params.rater_scale * 5 + params.rater_offset },
+                ],
+                borderColor: CHART_COLORS[11],
+                backgroundColor: `${CHART_COLORS[11]}50`,
+              },
+            ]}
             sx={{ mb: 2 }}
           />
         </div>
@@ -462,7 +471,6 @@ function renderRatingsBallkidSection(ballkid, params) {
 
 function RatingSection({ ballkid }) {
   const [params, setParams] = useState({});
-  const [average, setAverage] = useState({});
 
   const ballkidGroup = ballkid.is_chairperson
     ? "chairperson"
@@ -476,12 +484,6 @@ function RatingSection({ ballkid }) {
     })
       .then((response) => response.json())
       .then((data) => setParams(data));
-
-    fetch("/api/average-calibration-parameters", {
-      headers: getAuthHeader(),
-    })
-      .then((response) => response.json())
-      .then((data) => setAverage(data));
   }, [ballkid.id]);
 
   return (
@@ -491,7 +493,7 @@ function RatingSection({ ballkid }) {
       </Grid>
       {ballkidGroup === "ballkid"
         ? ""
-        : renderRatingsCaptainSection(ballkid, ballkidGroup, params, average)}
+        : renderRatingsCaptainSection(ballkid, ballkidGroup, params)}
 
       {ballkidGroup === "chairperson"
         ? ""
