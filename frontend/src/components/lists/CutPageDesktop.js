@@ -223,9 +223,6 @@ function ActiveSection({ active, setUpdated }) {
     collect: (monitor) => ({ isOver: monitor.isOver() }),
   });
 
-  const filtered = filterBallkids(active, searchKeyword, filterGroup);
-  const half = Math.ceil(filtered.length / 2);
-
   return (
     <Box
       component={Paper}
@@ -239,7 +236,7 @@ function ActiveSection({ active, setUpdated }) {
         </Typography>
         &ensp;
         <Typography variant="h6" sx={MARGINS}>
-          ({filtered.length})
+          ({active.length})
         </Typography>
       </div>
 
@@ -250,37 +247,62 @@ function ActiveSection({ active, setUpdated }) {
         filters={["rookie", "supervet", "captain", "back", "net"]}
       />
 
-      {active.length === 0 ? (
-        <Typography>
-          There are currently no active ballkids left to categorize.
-        </Typography>
-      ) : (
-        <Grid container>
-          {[filtered.slice(0, half), filtered.slice(half)].map((sliced) =>
-            sliced.length === 0 ? (
-              ""
+      {POSITIONS.map((position) => {
+        const filtered = filterBallkids(
+          active,
+          searchKeyword,
+          filterGroup
+        ).filter((ballkid) => ballkid.preferred_position.startsWith(position));
+        const half = Math.ceil(filtered.length / 2);
+
+        return (
+          <div key={position}>
+            <div className="sxs">
+              <Typography variant="h6" sx={MARGINS}>
+                {position}s
+              </Typography>
+              <Typography variant="subtitle1" sx={{ ...MARGINS, ml: 1 }}>
+                ({filtered.length})
+              </Typography>
+            </div>
+
+            {active.length === 0 ? (
+              <Typography>
+                There are currently no active ballkids left to categorize.
+              </Typography>
             ) : (
-              <Grid
-                container
-                item
-                key={sliced[0].id}
-                direction="column"
-                xs={12}
-                sm={6}
-                md={6}
-                lg={6}
-                xl={4}
-              >
-                {sliced.map((ballkid) => (
-                  <Grid key={ballkid.id} item sx={{ px: 1 }}>
-                    <DraggableBallkidAndIcon ballkid={ballkid} type="rank" />
-                  </Grid>
-                ))}
+              <Grid container>
+                {[filtered.slice(0, half), filtered.slice(half)].map((sliced) =>
+                  sliced.length === 0 ? (
+                    ""
+                  ) : (
+                    <Grid
+                      container
+                      item
+                      key={sliced[0].id}
+                      direction="column"
+                      xs={12}
+                      sm={6}
+                      md={6}
+                      lg={6}
+                      xl={4}
+                    >
+                      {sliced.map((ballkid) => (
+                        <Grid key={ballkid.id} item sx={{ px: 1 }}>
+                          <DraggableBallkidAndIcon
+                            ballkid={ballkid}
+                            type="rank"
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )
+                )}
               </Grid>
-            )
-          )}
-        </Grid>
-      )}
+            )}
+          </div>
+        );
+      })}
     </Box>
   );
 }
