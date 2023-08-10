@@ -66,7 +66,7 @@ function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
   );
 }
 
-function CheckoutComments({ ballkid, gridLayout, setUpdated }) {
+function CheckoutComments({ ballkid, layout, setUpdated }) {
   const [comments, setComments] = useState(ballkid.checkout_comments ?? "End");
   const [disabled, setDisabled] = useState(
     ballkid.checkout_comments !== "" && ballkid.checkout_comments !== null
@@ -78,12 +78,12 @@ function CheckoutComments({ ballkid, gridLayout, setUpdated }) {
     <CommentsText
       comments={ballkid.checkout_comments}
       commentType="checkout"
-      gridLayout={gridLayout}
+      layout={layout}
     />
   ) : (
     <Box
       className="sxs"
-      sx={{ mr: gridLayout ? 0 : 3, mt: gridLayout ? 1 : 0 }}
+      sx={{ mr: layout === "grid" ? 0 : 3, mt: layout === "grid" ? 1 : 0 }}
     >
       <Typography>Check-out Time:</Typography>
       &thinsp;
@@ -130,7 +130,7 @@ function CheckoutComments({ ballkid, gridLayout, setUpdated }) {
   );
 }
 
-function LastDayComments({ ballkid, gridLayout, setUpdated }) {
+function LastDayComments({ ballkid, layout, setUpdated }) {
   const [comments, setComments] = useState(ballkid.last_day ?? "End");
   const [disabled, setDisabled] = useState(
     ballkid.last_day !== "" && ballkid.last_day !== null
@@ -141,7 +141,7 @@ function LastDayComments({ ballkid, gridLayout, setUpdated }) {
   ) : (
     <Box
       className="sxs"
-      sx={{ mr: gridLayout ? 0 : 3, mt: gridLayout ? 1 : 0 }}
+      sx={{ mr: layout === "grid" ? 0 : 3, mt: layout === "grid" ? 1 : 0 }}
     >
       <Typography>Last Day:</Typography>
       &thinsp;
@@ -204,7 +204,7 @@ function LastDayComments({ ballkid, gridLayout, setUpdated }) {
   );
 }
 
-function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
+function renderBallkids(ballkids, isCheckedIn, layout, setUpdated) {
   return ballkids.length === 0 ? (
     <Typography variant="body1">
       {isCheckedIn
@@ -212,26 +212,26 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
         : "There are currently no ballkids checked out."}
     </Typography>
   ) : (
-    <Grid container spacing={gridLayout ? 2 : 1}>
+    <Grid container spacing={layout === "grid" ? 2 : 1}>
       {ballkids.map((ballkid) => (
         <Grid
           item
           key={ballkid.id}
-          xs={gridLayout ? 6 : 12}
-          sm={gridLayout ? 4 : 12}
-          md={gridLayout ? 3 : 12}
-          lg={gridLayout ? 2 : 12}
-          xl={gridLayout ? 1 : 12}
+          xs={layout === "grid" ? 6 : 12}
+          sm={layout === "grid" ? 4 : 12}
+          md={layout === "grid" ? 3 : 12}
+          lg={layout === "grid" ? 2 : 12}
+          xl={layout === "grid" ? 1 : 12}
         >
           <BallkidCard
             ballkid={ballkid}
             renderAdditional={
               <Box
-                className={gridLayout ? "" : "sxs"}
+                className={layout === "grid" ? "" : "sxs"}
                 textAlign="center"
-                sx={{ mt: gridLayout ? 1 : 0 }}
+                sx={{ mt: layout === "grid" ? 1 : 0 }}
               >
-                {gridLayout ? (
+                {layout === "grid" ? (
                   <CheckinButton
                     ballkid={ballkid}
                     isCheckedIn={isCheckedIn}
@@ -242,15 +242,15 @@ function renderBallkids(ballkids, isCheckedIn, gridLayout, setUpdated) {
                 )}
                 <LastDayComments
                   ballkid={ballkid}
-                  gridLayout={gridLayout}
+                  layout={layout}
                   setUpdated={setUpdated}
                 />
                 <CheckoutComments
                   ballkid={ballkid}
-                  gridLayout={gridLayout}
+                  layout={layout}
                   setUpdated={setUpdated}
                 />
-                {gridLayout ? (
+                {layout === "grid" ? (
                   ""
                 ) : (
                   <CheckinButton
@@ -283,9 +283,7 @@ export default function CheckinPage(props) {
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
-  const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? false
-  );
+  const [layout, setLayout] = useState(getLocalStorage("layout") ?? "list");
   const [updated, setUpdated] = useState(false);
 
   useEffect(() => {
@@ -331,7 +329,7 @@ export default function CheckinPage(props) {
           &thinsp;
           <HelpIcon page="Check-in" message={checkin} />
         </Box>
-        <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
+        <LayoutButtons layout={layout} setLayout={setLayout} />
       </div>
 
       <SearchAndFilter
@@ -361,7 +359,7 @@ export default function CheckinPage(props) {
       {renderBallkids(
         filterBallkids(checkedIn, searchKeyword, filterGroup),
         true,
-        gridLayout,
+        layout,
         setUpdated
       )}
 
@@ -376,7 +374,7 @@ export default function CheckinPage(props) {
       {renderBallkids(
         filterBallkids(checkedOut, searchKeyword, filterGroup),
         false,
-        gridLayout,
+        layout,
         setUpdated
       )}
     </div>

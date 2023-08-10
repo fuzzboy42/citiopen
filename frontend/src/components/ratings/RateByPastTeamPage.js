@@ -19,23 +19,23 @@ import {
 import { MARGINS } from "../Consts";
 import { rateByPastTeam } from "../HelpMessages";
 
-function renderBallkid(ballkid, gridLayout, setUpdated, date = null) {
+function renderBallkid(ballkid, layout, setUpdated, date = null) {
   return ballkid === undefined || ballkid === null ? (
     ""
   ) : (
     <Grid
       item
       key={ballkid.id}
-      xs={gridLayout ? 6 : 12}
-      sm={gridLayout ? 4 : 12}
-      md={gridLayout ? 3 : 12}
-      lg={gridLayout ? 2 : 12}
-      xl={gridLayout ? 1 : 12}
+      xs={layout === "grid" ? 6 : 12}
+      sm={layout === "grid" ? 4 : 12}
+      md={layout === "grid" ? 3 : 12}
+      lg={layout === "grid" ? 2 : 12}
+      xl={layout === "grid" ? 1 : 12}
     >
       <BallkidCard
         ballkid={ballkid}
         renderAdditional={
-          <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
+          <Box textAlign="center" sx={{ mt: layout === "grid" ? 1 : 0 }}>
             <RatingButton
               ballkid={ballkid}
               setUpdated={setUpdated}
@@ -57,9 +57,7 @@ export default function RateByPastTeamPage(props) {
   const [showUnrated, setShowUnrated] = useState(
     getLocalStorage("showUnrated") ?? false
   );
-  const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? false
-  );
+  const [layout, setLayout] = useState(getLocalStorage("layout") ?? "list");
   const pk = getLocalStorage("ballkid_id");
 
   useEffect(() => {
@@ -89,7 +87,7 @@ export default function RateByPastTeamPage(props) {
           <HelpIcon page="Rate by Past Team" message={rateByPastTeam} />
         </Box>
 
-        <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
+        <LayoutButtons layout={layout} setLayout={setLayout} />
       </div>
 
       <div className="sxs">
@@ -113,13 +111,13 @@ export default function RateByPastTeamPage(props) {
               {date}
             </Typography>
 
-            <Grid container spacing={gridLayout ? 2 : 1}>
+            <Grid container spacing={layout === "grid" ? 2 : 1}>
               {pastTeams[date].map((ballkidId) =>
                 renderBallkid(
                   (showUnrated ? unratedBallkids : ballkids).find(
                     (ballkid) => ballkid.id === ballkidId
                   ),
-                  gridLayout,
+                  layout,
                   setUpdated,
                   getDay(date)
                 )

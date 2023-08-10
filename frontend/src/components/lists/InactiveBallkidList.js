@@ -75,27 +75,27 @@ function renderUncutButton(ballkid, setUpdated) {
   );
 }
 
-function renderBallkids(ballkids, section, gridLayout, setUpdated) {
+function renderBallkids(ballkids, section, layout, setUpdated) {
   return ballkids.length === 0 ? (
     <Typography variant="body1">
       There are currently no {section} ballkids.
     </Typography>
   ) : (
-    <Grid container spacing={gridLayout ? 2 : 1}>
+    <Grid container spacing={layout === "grid" ? 2 : 1}>
       {ballkids.map((ballkid) => (
         <Grid
           item
           key={ballkid.id}
-          xs={gridLayout ? 6 : 12}
-          sm={gridLayout ? 4 : 12}
-          md={gridLayout ? 3 : 12}
-          lg={gridLayout ? 2 : 12}
-          xl={gridLayout ? 1 : 12}
+          xs={layout === "grid" ? 6 : 12}
+          sm={layout === "grid" ? 4 : 12}
+          md={layout === "grid" ? 3 : 12}
+          lg={layout === "grid" ? 2 : 12}
+          xl={layout === "grid" ? 1 : 12}
         >
           <BallkidCard
             ballkid={ballkid}
             renderAdditional={
-              <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
+              <Box textAlign="center" sx={{ mt: layout === "grid" ? 1 : 0 }}>
                 {section === "cut"
                   ? renderUncutButton(ballkid, setUpdated)
                   : renderUnarchiveButton(ballkid, setUpdated)}
@@ -114,9 +114,7 @@ export default function InactiveBallkidList(props) {
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
-  const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? false
-  );
+  const [layout, setLayout] = useState(getLocalStorage("layout") ?? "list");
   const [updated, setUpdated] = useState(false);
 
   useEffect(() => {
@@ -144,7 +142,7 @@ export default function InactiveBallkidList(props) {
           <HelpIcon page="Inactive" message={inactive} />
         </Box>
 
-        <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
+        <LayoutButtons layout={layout} setLayout={setLayout} />
       </div>
 
       <SearchAndFilter
@@ -166,7 +164,7 @@ export default function InactiveBallkidList(props) {
       {renderBallkids(
         filterBallkids(cut, searchKeyword, filterGroup),
         "cut",
-        gridLayout,
+        layout,
         setUpdated
       )}
 
@@ -183,7 +181,7 @@ export default function InactiveBallkidList(props) {
       {renderBallkids(
         filterBallkids(archived, searchKeyword, filterGroup),
         "archived",
-        gridLayout,
+        layout,
         setUpdated
       )}
     </div>

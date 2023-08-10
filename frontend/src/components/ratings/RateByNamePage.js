@@ -56,28 +56,28 @@ function renderSwitch(param, setParam, offStr, onStr, switchName) {
   );
 }
 
-function BallkidsSection({ ballkids, gridLayout, setUpdated }) {
+function BallkidsSection({ ballkids, layout, setUpdated }) {
   const isMobile = useIsMobile();
   const isChairperson = getLocalStorage("group") === "chairperson";
 
   return ballkids.length === 0 ? (
     <Typography variant="body1">There are no ballkids to rate.</Typography>
   ) : (
-    <Grid container spacing={gridLayout ? 2 : 1}>
+    <Grid container spacing={layout === "grid" ? 2 : 1}>
       {ballkids.map((ballkid) => (
         <Grid
           item
           key={ballkid.id}
-          xs={gridLayout ? 6 : 12}
-          sm={gridLayout ? 4 : 12}
-          md={gridLayout ? 3 : 12}
-          lg={gridLayout ? 2 : 12}
-          xl={gridLayout ? 1 : 12}
+          xs={layout === "grid" ? 6 : 12}
+          sm={layout === "grid" ? 4 : 12}
+          md={layout === "grid" ? 3 : 12}
+          lg={layout === "grid" ? 2 : 12}
+          xl={layout === "grid" ? 1 : 12}
         >
           <BallkidCard
             ballkid={ballkid}
             renderAdditional={
-              <Box textAlign="center" sx={{ mt: gridLayout ? 1 : 0 }}>
+              <Box textAlign="center" sx={{ mt: layout === "grid" ? 1 : 0 }}>
                 {ballkid.id === getLocalStorage("ballkid_id") ? (
                   ""
                 ) : (
@@ -93,7 +93,7 @@ function BallkidsSection({ ballkids, gridLayout, setUpdated }) {
                 ) : (
                   <Typography
                     variant="subtitle2"
-                    sx={{ mt: gridLayout ? 0.5 : 0 }}
+                    sx={{ mt: layout === "grid" ? 0.5 : 0 }}
                   >
                     Total ratings: {ballkid.num_ratings}
                   </Typography>
@@ -122,9 +122,7 @@ export default function RateByNamePage(props) {
   );
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
-  const [gridLayout, setGridLayout] = useState(
-    getLocalStorage("gridLayout") ?? false
-  );
+  const [layout, setLayout] = useState(getLocalStorage("layout") ?? "list");
   const pk = getLocalStorage("ballkid_id");
 
   useEffect(() => {
@@ -164,7 +162,7 @@ export default function RateByNamePage(props) {
             message={isChairperson ? rateByName : rateByNameNonchairperson}
           />
         </Box>
-        <LayoutButtons gridLayout={gridLayout} setGridLayout={setGridLayout} />
+        <LayoutButtons layout={layout} setLayout={setLayout} />
       </div>
 
       <Grid container>
@@ -196,7 +194,7 @@ export default function RateByNamePage(props) {
           searchKeyword,
           filterGroup
         )}
-        gridLayout={gridLayout}
+        layout={layout}
         setUpdated={setUpdated}
       />
     </div>

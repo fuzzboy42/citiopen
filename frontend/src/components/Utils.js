@@ -551,7 +551,7 @@ export function BallkidAndIcon({ ballkid }) {
 }
 
 export function BallkidCard({ ballkid, renderAdditional }) {
-  const layout = getLocalStorage("layout");
+  const layout = getLocalStorage("layout") ?? "list";
 
   return (
     <Card>
@@ -606,14 +606,14 @@ export function HelpIcon({ page, message }) {
   );
 }
 
-export function CommentsText({ comments, commentType, gridLayout = false }) {
+export function CommentsText({ comments, commentType, layout = "list" }) {
   switch (commentType) {
     case "checkout-teams":
       return comments === "End" ? (
         ""
       ) : (
         <Typography
-          sx={{ mx: 0.5, px: 0.5, my: gridLayout ? 1 : 0 }}
+          sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
           bgcolor="orange"
           variant="body2"
         >
@@ -624,7 +624,7 @@ export function CommentsText({ comments, commentType, gridLayout = false }) {
     case "checkout":
       return (
         <Typography
-          sx={{ mx: 0.5, px: 0.5, my: gridLayout ? 1 : 0 }}
+          sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
           bgcolor={comments === "End" ? "" : "orange"}
           variant="body2"
         >
