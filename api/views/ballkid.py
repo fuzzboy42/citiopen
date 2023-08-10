@@ -12,6 +12,8 @@ from django.db.models import (
     OuterRef,
     StdDev,
     Exists,
+    Case,
+    When,
 )
 from django.db.models.functions import TruncDay, Coalesce, DenseRank
 from django.shortcuts import get_object_or_404
@@ -49,7 +51,7 @@ def recalc_checkin_analytics(ballkid=None, now=None):
     if ballkid is None:
         histories = CheckinHistory.objects.filter(ballkid__is_active=True)
 
-        # Dict mapping ballkid_id to [duration, set of days]
+        # Dict mapping ballkid_id to [set of days, duration]
         analytics = {
             ballkid.id: [set(), timedelta()]
             for ballkid in Ballkid.objects.filter(is_active=True)
@@ -73,7 +75,10 @@ def recalc_checkin_analytics(ballkid=None, now=None):
             )
             continue
 
-        day = datetime.strftime(history.start, HYPHEN_YEAR_MONTH_DAY_FORMAT_STR)
+        day = datetime.strftime(
+            history.start - timedelta(hours=CHECKIN_START_HOUR),
+            HYPHEN_YEAR_MONTH_DAY_FORMAT_STR,
+        )
         analytics[history.ballkid_id][0].add(day)
 
         end_time = history.end if history.end else now
@@ -768,7 +773,14 @@ class GetAverageCheckinTime(APIView):
         recalc_court_analytics()
 
         ballkids = Ballkid.objects.annotate(
-            avg_checkin_time=Avg("checkinhistory__start__time"),
+            avg_checkin_time=Avg(
+                Case(
+                    When(
+                        checkinhistory__is_first_checkin=True,
+                        then="checkinhistory__start__time",
+                    )
+                )
+            ),
         )
         average = ballkids.aggregate(checkin_time_avg=Avg("avg_checkin_time"))
 
@@ -793,7 +805,14 @@ class GetCheckinLeaderboard(generics.ListAPIView):
             .annotate(
                 checkin_duration=F("checkinanalytics__duration"),
                 checkin_days=F("checkinanalytics__count"),
-                avg_checkin_time=Avg("checkinhistory__start__time"),
+                avg_checkin_time=Avg(
+                    Case(
+                        When(
+                            checkinhistory__is_first_checkin=True,
+                            then="checkinhistory__start__time",
+                        )
+                    )
+                ),
             )
             .order_by("-checkin_duration")
         )
@@ -808,7 +827,14 @@ class GetAverageCheckinLeaderboard(APIView):
         averages = (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_time=Avg("checkinhistory__start__time"),
+                checkin_time=Avg(
+                    Case(
+                        When(
+                            checkinhistory__is_first_checkin=True,
+                            then="checkinhistory__start__time",
+                        )
+                    )
+                ),
             )
             .aggregate(
                 checkin_avg=Avg("checkinanalytics__duration"),

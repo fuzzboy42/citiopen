@@ -115,8 +115,20 @@ class Ballkid(models.Model):
 
         # If checking in, create new checkin history row
         if value:
-            history = CheckinHistory.objects.create(ballkid=self, start=now)
+            now_date = (now - timedelta(hours=CHECKIN_START_HOUR)).date()
+            is_first_checkin = (
+                CheckinHistory.objects.filter(
+                    ballkid=self,
+                    start__startswith=now_date,
+                ).count()
+                == 0
+            )
+
+            history = CheckinHistory.objects.create(
+                ballkid=self, start=now, is_first_checkin=is_first_checkin
+            )
             history.save()
+
         # If checking out, update most recent checkin history row
         else:
             histories = CheckinHistory.objects.filter(ballkid=self)
@@ -523,6 +535,7 @@ class CheckinHistory(models.Model):
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True)
     duration = models.DurationField(default=timedelta)
+    is_first_checkin = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.ballkid.get_name()} checked in at {self.start} and checked out at {self.end} (total duration: {self.duration})"
