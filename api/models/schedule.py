@@ -27,13 +27,6 @@ class Tournament(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
 
-    banner1 = models.TextField(default="", blank=True)
-    banner2 = models.TextField(default="", blank=True)
-    banner3 = models.TextField(default="", blank=True)
-    banner1_timestamp = models.DateTimeField(blank=True, null=True)
-    banner2_timestamp = models.DateTimeField(blank=True, null=True)
-    banner3_timestamp = models.DateTimeField(blank=True, null=True)
-
     show_teams = models.BooleanField(default=False)
     show_finals_teams = models.BooleanField(default=False)
     on_rain_delay = models.BooleanField(default=False)

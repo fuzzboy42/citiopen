@@ -294,15 +294,6 @@ class GetTournament(APIView):
             for ballkid in Ballkid.objects.filter(is_active=True, is_cut=False):
                 ballkid.handle_finals_history_hideshow(show_teams)
 
-        if "banner1" in request.data:
-            tournament.banner1 = request.data["banner1"]
-            tournament.banner1_timestamp = timestamp
-        if "banner2" in request.data:
-            tournament.banner2 = request.data["banner2"]
-            tournament.banner2_timestamp = timestamp
-        if "banner3" in request.data:
-            tournament.banner3 = request.data["banner3"]
-            tournament.banner3_timestamp = timestamp
         if "rcal_ignore_outliers" in request.data:
             tournament.rcal_ignore_outliers = float(request.data["rcal_ignore_outliers"])
 

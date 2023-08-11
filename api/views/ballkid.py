@@ -938,3 +938,11 @@ class GetAverageCourtLeaderboard(APIView):
         )
 
         return Response(averages, status=status.HTTP_200_OK)
+
+
+class BannerList(generics.ListAPIView):
+    serializer_class = BannerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Banner.objects.all()

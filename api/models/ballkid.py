@@ -734,3 +734,10 @@ class CourtAnalytics(models.Model):
 
     def __str__(self):
         return f"{self.ballkid.get_name()} has been on {self.court} {self.count} times with a total time of {self.duration}"
+
+
+class Banner(models.Model):
+    timestamp = models.DateTimeField(blank=True, null=True)
+    content = models.TextField(default="", blank=True)
+    audience = models.CharField(default="all", max_length=20, blank=True, null=True)
+    ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE, null=True, blank=True)
