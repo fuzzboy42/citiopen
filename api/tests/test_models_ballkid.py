@@ -20,6 +20,7 @@ class TestBallkidModel(TestCase):
             preferred_position=POSITION.NB,
             position=POSITION.N,
         )
+        Tournament.objects.create(year=2023, show_finals_teams=True)
 
     def test_get_name(self):
         self.assertEqual(self.ballkid.get_name(), "Lacy Iosue")

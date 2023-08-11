@@ -3,10 +3,13 @@ from django.db.models import Max
 from django.contrib.auth.models import User, Group
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
+
 from api.models.ballkid import Ballkid, MATCH_TYPE, POSITION, CUT_STATUS
+from api.models.schedule import Tournament
 from api.models.rating import Rating
 from api.serializers import BallkidSerializer
 from api.tests.utils import *
+
 from datetime import datetime, timedelta
 
 
@@ -417,6 +420,8 @@ class TestUpdateBallkidView(APITestCase):
             current_team=0,
             preferred_position=POSITION.NB,
         )
+
+        Tournament.objects.create(year=2023, show_finals_teams=True)
 
     def test_name_not_provided(self):
         self.assertRaises(
@@ -1145,6 +1150,8 @@ class TestClearTeamView(APITestCase):
             preferred_position=POSITION.BN,
             finals_team=MATCH_TYPE.MS,
         )
+
+        Tournament.objects.create(year=2023, show_finals_teams=True)
 
     def test_nonexisting_team(self):
         response = self.client.patch(self.url, {"current_team": 3}, format="json")
