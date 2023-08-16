@@ -1,4 +1,5 @@
 ARG PYTHON_VERSION=3.10-buster
+ARG ssh_key
 
 FROM python:${PYTHON_VERSION}
 
@@ -21,8 +22,8 @@ RUN set -ex && \
     pip install -r /tmp/requirements.txt && \
     rm -rf /root/.cache/ 
 
-COPY ~/.ssh/id_ed25519rcal .
-RUN mkdir /root/.ssh && mv id_ed25519rcal /root/.ssh/id_rsa
+RUN mkdir -p /root/.ssh && \
+    echo "$ssh_key" > /root/.ssh/id_rsa 
 RUN eval `ssh-agent` && \
     ssh-add /root/.ssh/id_rsa && \
     pip install git+ssh://git@github.com/jtiosue/rcal.git
