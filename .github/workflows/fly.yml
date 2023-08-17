@@ -43,10 +43,10 @@ jobs:
         run: python manage.py collectstatic --no-input --clear
 
       - name: Clone rcal
-        uses: actions/checkout@v2
-        with:
-          repository: jtiosue/rcal
-          ssh-key: ${{ secrets.RCAL_SECRET_KEY }}
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< '${{ secrets.RCAL_SECRET_KEY }}'
+          git clone git+ssh://git@github.com/jtiosue/rcal.git
 
       - name: Deploy
         env:
