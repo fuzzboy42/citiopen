@@ -305,7 +305,6 @@ class BulkCreateSignups(APIView):
                 ballkid = filtered[0]
                 ballkid.num_years_experience = num_years_experience
                 ballkid.is_active = True
-                ballkid.is_cut = False
                 ballkid.age = age
                 ballkid.is_out_of_town = False
                 ballkid.save()
