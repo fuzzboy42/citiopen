@@ -245,6 +245,12 @@ class BulkCreateSignups(APIView):
         for line in reader:
             first_name = line["First Name"].strip().capitalize()
             last_name = line["Last Name"].strip().capitalize()
+            num_years_experience = (
+                line[
+                    "How many years have you been a Ballperson at the Mubadala Citi Open (not counting the upcoming year)?"
+                ].strip()
+                or 0
+            )
             is_captain = line["Are you a captain?"].strip() == "Yes"
             is_chairperson = line["is_chairperson"].strip() == "TRUE"
             is_out_of_town_rookie = line["is_out_of_town_rookie"].strip() == "TRUE"
@@ -255,33 +261,55 @@ class BulkCreateSignups(APIView):
             ].strip()
             dob = datetime.strptime(
                 line[
-                    "Date of Birth *You Must Be 14 years Old By Tournament Start (July 29th) To Apply*"
+                    "Date of Birth *You Must Be 14 years Old By Tournament Start (July 27th) To Apply*"
                 ].strip(),
                 SLASH_MONTH_DAY_YEAR_FORMAT_STR,
             )
-            first_day = datetime.strptime("07/29/2023", SLASH_MONTH_DAY_YEAR_FORMAT_STR)
+            first_day = datetime.strptime("07/27/2024", SLASH_MONTH_DAY_YEAR_FORMAT_STR)
             age = (first_day - dob) // timedelta(days=365.2425)
             image = f"static/img/{first_name.lower()}_{last_name.lower()}.jpg"
 
-            user = User(
-                username=f"{first_name.lower()}.{last_name.lower()}",
-                first_name=first_name,
-                last_name=last_name,
-                email=line["Email Address"].strip(),
-                password=make_password(
-                    "".join(random.sample(string.ascii_lowercase, 12))
-                ),
+            # If user does not yet exist, then create one
+            user_filtered = User.objects.filter(
+                first_name=first_name, last_name=last_name
             )
-            user.save()
+            if len(user_filtered) == 0:
+                user = User(
+                    username=f"{first_name.lower()}.{last_name.lower()}",
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=line["Email Address"].strip(),
+                    password=make_password(
+                        "".join(random.sample(string.ascii_lowercase, 12))
+                    ),
+                )
+                user.save()
 
-            group = Group.objects.get(
-                name="chairperson"
-                if is_chairperson
-                else "captain"
-                if is_captain
-                else "ballkid"
+                group = Group.objects.get(
+                    name=(
+                        "chairperson"
+                        if is_chairperson
+                        else "captain" if is_captain else "ballkid"
+                    )
+                )
+                user.groups.add(group)
+            else:
+                user = user_filtered[0]
+
+            # If ballkid already exist, then mark ballkid as active,
+            # increment the number of years of experience, and continue
+            filtered = Ballkid.objects.filter(
+                first_name=first_name, last_name=last_name
             )
-            user.groups.add(group)
+            if len(filtered) > 0:
+                ballkid = filtered[0]
+                ballkid.num_years_experience = num_years_experience
+                ballkid.is_active = True
+                ballkid.is_cut = False
+                ballkid.age = age
+                ballkid.is_out_of_town = False
+                ballkid.save()
+                continue
 
             ballkids.append(
                 Ballkid(
@@ -293,10 +321,7 @@ class BulkCreateSignups(APIView):
                     is_captain=is_captain,
                     is_chairperson=is_chairperson,
                     is_out_of_town=is_out_of_town_rookie,
-                    num_years_experience=line[
-                        "How many years have you been a Ballperson at the Citi Open (not counting the upcoming year)?"
-                    ].strip()
-                    or 0,
+                    num_years_experience=num_years_experience,
                     preferred_position=preferred_position_map[
                         line["What position are you?"].strip() or "Back"
                     ],
@@ -430,16 +455,18 @@ class BulkCreateRatings(APIView):
                     date=date,
                     rating=float(line["Overall Rating"]),
                     rolling_rating=float(line["Rolling"]) if line["Rolling"] else None,
-                    athleticism_rating=float(line["Athleticism"])
-                    if line["Athleticism"]
-                    else None,
+                    athleticism_rating=(
+                        float(line["Athleticism"]) if line["Athleticism"] else None
+                    ),
                     effort_rating=float(line["Effort"]) if line["Effort"] else None,
-                    awareness_rating=float(line["Awareness"])
-                    if line["Awareness"]
-                    else None,
-                    decision_rating=float(line["Decision-making"])
-                    if line["Decision-making"]
-                    else None,
+                    awareness_rating=(
+                        float(line["Awareness"]) if line["Awareness"] else None
+                    ),
+                    decision_rating=(
+                        float(line["Decision-making"])
+                        if line["Decision-making"]
+                        else None
+                    ),
                     comments=line["Comments"],
                 )
                 ratings.append(rating)
@@ -456,7 +483,11 @@ class BulkCreateFinals(APIView):
     permission_classes = [IsChairperson]
 
     def post(self, request):
-        match_type_dict = {"MS": MATCH_TYPE.MS, "MD": MATCH_TYPE.MD, "WS": MATCH_TYPE.WS}
+        match_type_dict = {
+            "MS": MATCH_TYPE.MS,
+            "MD": MATCH_TYPE.MD,
+            "WS": MATCH_TYPE.WS,
+        }
 
         finals = []
 
@@ -467,7 +498,9 @@ class BulkCreateFinals(APIView):
             first_name = line["First Name"]
             last_name = line["Last Name"]
             try:
-                ballkid = Ballkid.objects.get(first_name=first_name, last_name=last_name)
+                ballkid = Ballkid.objects.get(
+                    first_name=first_name, last_name=last_name
+                )
             except Exception:
                 continue
 
@@ -479,9 +512,11 @@ class BulkCreateFinals(APIView):
                     ballkid=ballkid,
                     match_type=match_type_dict[match_type],
                     count=count if count != "" else 0,
-                    years=[int(year.strip()) for year in years.split(",")]
-                    if years != ""
-                    else [],
+                    years=(
+                        [int(year.strip()) for year in years.split(",")]
+                        if years != ""
+                        else []
+                    ),
                 )
                 finals.append(final)
 
@@ -515,7 +550,9 @@ class BulkCreateCuts(APIView):
             first_name = line["First Name"]
             last_name = line["Last Name"]
             try:
-                ballkid = Ballkid.objects.get(first_name=first_name, last_name=last_name)
+                ballkid = Ballkid.objects.get(
+                    first_name=first_name, last_name=last_name
+                )
             except Exception:
                 continue
 
@@ -576,6 +613,8 @@ class DownloadData(APIView):
             for filename, data in filename_to_data.items():
                 zf.writestr(f"{filename}.csv", data)
 
-        response = HttpResponse(open(zip_filename, "rb"), content_type="application/zip")
+        response = HttpResponse(
+            open(zip_filename, "rb"), content_type="application/zip"
+        )
         response["Content-Disposition"] = "attachment; filename=name.zip"
         return response

@@ -74,7 +74,9 @@ class Ballkid(models.Model):
     # Ballkid transient information
     is_checked_in = models.BooleanField(default=False)
     current_team = models.IntegerField(default=0)
-    finals_team = models.CharField(max_length=20, choices=MATCH_TYPE.choices, blank=True)
+    finals_team = models.CharField(
+        max_length=20, choices=MATCH_TYPE.choices, blank=True
+    )
     position = models.CharField(
         max_length=10, choices=POSITION.choices, default=POSITION.B
     )
@@ -248,9 +250,9 @@ class Ballkid(models.Model):
         if self.is_captain:
             # Get and update everybody on the previous team
             if self.current_team != 0:
-                ballkids = Ballkid.objects.filter(current_team=self.current_team).exclude(
-                    id=self.id
-                )
+                ballkids = Ballkid.objects.filter(
+                    current_team=self.current_team
+                ).exclude(id=self.id)
 
                 # For each ballkid, find the most recent CaptainHistory entry
                 for ballkid in ballkids:
@@ -293,7 +295,9 @@ class Ballkid(models.Model):
         value(bool): True if the ballkid is getting promoted to captain and False if the
         ballkid is getting demoted from captain
         """
-        logger.info(f"[handle_captain_history_captain] ballkid {self.id}, value {value}")
+        logger.info(
+            f"[handle_captain_history_captain] ballkid {self.id}, value {value}"
+        )
 
         if now is None:
             now = datetime.now()
@@ -587,7 +591,14 @@ class Ballkid(models.Model):
             - If the ballkid is checked out or unassigned, ballkid's position is reset to the preferred position
             - If the ballkid is unassigned for finals, ballkid's finals position is reset to the preferred position
             - Ballkid's actual position can only be back or net
+            - If the ballkid is inactive, reset ballkid's is_cut, cut_status, finals_team, and finals_position (implicitly)
         """
+        # If ballkid is inactive, reset the is_cut, cut_status, and finals_team
+        if not self.is_active:
+            self.set_field("is_cut", False)
+            self.set_field("cut_status", "")
+            self.set_field("finals_team", "")
+
         # Ballkid cannot be checked in if cut or inactive
         if not self.is_active or self.is_cut:
             logger.info(
@@ -740,7 +751,9 @@ class Banner(models.Model):
     timestamp = models.DateTimeField(blank=True, null=True)
     message = models.TextField()
     audience = models.CharField(default="all", max_length=20)
-    ballkid = models.ForeignKey(Ballkid, on_delete=models.CASCADE, null=True, blank=True)
+    ballkid = models.ForeignKey(
+        Ballkid, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def __str__(self):
         return f"Banner for ({self.audience}, ballkid {self.ballkid}) with message {self.message} at {self.timestamp}"
