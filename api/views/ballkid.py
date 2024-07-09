@@ -308,42 +308,67 @@ def annotate_ratings(ballkids, pk):
 
 
 def annotate_durations(ballkids):
+    current_year = get_current_year()
+
     return ballkids.annotate(
-        checkin_duration=Coalesce(F("checkinanalytics__duration"), timedelta()),
-        checkin_days=Coalesce(F("checkinanalytics__count"), 0),
-        court_duration=Coalesce(Sum("courtanalytics__duration"), timedelta()),
+        checkin_duration=Coalesce(
+            F(
+                "checkinanalytics__duration",
+                # filter=Q(checkinanalytics__year=current_year),
+            ),
+            timedelta(),
+        ),
+        checkin_days=Coalesce(
+            F(
+                "checkinanalytics__count",
+                # filter=Q(checkinanalytics__year=current_year),
+            ),
+            0,
+        ),
+        court_duration=Coalesce(
+            Sum(
+                "courtanalytics__duration",
+                filter=Q(courtanalytics__year=current_year),
+            ),
+            timedelta(),
+        ),
         stadium_duration=Coalesce(
             Sum(
                 "courtanalytics__duration",
-                filter=Q(courtanalytics__court=COURT.STADIUM),
+                filter=Q(courtanalytics__court=COURT.STADIUM)
+                & Q(courtanalytics__year=current_year),
             ),
             timedelta(),
         ),
         harris_duration=Coalesce(
             Sum(
                 "courtanalytics__duration",
-                filter=Q(courtanalytics__court=COURT.HARRIS),
+                filter=Q(courtanalytics__court=COURT.HARRIS)
+                & Q(courtanalytics__year=current_year),
             ),
             timedelta(),
         ),
         grandstand_duration=Coalesce(
             Sum(
                 "courtanalytics__duration",
-                filter=Q(courtanalytics__court=COURT.GRANDSTAND),
+                filter=Q(courtanalytics__court=COURT.GRANDSTAND)
+                & Q(courtanalytics__year=current_year),
             ),
             timedelta(),
         ),
         four_duration=Coalesce(
             Sum(
                 "courtanalytics__duration",
-                filter=Q(courtanalytics__court=COURT.FOUR),
+                filter=Q(courtanalytics__court=COURT.FOUR)
+                & Q(courtanalytics__year=current_year),
             ),
             timedelta(),
         ),
         five_duration=Coalesce(
             Sum(
                 "courtanalytics__duration",
-                filter=Q(courtanalytics__court=COURT.FIVE),
+                filter=Q(courtanalytics__court=COURT.FIVE)
+                & Q(courtanalytics__year=current_year),
             ),
             timedelta(),
         ),

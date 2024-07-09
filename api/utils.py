@@ -6,7 +6,7 @@ logger = logging.getLogger("api.utils")
 
 
 def get_current_year():
-    return int(datetime.strftime(datetime.now(), YEAR_FORMAT_STR))
+    return datetime.now().year
 
 
 def get_first_name(full_name):
