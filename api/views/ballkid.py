@@ -15,6 +15,7 @@ from django.db.models import (
     Case,
     Value,
     When,
+    IntegerField,
 )
 from django.db.models.functions import TruncDay, Coalesce, DenseRank, Concat
 from django.shortcuts import get_object_or_404
@@ -312,16 +313,17 @@ def annotate_durations(ballkids):
 
     return ballkids.annotate(
         checkin_duration=Coalesce(
-            F(
+            Avg(
                 "checkinanalytics__duration",
-                # filter=Q(checkinanalytics__year=current_year),
+                filter=Q(checkinanalytics__year=current_year),
             ),
             timedelta(),
         ),
         checkin_days=Coalesce(
-            F(
+            Avg(
                 "checkinanalytics__count",
-                # filter=Q(checkinanalytics__year=current_year),
+                filter=Q(checkinanalytics__year=current_year),
+                output_field=IntegerField(),
             ),
             0,
         ),
