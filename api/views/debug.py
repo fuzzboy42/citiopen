@@ -307,6 +307,8 @@ class BulkCreateSignups(APIView):
                 ballkid.is_active = True
                 ballkid.age = age
                 ballkid.is_out_of_town = False
+                ballkid.emergency_name = emergency_name
+                ballkid.emergency_phone = emergency_phone
                 ballkid.save()
                 continue
 
