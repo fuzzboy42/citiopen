@@ -253,6 +253,14 @@ class BulkCreateSignups(APIView):
             )
             is_captain = line["Are you a captain?"].strip() == "Yes"
             is_chairperson = line["is_chairperson"].strip() == "TRUE"
+            group = Group.objects.get(
+                name=(
+                    "chairperson"
+                    if is_chairperson
+                    else "captain" if is_captain else "ballkid"
+                )
+            )
+
             is_out_of_town_rookie = line["is_out_of_town_rookie"].strip() == "TRUE"
             phone = line["Phone Number (XXX-XXX-XXXX)"].strip()
             emergency_name = line["Emergency Contact Name"].strip()
@@ -268,6 +276,7 @@ class BulkCreateSignups(APIView):
             first_day = datetime.strptime("07/27/2024", SLASH_MONTH_DAY_YEAR_FORMAT_STR)
             age = (first_day - dob) // timedelta(days=365.2425)
             image = f"static/img/{first_name.lower()}_{last_name.lower()}.jpg"
+            email = line["Email Address"].strip()
 
             # If user does not yet exist, then create one
             user_filtered = User.objects.filter(
@@ -278,23 +287,17 @@ class BulkCreateSignups(APIView):
                     username=f"{first_name.lower()}.{last_name.lower()}",
                     first_name=first_name,
                     last_name=last_name,
-                    email=line["Email Address"].strip(),
+                    email=email,
                     password=make_password(
                         "".join(random.sample(string.ascii_lowercase, 12))
                     ),
                 )
-                user.save()
-
-                group = Group.objects.get(
-                    name=(
-                        "chairperson"
-                        if is_chairperson
-                        else "captain" if is_captain else "ballkid"
-                    )
-                )
-                user.groups.add(group)
             else:
                 user = user_filtered[0]
+                user.email = email
+
+            user.groups.add(group)
+            user.save()
 
             # If ballkid already exist, then mark ballkid as active,
             # increment the number of years of experience, and continue
@@ -305,6 +308,9 @@ class BulkCreateSignups(APIView):
                 ballkid = filtered[0]
                 ballkid.num_years_experience = num_years_experience
                 ballkid.is_active = True
+                ballkid.is_captain = is_captain
+                ballkid.is_chairperson = is_chairperson
+                ballkid.phone = phone
                 ballkid.age = age
                 ballkid.is_out_of_town = False
                 ballkid.emergency_name = emergency_name
