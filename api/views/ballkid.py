@@ -47,12 +47,15 @@ def recalc_checkin_analytics(ballkid=None, now=None):
 
     if now is None:
         now = datetime.now()
-    current_year = now.year
+
+    current_year = get_current_year()
 
     # If not updating a specific ballkid, get all histories and create analytics for
     # all active ballkids
     if ballkid is None:
-        histories = CheckinHistory.objects.filter(ballkid__is_active=True)
+        histories = CheckinHistory.objects.filter(
+            ballkid__is_active=True, start__year=current_year
+        )
 
         # Dict mapping ballkid_id to [set of days, duration]
         analytics = {
@@ -63,7 +66,9 @@ def recalc_checkin_analytics(ballkid=None, now=None):
     # If updating a specific ballkid, only get that ballkid's histories and only
     # create 1 analytic
     else:
-        histories = CheckinHistory.objects.filter(ballkid_id=ballkid.id)
+        histories = CheckinHistory.objects.filter(
+            ballkid_id=ballkid.id, start__year=current_year
+        )
         analytics = {ballkid.id: [set(), timedelta()]}
 
     logger.info(
@@ -109,12 +114,12 @@ def recalc_court_analytics(ballkid=None, now=None):
 
     if now is None:
         now = datetime.now()
-    current_year = now.year
+    current_year = get_current_year()
 
     # If not updating a specific ballkid, get all histories and create analytics for
     # all active ballkids
     if ballkid is None:
-        histories = TeamHistory.objects.all()
+        histories = TeamHistory.objects.filter(start__year=current_year)
 
         # Dict mapping ballkid_id to [count, duration]
         analytics = {
@@ -126,7 +131,9 @@ def recalc_court_analytics(ballkid=None, now=None):
     # If updating a specific ballkid, only get that ballkid's histories and only
     # create 1 analytic
     else:
-        histories = TeamHistory.objects.filter(ballkid_id=ballkid.id)
+        histories = TeamHistory.objects.filter(
+            ballkid_id=ballkid.id, start__year=current_year
+        )
         analytics = {
             (ballkid.id, court): [0, timedelta()] for court in NUM_COURTS_TO_COURTS[5]
         }
@@ -141,6 +148,7 @@ def recalc_court_analytics(ballkid=None, now=None):
         # for some reason does not so extra filters are commented out.
         shifts = Schedule.objects.filter(
             team=history.team,
+            start__year=current_year,
             # start__gte=history.start - timedelta(hours=1),
             # start__lte=history.end if history.end else now,
         )
@@ -201,7 +209,7 @@ def recalc_captain_analytics(ballkid, now=None):
 
     if now is None:
         now = datetime.now()
-    current_year = now.year
+    current_year = get_current_year()
 
     for updateAsCaptain in [True, False]:
         # If ballkid is not a captain, then don't update as captain
@@ -213,10 +221,14 @@ def recalc_captain_analytics(ballkid, now=None):
 
         # If updating as captain, then treat self as the captain
         if updateAsCaptain:
-            histories = CaptainHistory.objects.filter(captain=ballkid)
+            histories = CaptainHistory.objects.filter(
+                captain=ballkid, start__year=current_year
+            )
         # If not updating as captain, then treat self as the ballkid
         else:
-            histories = CaptainHistory.objects.filter(ballkid=ballkid)
+            histories = CaptainHistory.objects.filter(
+                ballkid=ballkid, start__year=current_year
+            )
 
         logger.info(
             f"[recalc-captain-analytics] # histories: {len(histories)}, first 10: {histories[:10]}"
@@ -378,12 +390,26 @@ def annotate_durations(ballkids):
 
 
 def annotate_rank(ballkids):
+    current_year = get_current_year()
+
     return ballkids.annotate(
-        num_ratings=Count("ratee", filter=Q(ratee__date__year=get_current_year())),
-        calibrated_avg=Coalesce(F("calibrationparams__ratee_calibrated_avg"), 0.0),
+        num_ratings=Count("ratee", filter=Q(ratee__date__year=current_year)),
+        calibrated_avg=Coalesce(
+            Avg(
+                "calibrationparams__ratee_calibrated_avg",
+                filter=Q(calibrationparams__year=current_year),
+            ),
+            0.0,
+        ),
         rank=models.Window(
             expression=DenseRank(),
-            order_by=Coalesce(F("calibrationparams__ratee_calibrated_avg"), 0.0).desc(),
+            order_by=Coalesce(
+                Avg(
+                    "calibrationparams__ratee_calibrated_avg",
+                    filter=Q(calibrationparams__year=current_year),
+                ),
+                0.0,
+            ).desc(),
         ),
     )
 
@@ -876,18 +902,20 @@ class GetCheckinLeaderboard(generics.ListAPIView):
         return (
             Ballkid.objects.filter(is_active=True)
             .annotate(
-                checkin_duration=F(
+                checkin_duration=Avg(
                     "checkinanalytics__duration",
-                    # filter=Q(checkinanalytics__year=current_year),
+                    filter=Q(checkinanalytics__year=current_year),
                 ),
-                checkin_days=F(
+                checkin_days=Avg(
                     "checkinanalytics__count",
-                    # filter=Q(checkinanalytics__year=current_year),
+                    filter=Q(checkinanalytics__year=current_year),
+                    output_field=IntegerField(),
                 ),
                 avg_checkin_time=Avg(
                     Case(
                         When(
-                            checkinhistory__is_first_checkin=True,
+                            Q(checkinhistory__is_first_checkin=True)
+                            & Q(checkinhistory__start__year=current_year),
                             then="checkinhistory__start__time",
                         )
                     )
@@ -901,6 +929,7 @@ class GetAverageCheckinLeaderboard(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request):
+        current_year = get_current_year()
         recalc_checkin_analytics()
 
         averages = (
@@ -909,15 +938,23 @@ class GetAverageCheckinLeaderboard(APIView):
                 checkin_time=Avg(
                     Case(
                         When(
-                            checkinhistory__is_first_checkin=True,
+                            Q(checkinhistory__is_first_checkin=True)
+                            & Q(checkinhistory__start__year=current_year),
                             then="checkinhistory__start__time",
                         )
                     )
                 ),
             )
             .aggregate(
-                checkin_avg=Avg("checkinanalytics__duration"),
-                days_avg=Avg("checkinanalytics__count"),
+                checkin_avg=Avg(
+                    "checkinanalytics__duration",
+                    filter=Q(checkinanalytics__year=current_year),
+                ),
+                days_avg=Avg(
+                    "checkinanalytics__count",
+                    filter=Q(checkinanalytics__year=current_year),
+                    output_field=IntegerField(),
+                ),
                 avg_checkin_time=Avg("checkin_time"),
             )
         )
