@@ -831,7 +831,9 @@ class GetCheckinHistory(APIView):
     permission_classes = [IsChairpersonOrSelf]
 
     def get(self, request, pk):
-        histories = CheckinHistory.objects.filter(ballkid_id=pk).order_by("start")
+        histories = CheckinHistory.objects.filter(
+            ballkid_id=pk, start__year=get_current_year()
+        ).order_by("start")
         return Response(CheckinHistorySerializer(histories, many=True).data)
 
 
@@ -842,7 +844,7 @@ class GetCaptainAnalytics(APIView):
         ballkid = get_object_or_404(Ballkid, id=pk)
         recalc_captain_analytics(ballkid=ballkid)
         analytics = CaptainAnalytics.objects.filter(
-            ballkid_id=pk, duration__gte=timedelta(minutes=MIN_CAPTAIN_DURATION)
+            ballkid_id=pk, duration__gte=timedelta(minutes=MIN_CAPTAIN_DURATION), year=get_current_year()
         ).order_by("-duration")
         return Response(CaptainAnalyticsSerializer(analytics, many=True).data)
 
