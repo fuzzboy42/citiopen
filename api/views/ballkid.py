@@ -844,7 +844,9 @@ class GetCaptainAnalytics(APIView):
         ballkid = get_object_or_404(Ballkid, id=pk)
         recalc_captain_analytics(ballkid=ballkid)
         analytics = CaptainAnalytics.objects.filter(
-            ballkid_id=pk, duration__gte=timedelta(minutes=MIN_CAPTAIN_DURATION), year=get_current_year()
+            ballkid_id=pk,
+            duration__gte=timedelta(minutes=MIN_CAPTAIN_DURATION),
+            year=get_current_year(),
         ).order_by("-duration")
         return Response(CaptainAnalyticsSerializer(analytics, many=True).data)
 

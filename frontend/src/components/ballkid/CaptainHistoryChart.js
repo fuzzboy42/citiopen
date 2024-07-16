@@ -40,6 +40,7 @@ export function CaptainHistoryChart({ pk }) {
     },
     responsive: true,
     indexAxis: "y",
+    aspectRatio: 1,
     scales: {
       x: {
         title: {
