@@ -33,6 +33,8 @@ import Archive from "@mui/icons-material/Archive";
 import Unarchive from "@mui/icons-material/Unarchive";
 import ReportOff from "@mui/icons-material/ReportOff";
 import Shortcut from "@mui/icons-material/Shortcut";
+import RemoveCircle from "@mui/icons-material/RemoveCircle";
+import AddCircle from "@mui/icons-material/AddCircle";
 
 import RatingDialog from "../ratings/RatingDialog";
 import { CheckinHistoryChart } from "./CheckinHistoryChart";
@@ -508,13 +510,7 @@ function InactiveOverflowMenu(props) {
 
   return (
     <div>
-      <IconButton
-        onClick={(e) => {
-          setAnchorEl(e.currentTarget);
-        }}
-      >
-        <MoreVert />
-      </IconButton>
+      c
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -1134,6 +1130,53 @@ export default function BallkidPageChairperson(props) {
           ) : (
             <div>
               <Typography variant="h6">Comments</Typography>
+              <Box className="sxs">
+                <Typography variant="body1" fontWeight="medium">
+                  # of Tickets Used:
+                </Typography>
+                <Typography variant="body1" sx={{ mx: 1 }}>
+                  {ballkid.num_tickets_used}
+                </Typography>
+                <IconButton
+                  disabled={ballkid.num_tickets_used === 0}
+                  size="small"
+                  sx={{ p: 0.5 }}
+                  onClick={(e) => {
+                    fetch("/api/update-ballkid", {
+                      method: "PATCH",
+                      headers: getAuthHeader(),
+                      body: JSON.stringify({
+                        first_name: ballkid.first_name,
+                        last_name: ballkid.last_name,
+                        num_tickets_used: ballkid.num_tickets_used - 1,
+                      }),
+                    })
+                      .then((response) => response.json())
+                      .then(() => setUpdated(true));
+                  }}
+                >
+                  <RemoveCircle />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  sx={{ p: 0.5 }}
+                  onClick={(e) => {
+                    fetch("/api/update-ballkid", {
+                      method: "PATCH",
+                      headers: getAuthHeader(),
+                      body: JSON.stringify({
+                        first_name: ballkid.first_name,
+                        last_name: ballkid.last_name,
+                        num_tickets_used: ballkid.num_tickets_used + 1,
+                      }),
+                    })
+                      .then((response) => response.json())
+                      .then(() => setUpdated(true));
+                  }}
+                >
+                  <AddCircle />
+                </IconButton>
+              </Box>
               <Comments
                 ballkid={ballkid}
                 commentType="schedule"

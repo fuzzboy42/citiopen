@@ -83,6 +83,9 @@ class Ballkid(models.Model):
     finals_position = models.CharField(
         max_length=10, choices=POSITION.choices, default=POSITION.B
     )
+
+    # Comments / misc info
+    num_tickets_used = models.IntegerField(default=0)
     last_day = models.CharField(
         max_length=10, choices=DAY_OF_WEEK.choices, null=True, blank=True
     )
@@ -556,6 +559,9 @@ class Ballkid(models.Model):
         elif field == "last_day":
             self.last_day = value
             self.cut_status = ""
+
+        elif field == "num_tickets_used":
+            self.num_tickets_used = value
 
         else:
             raise Exception(f"Unrecognized field {field}")
