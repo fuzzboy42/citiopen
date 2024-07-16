@@ -955,5 +955,95 @@ class TestGetCaptainAnalytics(APITestCase):
         self.assertEqual(serializer.data, response.data)
 
 
-class TestGetAnalytics(APITestCase):
-    pass
+class TestGetAverageCheckinTime(APITestCase):
+    def setUp(self):
+        self.client = setup_testing_client()
+
+        self.ballkid1 = Ballkid.objects.create(first_name="Lacy", last_name="Iosue")
+        self.ballkid2 = Ballkid.objects.create(first_name="Andrea", last_name="Losue")
+
+        self.year = get_current_year()
+
+    def test_no_histories(self):
+        response = self.client.get(
+            reverse("get-average-checkin-time", kwargs={"pk": self.ballkid1.id}),
+            format="json",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertIsNone(response.data["ballkid"])
+        self.assertIsNone(response.data["average"])
+
+    def test_one_history(self):
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 10, 25, 0)
+        )
+
+        response = self.client.get(
+            reverse("get-average-checkin-time", kwargs={"pk": self.ballkid1.id}),
+            format="json",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(timedelta(hours=10, minutes=25), response.data["ballkid"])
+        self.assertEqual(timedelta(hours=10, minutes=25), response.data["average"])
+
+    def test_one_history_each(self):
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 10, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid2, start=datetime(self.year, 5, 3, 14, 25, 0)
+        )
+
+        response = self.client.get(
+            reverse("get-average-checkin-time", kwargs={"pk": self.ballkid1.id}),
+            format="json",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(timedelta(hours=10, minutes=25), response.data["ballkid"])
+        self.assertEqual(timedelta(hours=12, minutes=25), response.data["average"])
+
+    def test_mult_histories_each(self):
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 10, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid2, start=datetime(self.year, 5, 3, 15, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 12, 25, 0)
+        )
+
+        response = self.client.get(
+            reverse("get-average-checkin-time", kwargs={"pk": self.ballkid1.id}),
+            format="json",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(timedelta(hours=11, minutes=25), response.data["ballkid"])
+        self.assertEqual(timedelta(hours=13, minutes=25), response.data["average"])
+
+    def test_mult_histories_mult_years(self):
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 10, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid2, start=datetime(self.year, 5, 3, 15, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year, 5, 3, 12, 25, 0)
+        )
+        CheckinHistory.objects.create(
+            ballkid=self.ballkid1, start=datetime(self.year - 1, 5, 3, 12, 25, 0)
+        )
+
+        response = self.client.get(
+            reverse("get-average-checkin-time", kwargs={"pk": self.ballkid1.id}),
+            format="json",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(timedelta(hours=11, minutes=25), response.data["ballkid"])
+        self.assertEqual(timedelta(hours=13, minutes=25), response.data["average"])

@@ -870,7 +870,8 @@ class GetAverageCheckinTime(APIView):
             avg_checkin_time=Avg(
                 Case(
                     When(
-                        checkinhistory__is_first_checkin=True,
+                        Q(checkinhistory__is_first_checkin=True)
+                        & Q(checkinhistory__start__year=get_current_year()),
                         then="checkinhistory__start__time",
                     )
                 )
