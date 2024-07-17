@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from django.contrib.auth.models import User, Group
 from api.models.ballkid import Ballkid
-from api.tests.utils import setup_testing_client
+from api.utils.utils import setup_testing_client
 
 
 class AccountsTest(APITestCase):
@@ -39,7 +39,11 @@ class AccountsTest(APITestCase):
         """
         Ensure user is not created for password lengths less than 8.
         """
-        data = {"username": "foobar", "email": "foobarbaz@example.com", "password": "foo"}
+        data = {
+            "username": "foobar",
+            "email": "foobarbaz@example.com",
+            "password": "foo",
+        }
         response = self.client.post(reverse("register"), data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

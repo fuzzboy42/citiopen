@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from api.models.ballkid import Ballkid, MATCH_TYPE
 from api.views.ballkid import recalc_captain_analytics
 from api.serializers import *
-from api.tests.utils import *
+from api.utils.utils import *
 from api.consts import *
 
 from datetime import datetime

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from datetime import datetime
-from api.utils import *
+from api.utils.utils import *
 
 
 class COURT(models.TextChoices):

@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from datetime import datetime, timedelta
 from phonenumber_field.modelfields import PhoneNumberField
 from api.models.schedule import Tournament
-from api.utils import *
+from api.utils.utils import *
 from api.consts import *
 import logging
 

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from datetime import datetime, timedelta
-from api.utils import *
+from api.utils.utils import *
 
 
 class TestUtils(TestCase):

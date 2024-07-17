@@ -8,7 +8,7 @@ from api.models.ballkid import Ballkid, MATCH_TYPE, POSITION, CUT_STATUS
 from api.models.schedule import Tournament
 from api.models.rating import Rating
 from api.serializers import BallkidSerializer
-from api.tests.utils import *
+from api.utils.utils import *
 from api.consts import MATCHES_START_HOUR
 
 from datetime import datetime, timedelta

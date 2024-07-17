@@ -9,7 +9,7 @@ from api.views.ballkid import (
 )
 from api.models.ballkid import Ballkid
 from api.serializers import *
-from api.tests.utils import *
+from api.utils.utils import *
 from datetime import datetime
 
 

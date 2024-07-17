@@ -24,7 +24,8 @@ from api.models.ballkid import *
 from api.models.rating import *
 from api.models.schedule import COURT
 from api.serializers import *
-from api.utils import *
+from api.utils.utils import *
+from api.utils.teams_generator import create_teams
 from api.consts import *
 from api.permissions import *
 from accounts.views import UpdateCaptainStatus
@@ -771,6 +772,30 @@ class ClearTeam(APIView):
             unassign_future_shifts(team)
 
         return Response(f"Team {team} cleared", status=status.HTTP_200_OK)
+
+
+class CreateTeams(APIView):
+    permission_classes = [IsChairperson]
+
+    def patch(self, request, format=None):
+        num = request.data["numTeams"]
+        should_recreate = request.data["shouldRecreate"]
+
+        # Assign teams to ballkids based on teams algorithm
+        teams = create_teams(num, should_recreate)
+        to_unassign = set(Ballkid.objects.filter(is_checked_in=True))
+        for team, ballkids in teams.items():
+            for ballkid in ballkids:
+                ballkid.set_field("current_team", team)
+                to_unassign.remove(ballkid)
+        # Unassign all checked in ballkids who are not assigned to a team
+        for ballkid in to_unassign:
+            ballkid.set_field("current_team", 0)
+
+        return Response(
+            {"Success": "Teams auto-created"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class GetFinalsHistory(generics.ListAPIView):

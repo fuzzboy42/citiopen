@@ -26,8 +26,13 @@ ballkid_urls = [
     path("checkout-all", CheckoutAll.as_view(), name="checkout-all"),
     path("cut-all", CutAll.as_view(), name="cut-all"),
     path("archive-all", ArchiveAll.as_view(), name="archive-all"),
+]
+
+# Teams URLs
+teams_urls = [
     path("calc-num-teams", CalcNumTeams.as_view(), name="calc-num-teams"),
     path("clear-team", ClearTeam.as_view(), name="clear-team"),
+    path("create-teams", CreateTeams.as_view(), name="create-teams"),
 ]
 
 # Schedule URLs
@@ -189,6 +194,7 @@ debug_urls = [
 
 urlpatterns = (
     ballkid_urls
+    + teams_urls
     + schedule_urls
     + analytics_urls
     + tournament_urls
