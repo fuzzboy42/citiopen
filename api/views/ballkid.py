@@ -726,85 +726,83 @@ class ResetData(APIView):
     def patch(self, request, format=None):
         year = get_current_year()
 
+        # Check out all ballkids
+        for ballkid in Ballkid.objects.filter(is_active=True):
+            ballkid.set_field("is_checked_in", False)
+            ballkid.set_field("num_tickets_used", 0)
+            ballkid.set_field("last_day", None)
+            ballkid.set_field("comments", "")
+            ballkid.validate()
+            ballkid.save()
+
         # Delete ratings from this year
         ratings = Rating.objects.filter(date__year=year)
         logger.info(f"[ResetData] Deleting {len(ratings)} ratings: {ratings}")
-        # ratings.delete()
-        print(ratings)
+        ratings.delete()
 
         # Delete checkin histories from this year
         histories = CheckinHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} checkin histories: {histories}"
         )
-        # histories.delete()
-        print(histories)
+        histories.delete()
 
         # Delete checkin analytics from this year
         analytics = CheckinAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} checkin analytics: {analytics}"
         )
-        # analytics.delete()
-        print(analytics)
+        analytics.delete()
 
         # Delete team histories from this year
         histories = TeamHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} team histories: {histories}"
         )
-        # histories.delete()
-        print(histories)
+        histories.delete()
 
         # Delete captain histories from this year
         histories = CaptainHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} captain histories: {histories}"
         )
-        # histories.delete()
-        print(histories)
+        histories.delete()
 
         # Delete captain analytics from this year
         analytics = CaptainAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} captain analytics: {analytics}"
         )
-        # analytics.delete()
-        print(analytics)
+        analytics.delete()
 
         # Delete court analytics from this year
         analytics = CourtAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} court analytics: {analytics}"
         )
-        # analytics.delete()
-        print(analytics)
+        analytics.delete()
 
         # Delete schedules from this year
         schedules = Schedule.objects.filter(start__year=year)
         logger.info(f"[ResetData] Deleting {len(schedules)} schedules: {schedules}")
-        # schedules.delete()
-        print(schedules)
+        schedules.delete()
 
         # Delete calibrationparams from this year
         cps = CalibrationParams.objects.filter(year=year)
         logger.info(f"[ResetData] Deleting {len(cps)} calibration params: {cps}")
-        # cps.delete()
-        print(cps)
+        cps.delete()
 
         # Delete cut histories from this year
         histories = CutHistory.objects.filter(year=year)
         logger.info(f"[ResetData] Deleting {len(histories)} cut histories: {histories}")
-        # histories.delete()
-        print(histories)
+        histories.delete()
 
-        # Delete finals histories from this year
-        histories = FinalsHistory.objects.filter(year=year)
-        logger.info(
-            f"[ResetData] Deleting {len(histories)} finals histories: {histories}"
-        )
-        # histories.delete()
-        print(histories)
+        # # Delete finals histories from this year
+        # histories = FinalsHistory.objects.filter(year=year)
+        # logger.info(
+        #     f"[ResetData] Deleting {len(histories)} finals histories: {histories}"
+        # )
+        # # histories.delete()
 
         return Response(
             {"Success": f"Data for {year} successfully reset"},

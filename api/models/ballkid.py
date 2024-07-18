@@ -511,7 +511,9 @@ class Ballkid(models.Model):
             # Reset the checkout time comments if ballkid is checked in and
             # getting checked out
             if self.is_checked_in and not value:
-                f"[validate] ballkid {self.id} checkout time comments reset to empty"
+                logger.info(
+                    f"[validate] ballkid {self.id} checkout time comments reset to empty"
+                )
                 self.set_field("checkout_comments", None)
 
             self.is_checked_in = value
