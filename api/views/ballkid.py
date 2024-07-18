@@ -25,9 +25,9 @@ from api.models.rating import *
 from api.models.schedule import COURT
 from api.serializers import *
 from api.utils.utils import *
-from api.utils.teams_generator import create_teams
 from api.utils.consts import *
 from api.permissions import *
+from api.utils.teams_generator import TeamsGenerator
 from accounts.views import UpdateCaptainStatus
 
 from datetime import timedelta
@@ -778,19 +778,17 @@ class CreateTeams(APIView):
     permission_classes = [IsChairperson]
 
     def patch(self, request, format=None):
-        num = request.data["numTeams"]
-        should_recreate = request.data["shouldRecreate"]
+        num_teams = int(request.data["numTeams"])
 
-        # Assign teams to ballkids based on teams algorithm
-        teams = create_teams(num, should_recreate)
-        to_unassign = set(Ballkid.objects.filter(is_checked_in=True))
-        for team, ballkids in teams.items():
-            for ballkid in ballkids:
-                ballkid.set_field("current_team", team)
-                to_unassign.remove(ballkid)
-        # Unassign all checked in ballkids who are not assigned to a team
-        for ballkid in to_unassign:
-            ballkid.set_field("current_team", 0)
+        generator = TeamsGenerator(num_teams)
+        teams = generator.create_teams()
+
+        for team in teams:
+            for ballkid in team.get_ballkids():
+
+                ballkid.set_field("current_team", team.get_number())
+                ballkid.validate()
+                ballkid.save()
 
         return Response(
             {"Success": "Teams auto-created"},

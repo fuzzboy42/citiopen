@@ -3,7 +3,8 @@ from api.utils.consts import *
 
 from django.db.models import Q
 
-# import random
+import random
+
 # import math
 
 
@@ -161,16 +162,108 @@ from django.db.models import Q
 #     )
 
 
-def create_teams(num):
-    teams = {i + 1: [] for i in range(num)}
+class Team:
+    def __init__(self, num):
+        self.number = num
+        self.ballkids = {position: [] for position in [POSITION.N, POSITION.B]}
+        self.experienced = {position: [] for position in [POSITION.N, POSITION.B]}
 
-    all = Ballkid.objects.filter(is_checked_in=True)
-    captains = all.filter(Q("is_chairperson") | Q("is_captain"))
-    supervets = all.filter(num_years_experience__gt=3)
-    ballkids = all.order_by("-num_years_experience")
+    def get_number(self):
+        return self.number
 
-    for position in [POSITION.N, POSITION.B]:
-        all = ballkids.filter(position=position)
-        captains = all.filter(is_captain=True)
-    nets = ballkids.filter(position=POSITION.N)
-    backs = ballkids.filter(position=POSITION.B)
+    def get_ballkids(self):
+        return self.ballkids[POSITION.N] + self.ballkids[POSITION.B]
+
+    def size(self, position=None):
+        if position is None:
+            return len(self.get_ballkids())
+        else:
+            return len(self.ballkids[position])
+
+    def has_experienced(self, position):
+        return len(self.experienced[position]) > 0
+
+    def add_ballkid(self, ballkid):
+        position = ballkid.position
+
+        self.ballkids[position].append(ballkid)
+
+        if (
+            ballkid.is_captain
+            or ballkid.is_chairperson
+            or ballkid.num_years_experience > SUPERVET_THRESHOLD
+        ):
+            self.experienced[position].append(ballkid)
+
+    def __repr__(self):
+        return str(
+            [
+                f"{ballkid.first_name} {ballkid.last_name}"
+                for ballkid in self.get_ballkids()
+            ]
+        )
+
+
+class TeamsGenerator:
+    def __init__(self, num_teams):
+        self.teams = [Team(i + 1) for i in range(num_teams)]
+
+    def get_smallest_team(self, position=None):
+        smallest_team = self.teams[0]
+        for team in self.teams:
+            if team.size() < smallest_team.size(position):
+                smallest_team = team
+
+        return smallest_team
+
+    def get_team_without_experienced_position(self, position):
+        eligible_teams = [
+            team for team in self.teams if not team.has_experienced(position)
+        ]
+        return eligible_teams[0] if len(eligible_teams) > 0 else None
+
+    def create_teams(self):
+        all = Ballkid.objects.filter(is_checked_in=True)
+        captains = all.filter(Q(is_chairperson=True) | Q(is_captain=True))
+        supervets = list(
+            all.exclude(Q(is_chairperson=True) | Q(is_captain=True)).filter(
+                num_years_experience__gt=SUPERVET_THRESHOLD
+            )
+        )
+        ballkids = list(
+            all.exclude(Q(is_chairperson=True) | Q(is_captain=True))
+            .filter(num_years_experience__lte=SUPERVET_THRESHOLD)
+            .order_by("-num_years_experience")
+        )
+
+        team_counter = 0
+
+        for pos in [POSITION.N, POSITION.B]:
+            # Get all captains at that position and shuffle them
+            position_captains = list(captains.filter(position=pos))
+            random.shuffle(position_captains)
+
+            # For each captain, assign them to a team
+            for captain in position_captains:
+                team = self.teams[team_counter]
+                team.add_ballkid(captain)
+
+                # Increment team counter
+                team_counter = (team_counter + 1) % len(self.teams)
+
+        random.shuffle(supervets)
+        for supervet in supervets:
+            team = self.get_team_without_experienced_position(supervet.position)
+            if team is None:
+                team = self.get_smallest_team()
+
+            team.add_ballkid(supervet)
+
+        for ballkid in ballkids:
+            team = self.get_smallest_team()
+            team.add_ballkid(ballkid)
+
+        return self.teams
+
+    def __repr__(self):
+        return str([team for team in self.teams])

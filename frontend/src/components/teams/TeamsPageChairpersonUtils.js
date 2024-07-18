@@ -36,7 +36,13 @@ import {
   ConfirmDialog,
   HelpIcon,
 } from "../Utils";
-import { ON_COURT_GREEN, MARGINS, POSITIONS, TIMEOUT_MS } from "../Consts";
+import {
+  ON_COURT_GREEN,
+  MARGINS,
+  POSITIONS,
+  TIMEOUT_MS,
+  TARGET_NUM_BALLKIDS_PER_TEAM,
+} from "../Consts";
 import { teams } from "../HelpMessages.js";
 
 function renderSwitchButton(ballkid, setUpdated) {
@@ -459,6 +465,19 @@ function CreateTeamsDialog({ open, setOpen, updated, setUpdated }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  useEffect(() => {
+    fetch("/api/sorted-list", { headers: getAuthHeader() })
+      .then((response) => response.json())
+      .then((data) =>
+        setNumTeams(
+          Math.round(
+            data.filter((ballkid) => ballkid.is_checked_in === true).length /
+              TARGET_NUM_BALLKIDS_PER_TEAM
+          )
+        )
+      );
+  }, []);
+
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>
@@ -492,7 +511,7 @@ function CreateTeamsDialog({ open, setOpen, updated, setUpdated }) {
           />
         </Box>
 
-        <Box>{renderRecreateToggle(shouldRecreate, setShouldRecreate)}</Box>
+        {/* {renderRecreateToggle(shouldRecreate, setShouldRecreate)} */}
       </DialogContent>
 
       <DialogActions>
