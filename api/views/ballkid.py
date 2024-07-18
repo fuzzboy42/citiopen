@@ -729,71 +729,82 @@ class ResetData(APIView):
         # Delete ratings from this year
         ratings = Rating.objects.filter(date__year=year)
         logger.info(f"[ResetData] Deleting {len(ratings)} ratings: {ratings}")
-        ratings.delete()
+        # ratings.delete()
+        print(ratings)
 
         # Delete checkin histories from this year
         histories = CheckinHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} checkin histories: {histories}"
         )
-        histories.delete()
+        # histories.delete()
+        print(histories)
 
         # Delete checkin analytics from this year
         analytics = CheckinAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} checkin analytics: {analytics}"
         )
-        analytics.delete()
+        # analytics.delete()
+        print(analytics)
 
         # Delete team histories from this year
         histories = TeamHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} team histories: {histories}"
         )
-        histories.delete()
+        # histories.delete()
+        print(histories)
 
         # Delete captain histories from this year
         histories = CaptainHistory.objects.filter(start__year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} captain histories: {histories}"
         )
-        histories.delete()
+        # histories.delete()
+        print(histories)
 
         # Delete captain analytics from this year
         analytics = CaptainAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} captain analytics: {analytics}"
         )
-        analytics.delete()
+        # analytics.delete()
+        print(analytics)
 
         # Delete court analytics from this year
         analytics = CourtAnalytics.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(analytics)} court analytics: {analytics}"
         )
-        analytics.delete()
+        # analytics.delete()
+        print(analytics)
 
         # Delete schedules from this year
         schedules = Schedule.objects.filter(start__year=year)
         logger.info(f"[ResetData] Deleting {len(schedules)} schedules: {schedules}")
-        schedules.delete()
+        # schedules.delete()
+        print(schedules)
 
         # Delete calibrationparams from this year
         cps = CalibrationParams.objects.filter(year=year)
         logger.info(f"[ResetData] Deleting {len(cps)} calibration params: {cps}")
-        cps.delete()
+        # cps.delete()
+        print(cps)
 
         # Delete cut histories from this year
         histories = CutHistory.objects.filter(year=year)
         logger.info(f"[ResetData] Deleting {len(histories)} cut histories: {histories}")
-        histories.delete()
+        # histories.delete()
+        print(histories)
 
         # Delete finals histories from this year
         histories = FinalsHistory.objects.filter(year=year)
         logger.info(
             f"[ResetData] Deleting {len(histories)} finals histories: {histories}"
         )
-        histories.delete()
+        # histories.delete()
+        print(histories)
 
         return Response(
             {"Success": f"Data for {year} successfully reset"},
