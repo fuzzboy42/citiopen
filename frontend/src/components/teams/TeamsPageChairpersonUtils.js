@@ -16,7 +16,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Switch from "@mui/material/Switch";
 
 import RemoveCircleOutline from "@mui/icons-material/RemoveCircleOutline";
 import SwapVert from "@mui/icons-material/SwapVert";
@@ -432,33 +431,32 @@ export function Header() {
 //   );
 // }
 
-function renderRecreateToggle(shouldRecreate, setShouldRecreate) {
-  return (
-    <Box>
-      <DialogContentText sx={{ mt: 4, mb: 1, color: "black" }}>
-        Should existing teams be re-created?
-      </DialogContentText>
-      <Box width="75%" sx={{ mx: "auto" }}>
-        <Box className="sxs">
-          <Typography variant="body2" width="45%">
-            Keep existing teams; only assign unassigned ballkids
-          </Typography>
-          <Switch
-            checked={shouldRecreate}
-            onClick={(e) => setShouldRecreate(e.target.checked)}
-          />
-          <Typography variant="body2" width="45%">
-            Unassign all ballkids; re-create all teams
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+// function renderRecreateToggle(shouldRecreate, setShouldRecreate) {
+//   return (
+//     <Box>
+//       <DialogContentText sx={{ mt: 4, mb: 1, color: "black" }}>
+//         Should existing teams be re-created?
+//       </DialogContentText>
+//       <Box width="75%" sx={{ mx: "auto" }}>
+//         <Box className="sxs">
+//           <Typography variant="body2" width="45%">
+//             Keep existing teams; only assign unassigned ballkids
+//           </Typography>
+//           <Switch
+//             checked={shouldRecreate}
+//             onClick={(e) => setShouldRecreate(e.target.checked)}
+//           />
+//           <Typography variant="body2" width="45%">
+//             Unassign all ballkids; re-create all teams
+//           </Typography>
+//         </Box>
+//       </Box>
+//     </Box>
+//   );
+// }
 
 function CreateTeamsDialog({ open, setOpen, updated, setUpdated }) {
   const [numTeams, setNumTeams] = useState(10);
-  const [shouldRecreate, setShouldRecreate] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -526,7 +524,6 @@ function CreateTeamsDialog({ open, setOpen, updated, setUpdated }) {
               headers: getAuthHeader(),
               body: JSON.stringify({
                 numTeams: numTeams,
-                shouldRecreate: shouldRecreate,
               }),
             })
               .then((response) => {
