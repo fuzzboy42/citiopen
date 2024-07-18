@@ -510,7 +510,13 @@ function InactiveOverflowMenu(props) {
 
   return (
     <div>
-      c
+      <IconButton
+        onClick={(e) => {
+          setAnchorEl(e.currentTarget);
+        }}
+      >
+        <MoreVert />
+      </IconButton>
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
