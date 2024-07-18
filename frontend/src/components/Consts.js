@@ -8,6 +8,8 @@ import Grid4x4 from "@mui/icons-material/Grid4x4";
 export const MARGINS = { mt: 2, mb: 1 };
 export const ON_COURT_GREEN = "#c8f7c8";
 
+export const SUPERVET_THRESHOLD = 3;
+
 export const DATA_GRID_HEIGHT = "75vh";
 export const TIMEOUT_MS = 1500;
 
@@ -41,7 +43,7 @@ export const TOOLTIP_DICT = {
   captain: "Captain",
   rookie: "Rookie",
   chairperson: "Chairperson",
-  supervet: "Supervet (> 3 years experience)",
+  supervet: `Supervet (> ${SUPERVET_THRESHOLD} years experience)`,
   outOfTownRookie: "Out-of-town rookie",
   back: "Back",
   net: "Net",

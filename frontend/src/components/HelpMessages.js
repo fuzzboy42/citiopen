@@ -1,4 +1,5 @@
 import DialogContentText from "@mui/material/DialogContentText";
+import { SUPERVET_THRESHOLD } from "./Consts";
 
 export const list = (
   <DialogContentText>
@@ -52,8 +53,9 @@ export const cut = (
     The Active Ballkids section only includes ballkids that are active this year
     and not yet cut. The list is organized with captains at the top of the list,
     rookies at the bottom of the list, and descending order of years of
-    experience. Supervets (&gt; 3 years of experience) are indicated by a blue
-    square and out-of-town rookies are indicated by a red circle.
+    experience. Supervets (&gt; {SUPERVET_THRESHOLD} years of experience) are
+    indicated by a blue square and out-of-town rookies are indicated by a red
+    circle.
     <br /> <br />
     The cut sections (Definitely Keep, Possibly Keep, Possibly Cut, and
     Definitely Cut) are not publicly visible to ballkids and captains and can be

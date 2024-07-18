@@ -48,6 +48,7 @@ import {
   TOOLTIP_DICT,
   NUM_RATINGS_WARNING_THRESHOLD,
   ON_COURT_GREEN,
+  SUPERVET_THRESHOLD,
 } from "./Consts";
 
 export function Icons({ ballkid, margin, isTeamsPage = false }) {
@@ -55,7 +56,7 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
 
   if (
     !ballkid.is_captain &&
-    ballkid.num_years_experience <= 3 &&
+    ballkid.num_years_experience <= SUPERVET_THRESHOLD &&
     ballkid.num_years_experience > 0
   ) {
     return "";
@@ -73,7 +74,9 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
       {group !== "ballkid" &&
         ballkid.num_years_experience === 0 &&
         ICON_DICT["rookie"]}
-      {ballkid.num_years_experience > 3 && isTeamsPage && ICON_DICT["supervet"]}
+      {ballkid.num_years_experience > SUPERVET_THRESHOLD &&
+        isTeamsPage &&
+        ICON_DICT["supervet"]}
     </Icon>
   );
 }
