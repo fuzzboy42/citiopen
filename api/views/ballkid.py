@@ -1093,13 +1093,17 @@ class GetRatingsCaptainLeaderboard(generics.ListAPIView):
             Ballkid.objects.filter(is_active=True)
             .filter(Q(is_captain=True) | Q(is_chairperson=True))
             .annotate(
-                num_ratings=Count("rater", filter=Q(rater__date__year=year)),
-                raw_avg=Coalesce(
-                    Avg("rater__rating", filter=Q(rater__date__year=year)), 0.0
+                num_ratings=Avg(
+                    "calibrationparams__num_rater_ratings",
+                    filter=Q(calibrationparams__year=year),
                 ),
-                raw_stdev=Coalesce(
-                    StdDev("rater__rating", filter=Q(rater__date__year=year)),
-                    0.0,
+                raw_avg=Avg(
+                    "calibrationparams__rater_raw_avg",
+                    filter=Q(calibrationparams__year=year),
+                ),
+                raw_stdev=Avg(
+                    "calibrationparams__rater_raw_stdev",
+                    filter=Q(calibrationparams__year=year),
                 ),
                 scale=Avg(
                     "calibrationparams__rater_scale",
