@@ -44,6 +44,21 @@ class DAY_OF_WEEK(models.TextChoices):
     END = "End"
 
 
+class CHECKOUT_TIMES(models.TextChoices):
+    ONE = "1pm"
+    TWO = "2pm"
+    THREE = "3pm"
+    FOUR = "4pm"
+    FIVE = "5pm"
+    SIX = "6pm"
+    SEVEN = "7pm"
+    EIGHT = "8pm"
+    NINE = "9pm"
+    TEN = "10pm"
+    ELEVEN = "11pm"
+    MIDNIGHT = "12am"
+
+
 class Ballkid(models.Model):
     # Ballkid static information
     user = models.ForeignKey(
@@ -89,7 +104,9 @@ class Ballkid(models.Model):
     last_day = models.CharField(
         max_length=10, choices=DAY_OF_WEEK.choices, null=True, blank=True
     )
-    checkout_comments = models.TextField(null=True, blank=True)
+    checkout_comments = models.CharField(
+        max_length=10, choices=CHECKOUT_TIMES.choices, null=True, blank=True
+    )
     comments = models.TextField(default="", blank=True)
 
     # TODO: consider adding this in the future but need to
