@@ -266,14 +266,6 @@ function renderBallkids(ballkids, isCheckedIn, layout, setUpdated) {
   );
 }
 
-function renderCheckoutAllButton(setOpen) {
-  return (
-    <Button variant="contained" color="error" onClick={() => setOpen(true)}>
-      Check Out All
-    </Button>
-  );
-}
-
 export default function CheckinPage(props) {
   const [checkedIn, setCheckedIn] = useState([]);
   const [checkedOut, setCheckedOut] = useState([]);
@@ -349,7 +341,13 @@ export default function CheckinPage(props) {
 
         {checkedIn.length > 0 && (
           <Grid item sx={MARGINS}>
-            {renderCheckoutAllButton(setOpen)}
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpen(true)}
+            >
+              Check Out All
+            </Button>
           </Grid>
         )}
       </Grid>

@@ -80,9 +80,6 @@ function DownloadButton({ setSuccessMsg, setErrorMsg }) {
 function ArchiveButton() {
   const [open, setOpen] = useState(false);
 
-  // Underscore to indicate that variable is not used to ignore for estlint
-  const [_updated, setUpdated] = useState();
-
   return (
     <Box>
       <ConfirmDialog
@@ -91,7 +88,7 @@ function ArchiveButton() {
         body={{}}
         open={open}
         setOpen={setOpen}
-        setUpdated={setUpdated}
+        setUpdated={null}
       />
 
       <Button
@@ -509,9 +506,6 @@ function CreateTournament({ setUpdated, setSuccessMsg, setErrorMsg }) {
 function ResetDataButton() {
   const [open, setOpen] = useState(false);
 
-  // Underscore to indicate that variable is not used to ignore for estlint
-  const [_updated, setUpdated] = useState();
-
   return (
     <Box>
       <ConfirmDialog
@@ -522,7 +516,7 @@ function ResetDataButton() {
         body={{}}
         open={open}
         setOpen={setOpen}
-        setUpdated={setUpdated}
+        setUpdated={null}
       />
 
       <Button

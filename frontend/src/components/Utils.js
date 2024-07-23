@@ -54,14 +54,6 @@ import {
 export function Icons({ ballkid, margin, isTeamsPage = false }) {
   const group = getLocalStorage("group");
 
-  if (
-    !ballkid.is_captain &&
-    ballkid.num_years_experience <= SUPERVET_THRESHOLD &&
-    ballkid.num_years_experience > 0
-  ) {
-    return "";
-  }
-
   return (
     <Icon sx={{ mb: margin }}>
       {ballkid.is_chairperson && ICON_DICT["chairperson"]}
@@ -457,7 +449,9 @@ export function ConfirmDialog({
                 setTimeout(() => {
                   setOpen(false);
                   setSuccessMsg("");
-                  setUpdated(true);
+                  if (setUpdated) {
+                    setUpdated(true);
+                  }
                 }, 2000);
               } else {
                 setErrorMsg("Error.");
