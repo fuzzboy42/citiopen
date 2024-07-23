@@ -298,7 +298,7 @@ class BulkCreateSignups(APIView):
                 user = user_filtered[0]
                 user.email = email
 
-            user.groups.add(group)
+            user.groups.set([group])
             user.save()
 
             # If ballkid already exist, then mark ballkid as active,
@@ -623,15 +623,16 @@ class BulkCreateCheckins(APIView):
             status=status.HTTP_200_OK,
         )
 
+
 class BulkCheckin(APIView):
     permission_classes = [IsChairperson]
 
     def patch(self, request, format=None):
         num = int(request.data["num"])
 
-        ballkids = Ballkid.objects.filter(is_active=True).order_by('?')[:num]
-        for ballkid in ballkids: 
-            ballkid.set_field('is_checked_in', True)
+        ballkids = Ballkid.objects.filter(is_active=True).order_by("?")[:num]
+        for ballkid in ballkids:
+            ballkid.set_field("is_checked_in", True)
             ballkid.validate()
             ballkid.save()
 
