@@ -397,64 +397,6 @@ export function Header() {
   );
 }
 
-// function renderBalancedSlider(balanceCoeff, setBalanceCoeff) {
-//   const marks = [
-//     { value: 1, label: "More Balanced" },
-//     { value: 2, label: "" },
-//     { value: 3, label: "More Adjusted" },
-//   ];
-
-//   return (
-//     <Box>
-//       <DialogContentText sx={{ mt: 4, mb: 1, color: "black" }}>
-//         How much should skill/experience be balanced across teams?
-//       </DialogContentText>
-//       <Box width="75%" sx={{ mx: "auto" }}>
-//         <Slider
-//           value={balanceCoeff}
-//           valueLabelDisplay="off"
-//           step={null}
-//           marks={marks}
-//           min={1}
-//           max={3}
-//           onChange={(e) => setBalanceCoeff(e.target.value)}
-//         />
-//       </Box>
-//       <Box width="90%" sx={{ mx: "auto" }}>
-//         <DialogContentText sx={{ mt: 1 }} variant="body2">
-//           Note: More balanced teams will have similar levels of skill/experience
-//           between main and outer courts. More adjusted teams will have a larger
-//           disparity in skill/experience between main and outer courts.
-//         </DialogContentText>
-//       </Box>
-//     </Box>
-//   );
-// }
-
-// function renderRecreateToggle(shouldRecreate, setShouldRecreate) {
-//   return (
-//     <Box>
-//       <DialogContentText sx={{ mt: 4, mb: 1, color: "black" }}>
-//         Should existing teams be re-created?
-//       </DialogContentText>
-//       <Box width="75%" sx={{ mx: "auto" }}>
-//         <Box className="sxs">
-//           <Typography variant="body2" width="45%">
-//             Keep existing teams; only assign unassigned ballkids
-//           </Typography>
-//           <Switch
-//             checked={shouldRecreate}
-//             onClick={(e) => setShouldRecreate(e.target.checked)}
-//           />
-//           <Typography variant="body2" width="45%">
-//             Unassign all ballkids; re-create all teams
-//           </Typography>
-//         </Box>
-//       </Box>
-//     </Box>
-//   );
-// }
-
 function CreateTeamsDialog({ open, setOpen, setUpdated }) {
   const [numTeams, setNumTeams] = useState(10);
 
@@ -615,6 +557,7 @@ export function ActionsButtons({ numAssigned, setUpdated }) {
           variant="outlined"
           size="small"
           color="primary"
+          disabled={numAssigned === 0}
           startIcon={<RemoveCircleOutline />}
           onClick={() => setUnassignOpen(true)}
           sx={{ mx: 0.3 }}
@@ -626,6 +569,7 @@ export function ActionsButtons({ numAssigned, setUpdated }) {
           variant="outlined"
           size="small"
           color="error"
+          disabled={numAssigned === 0}
           startIcon={<HighlightOff />}
           onClick={() => setCheckoutOpen(true)}
           sx={{ mx: 0.3 }}
