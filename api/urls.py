@@ -191,6 +191,11 @@ debug_urls = [
         BulkCreateCheckins.as_view(),
         name="bulk-create-checkins",
     ),
+    path(
+        "bulk-checkin",
+        BulkCheckin.as_view(),
+        name="bulk-checkin",
+    ),
 ]
 
 urlpatterns = (

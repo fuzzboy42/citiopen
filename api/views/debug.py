@@ -623,6 +623,23 @@ class BulkCreateCheckins(APIView):
             status=status.HTTP_200_OK,
         )
 
+class BulkCheckin(APIView):
+    permission_classes = [IsChairperson]
+
+    def patch(self, request, format=None):
+        num = int(request.data["num"])
+
+        ballkids = Ballkid.objects.filter(is_active=True).order_by('?')[:num]
+        for ballkid in ballkids: 
+            ballkid.set_field('is_checked_in', True)
+            ballkid.validate()
+            ballkid.save()
+
+        return Response(
+            {"Success": f"Bulk checked in {len(ballkids)} ballkids"},
+            status=status.HTTP_200_OK,
+        )
+
 
 class DownloadData(APIView):
     permission_classes = [IsChairperson]

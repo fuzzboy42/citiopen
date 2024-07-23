@@ -1245,6 +1245,71 @@ function BulkCreation({ type }) {
   );
 }
 
+function BulkCheckin() {
+  const [numBallkids, setNumBallkids] = useState("");
+
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  return (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Alerts
+          successMsg={successMsg}
+          errorMsg={errorMsg}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography component="h4" variant="h4">
+          Bulk Check-in Ballkids
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          value={numBallkids}
+          label="Number of Ballkids"
+          variant="standard"
+          type="number"
+          required
+          onChange={(e) => setNumBallkids(e.target.value)}
+        />
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          Note that ballkids to be checked in will be randomly selected.
+        </Typography>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={(e) =>
+            fetch("/api/bulk-checkin", {
+              method: "PATCH",
+              headers: getAuthHeader(),
+              body: JSON.stringify({ num: numBallkids }),
+            }).then((response) => {
+              if (response.ok) {
+                setSuccessMsg(
+                  `Checked in ${numBallkids} ballkid${
+                    numBallkids === 0 ? "" : "s"
+                  }!`
+                );
+              } else {
+                setErrorMsg("Error checking in ballkids.");
+              }
+              setNumBallkids("");
+            })
+          }
+        >
+          Bulk Check In
+        </Button>
+      </Grid>
+    </Grid>
+  );
+}
+
 export default function DebugPage(props) {
   const [ballkids, setBallkids] = useState([]);
   const [captains, setCaptains] = useState([]);
@@ -1303,6 +1368,7 @@ export default function DebugPage(props) {
     "Bulk Create Finals": <BulkCreation type="finals" />,
     "Bulk Create Cuts": <BulkCreation type="cuts" />,
     "Bulk Create Check-in Histories": <BulkCreation type="checkins" />,
+    "Bulk Check-in Ballkids": <BulkCheckin />,
   };
 
   return (
