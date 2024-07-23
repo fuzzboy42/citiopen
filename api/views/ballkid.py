@@ -913,7 +913,7 @@ class GetPastTeams(APIView):
         )
         current = CaptainHistory.objects.filter(captain_id=pk, end=None)
         try:
-            show_teams = Tournament.objects.get(year=2023).show_teams
+            show_teams = Tournament.objects.get(year=get_current_year()).show_teams
         except Exception:
             show_teams = True
 

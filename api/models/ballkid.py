@@ -551,7 +551,9 @@ class Ballkid(models.Model):
             self.current_team = value
 
         elif field == "finals_team":
-            show_teams = Tournament.objects.get(year=2023).show_finals_teams
+            show_teams = Tournament.objects.get(
+                year=get_current_year()
+            ).show_finals_teams
             self.handle_finals_history_team(value, show_teams)
 
             self.finals_team = value

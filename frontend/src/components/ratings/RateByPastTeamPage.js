@@ -19,6 +19,7 @@ import {
 import { MARGINS } from "../Consts";
 import { rateByPastTeam } from "../HelpMessages";
 
+// Date is the default date for which to give the ballkid a rating
 function renderBallkid(ballkid, layout, setUpdated, date = null) {
   return ballkid === undefined || ballkid === null ? (
     ""

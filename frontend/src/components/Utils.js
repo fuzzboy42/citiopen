@@ -133,6 +133,7 @@ export function Alerts({ successMsg, errorMsg, setSuccessMsg, setErrorMsg }) {
   );
 }
 
+// Date is the default date filled in in the RatingDialog when giving a rating
 export function RatingButton({ ballkid, setUpdated, isMobile, date = null }) {
   const [open, setOpen] = useState(false);
 
@@ -837,10 +838,11 @@ export function getToday(format = "slash", isForRating = false) {
 // Returns date in the format: [week abbrev], [month abbrev] [day]
 //  as a string of the format: [month]/[day]/[year]
 export function getDay(dateStr) {
-  const date = new Date(`${dateStr.slice(5)}, 2023`);
+  const yyyy = new Date().getFullYear();
+  const date = new Date(`${dateStr.slice(5)}, ${yyyy}`);
   const dd = String(date.getDate());
   const mm = String(date.getMonth() + 1); //January is 0!
-  return `${mm}/${dd}/2023`;
+  return `${mm}/${dd}/${yyyy}`;
 }
 
 export function getLocalStorage(key) {
