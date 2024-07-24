@@ -271,7 +271,9 @@ export const rateByName = (
     In order to only show ballkids who you have not yet rated, toggle the "Show
     All Ballkids / Show Ballkids to Rate" toggle at the top of the page. In
     order to only show ballkids who are on your currently assigned team, toggle
-    the "Show All Teams / Show My Team Only" toggle at the top of the page.
+    the "Show All Teams / Show My Team Only" toggle at the top of the page. This
+    will only show ballkids on your current team if teams are publicly available
+    to ballkids and captains.
   </DialogContentText>
 );
 
@@ -288,7 +290,9 @@ export const rateByNameNonchairperson = (
     In order to only show ballkids who you have not yet rated, toggle the "Show
     All Ballkids / Show Ballkids to Rate" toggle at the top of the page. In
     order to only show ballkids who are on your currently assigned team, toggle
-    the "Show All Teams / Show My Team Only" toggle at the top of the page.
+    the "Show All Teams / Show My Team Only" toggle at the top of the page. This
+    will only show ballkids on your current team if teams are publicly available
+    to ballkids and captains.
   </DialogContentText>
 );
 

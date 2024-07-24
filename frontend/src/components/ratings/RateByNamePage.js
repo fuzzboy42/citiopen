@@ -30,6 +30,7 @@ function getBallkidsToRender(
   const pk = getLocalStorage("ballkid_id");
 
   // If teams are hidden and they are saying to show their team, then don't show anyone
+  // regardless of captain or chairperson
   if (showTeam && !tournamentShowTeams) {
     return [];
   }
