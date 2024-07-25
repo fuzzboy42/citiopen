@@ -94,7 +94,7 @@ function ArchiveButton() {
       <Button
         variant="contained"
         size="small"
-        color="error"
+        color="warning"
         onClick={() => setOpen(true)}
       >
         Archive All
@@ -510,7 +510,7 @@ function ResetDataButton() {
     <Box>
       <ConfirmDialog
         message={
-          "You are about to reset ALL data for this year, including check-in history and analytics, team history, captain analytics, court analytics, schedules, ratings, and calibration parameters."
+          "You are about to reset ALL data for this year. This includes archiving all ballkids AND deleting this year's check-in history and analytics, team history, captain analytics, court analytics, schedules, ratings, and calibration parameters."
         }
         url={"/api/reset-data"}
         body={{}}
@@ -522,7 +522,7 @@ function ResetDataButton() {
       <Button
         variant="contained"
         size="small"
-        color="warning"
+        color="error"
         onClick={() => setOpen(true)}
       >
         Reset Data
@@ -614,16 +614,6 @@ export default function TournamentSettings(props) {
 
           <Grid item xs={12} className="justify">
             <Typography variant="subtitle1">
-              Reset all data for this year
-            </Typography>
-            <ResetDataButton
-              setSuccessMsg={setSuccessMsg}
-              setErrorMsg={setErrorMsg}
-            />
-          </Grid>
-
-          <Grid item xs={12} className="justify">
-            <Typography variant="subtitle1">
               Change calibration ignore_outliers parameter
             </Typography>
             <RemoveOutliers
@@ -651,6 +641,15 @@ export default function TournamentSettings(props) {
             />
           </Grid>
 
+          <Grid item xs={12} className="justify">
+            <Typography variant="subtitle1">
+              Reset all data for this year
+            </Typography>
+            <ResetDataButton
+              setSuccessMsg={setSuccessMsg}
+              setErrorMsg={setErrorMsg}
+            />
+          </Grid>
           {/* <Grid item xs={12} className="justify">
           <Typography variant="subtitle1">
           Wrap up this year's tournament

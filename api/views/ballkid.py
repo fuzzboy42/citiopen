@@ -726,9 +726,10 @@ class ResetData(APIView):
     def patch(self, request, format=None):
         year = get_current_year()
 
-        # Check out all ballkids
+        # Check out and archive all ballkids
         for ballkid in Ballkid.objects.filter(is_active=True):
             ballkid.set_field("is_checked_in", False)
+            ballkid.set_field('is_active', False)
             ballkid.set_field("num_tickets_used", 0)
             ballkid.set_field("last_day", None)
             ballkid.set_field("comments", "")
