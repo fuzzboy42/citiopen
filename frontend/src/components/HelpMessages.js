@@ -115,8 +115,25 @@ export const inactive = (
 
 export const ticketsPage = (
   <DialogContentText>
-    placeholder
+    This page allows you to keep track of which ballkids have requested, been
+    granted, and received tickets for which sessions.
     <br /> <br />
+    Each session is listed, along with the ballkids who requested tickets and
+    the priority order in which they requested tickets. The number of tickets
+    they have received is listed to the right of the ballkid name and
+    highlighted pink if they have received 2 or more tickets. This count
+    includes tickets delivered for the given session.
+    <br /> <br />
+    New ticket requests for a session can be made by clicking on the '+' icon,
+    selecting the ballkid name from the dropdown and the number of tickets
+    requested, and saving. Once a ticket request is made, the number of tickets
+    requested is represented by the circles next to each ballkid's name. A blue
+    open circle means that the ticket has been requested, but not granted or
+    delivered. A purple outlined checkmark means that the ticket has been
+    requested and granted, but not delivered. A filled in green checkmark means
+    that the ticket has been delivered. To toggle between states, click on the
+    ticket to go from requested to granted, granted to delivered, or delivered
+    back to granted.
   </DialogContentText>
 );
 
