@@ -91,6 +91,7 @@ function AddTicketRequest({ session, ballkidsList, setUpdated }) {
       <Autocomplete
         disablePortal
         openOnFocus
+        required
         sx={{ width: 250 }}
         options={ballkidsList}
         value={ballkid}
@@ -104,6 +105,7 @@ function AddTicketRequest({ session, ballkidsList, setUpdated }) {
       />
       <TextField
         select
+        required
         value={numTickets}
         variant="standard"
         sx={{ mx: 1 }}
@@ -114,15 +116,16 @@ function AddTicketRequest({ session, ballkidsList, setUpdated }) {
         }}
         onChange={(e) => setNumTickets(e.target.value)}
       >
-        {[1, 2].map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
+        {[...Array(5).keys()].map((value) => (
+          <MenuItem key={value} value={value + 1}>
+            {value + 1}
           </MenuItem>
         ))}
       </TextField>
 
       <IconButton
         size="small"
+        disabled={!ballkid || !numTickets}
         sx={{ ml: 2 }}
         onClick={() =>
           fetch("/api/update-ticket", {
