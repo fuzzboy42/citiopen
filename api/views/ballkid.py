@@ -1319,7 +1319,7 @@ class UpdateTicket(APIView):
     def post(self, request, format=None):
         year = get_current_year()
         session = request.data["session"]
-        ballkid = Ballkid.objects.get(id=request.data["ballkid"]["id"])
+        ballkid = Ballkid.objects.get(id=request.data["ballkidId"])
 
         next_order = (
             Coalesce(
@@ -1369,3 +1369,33 @@ class UpdateTicket(APIView):
             f"[UpdateTicket] Ticket updated {ticket} given request {request.data}"
         )
         return Response({"Success": f"Updated ticket"}, status=status.HTTP_200_OK)
+
+    def delete(self, request, format=None):
+        year = get_current_year()
+        session = request.data["session"]
+        ballkid = Ballkid.objects.get(id=request.data["ballkidId"])
+
+        # Delete original ticket
+        ticket = Ticket.objects.get(
+            year=year,
+            session=session,
+            ballkid=ballkid,
+        )
+        order = ticket.order
+        ballkid.num_tickets -= ticket.num_delivered
+        ballkid.save()
+        ticket.delete()
+
+        # Get all ticket requests which have an order greater than the ticket that got deleted
+        # and decrement order
+        tickets_to_update = Ticket.objects.filter(
+            session=session, year=year, order__gt=order
+        )
+        for tick in tickets_to_update:
+            tick.order -= 1
+            tick.save()
+
+        logger.info(
+            f"[UpdateTicket] Deleted ticket {ticket} given request {request.data}"
+        )
+        return Response({"Success": f"Deleted ticket"}, status=status.HTTP_200_OK)

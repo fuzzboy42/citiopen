@@ -17,6 +17,9 @@ import Close from "@mui/icons-material/Close";
 import RadioButtonUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
 import CheckCircle from "@mui/icons-material/CheckCircle";
+import Delete from "@mui/icons-material/Delete";
+import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
+import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
 
 import {
   getAuthHeader,
@@ -133,7 +136,7 @@ function AddTicketRequest({ session, ballkidsList, setUpdated }) {
             headers: getAuthHeader(),
             body: JSON.stringify({
               session: session,
-              ballkid: ballkid,
+              ballkidId: ballkid.id,
               numTickets: numTickets,
             }),
           }).then(() => {
@@ -180,6 +183,14 @@ function Session({ session, tickets, ballkidsList, setUpdated }) {
           {tickets.map((ticket) => (
             <Box key={`${session}_${ticket.ballkid}`} className="justify">
               <Box className="sxs">
+                <Box sx={{ mr: 2 }}>
+                  <IconButton size="small" sx={{ p: 0.1 }}>
+                    <KeyboardDoubleArrowUp color="primary" />
+                  </IconButton>
+                  <IconButton size="small" sx={{ p: 0.1 }}>
+                    <KeyboardDoubleArrowDown color="primary" />
+                  </IconButton>
+                </Box>
                 <Typography variant="subtitle2" sx={{ mr: 2 }}>
                   {ticket.order}
                 </Typography>
@@ -201,6 +212,24 @@ function Session({ session, tickets, ballkidsList, setUpdated }) {
                     setUpdated={setUpdated}
                   />
                 ))}
+                <IconButton
+                  size="small"
+                  sx={{ p: 0.1, ml: 1 }}
+                  onClick={() =>
+                    fetch("/api/update-ticket", {
+                      method: "DELETE",
+                      headers: getAuthHeader(),
+                      body: JSON.stringify({
+                        session: ticket.session,
+                        ballkidId: ticket.ballkid,
+                      }),
+                    })
+                      .then((response) => response.json())
+                      .then(() => setUpdated(true))
+                  }
+                >
+                  <Delete />
+                </IconButton>
               </Box>
             </Box>
           ))}
