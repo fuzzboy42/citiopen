@@ -49,6 +49,7 @@ function Ticket({ ticket, ticketRepr, setUpdated }) {
           body: JSON.stringify({
             session: ticket.session,
             ballkidId: ticket.ballkid,
+            action: "tick",
             oldState: ticketRepr,
           }),
         })
@@ -184,10 +185,47 @@ function Session({ session, tickets, ballkidsList, setUpdated }) {
             <Box key={`${session}_${ticket.ballkid}`} className="justify">
               <Box className="sxs">
                 <Box sx={{ mr: 2 }}>
-                  <IconButton size="small" sx={{ p: 0.1 }}>
-                    <KeyboardDoubleArrowUp color="primary" />
+                  <IconButton
+                    size="small"
+                    sx={{ p: 0.1 }}
+                    disabled={ticket.order === 1}
+                    onClick={() =>
+                      fetch("/api/update-ticket", {
+                        method: "PATCH",
+                        headers: getAuthHeader(),
+                        body: JSON.stringify({
+                          session: ticket.session,
+                          ballkidId: ticket.ballkid,
+                          action: "reorder",
+                          direction: "up",
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then(() => setUpdated(true))
+                    }
+                  >
+                    <KeyboardDoubleArrowUp
+                      color={ticket.order === 1 ? "" : "primary"}
+                    />
                   </IconButton>
-                  <IconButton size="small" sx={{ p: 0.1 }}>
+                  <IconButton
+                    size="small"
+                    sx={{ p: 0.1 }}
+                    onClick={() =>
+                      fetch("/api/update-ticket", {
+                        method: "PATCH",
+                        headers: getAuthHeader(),
+                        body: JSON.stringify({
+                          session: ticket.session,
+                          ballkidId: ticket.ballkid,
+                          action: "reorder",
+                          direction: "down",
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then(() => setUpdated(true))
+                    }
+                  >
                     <KeyboardDoubleArrowDown color="primary" />
                   </IconButton>
                 </Box>

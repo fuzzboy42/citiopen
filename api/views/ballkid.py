@@ -1347,23 +1347,56 @@ class UpdateTicket(APIView):
         )
 
     def patch(self, request, format=None):
+        action = request.data["action"]
+        session = request.data["session"]
+        year = get_current_year()
+
         ballkid = Ballkid.objects.get(id=request.data["ballkidId"])
+        ticket = Ticket.objects.get(session=session, year=year, ballkid=ballkid)
 
-        ticket = Ticket.objects.get(
-            session=request.data["session"], year=get_current_year(), ballkid=ballkid
-        )
+        if action == "tick":
+            old_state = request.data["oldState"]
+            if old_state == "requested":
+                ticket.num_granted += 1
+            elif old_state == "granted":
+                ticket.num_delivered += 1
+                ballkid.num_tickets += 1
+            else:
+                ticket.num_delivered -= 1
+                ballkid.num_tickets -= 1
+            ticket.save()
+            ballkid.save()
 
-        old_state = request.data["oldState"]
-        if old_state == "requested":
-            ticket.num_granted += 1
-        elif old_state == "granted":
-            ticket.num_delivered += 1
-            ballkid.num_tickets += 1
+        elif action == "reorder":
+            direction = request.data["direction"]
+            if direction == "up":
+                other_ticket = Ticket.objects.get(
+                    year=year, session=session, order=ticket.order - 1
+                )
+                ticket.order -= 1
+                other_ticket.order += 1
+
+            elif direction == "down":
+                other_ticket = Ticket.objects.filter(
+                    year=year, session=session, order=ticket.order + 1
+                ).first()
+
+                # If the other ticket exists (the current ticket is not the last ticket in order),
+                # then update the other ticket and this ticket. Otherwise do nothing
+                if other_ticket is not None:
+                    ticket.order += 1
+                    other_ticket.order -= 1
+
+            else:
+                raise Exception("Unrecognized direction {direction}")
+
+            ticket.save()
+
+            if other_ticket:
+                other_ticket.save()
+
         else:
-            ticket.num_delivered -= 1
-            ballkid.num_tickets -= 1
-        ticket.save()
-        ballkid.save()
+            raise Exception(f"Unrecognized action {action}")
 
         logger.info(
             f"[UpdateTicket] Ticket updated {ticket} given request {request.data}"
