@@ -141,7 +141,7 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
               ballkid={ballkid}
               commentTypes={
                 section === "Self-Cut"
-                  ? [""]
+                  ? ["last_day"]
                   : ["rank", "experience", "last_day"]
               }
             />
