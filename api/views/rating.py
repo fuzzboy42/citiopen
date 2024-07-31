@@ -30,7 +30,9 @@ def get_min_dates(ratings):
     }
 
 
-def queryset_to_rcal(ratings, rating_name="overall", returnAveraged=True):
+def queryset_to_rcal(
+    ratings, rating_name="overall", bucket_size=DAYS_PER_BUCKET, returnAveraged=True
+):
     """
     Converts a Django queryset into the appropriate format for review calibration:
         Queryset of Rating objects => dict of (captain, ballkid, day) : rating
@@ -50,8 +52,8 @@ def queryset_to_rcal(ratings, rating_name="overall", returnAveraged=True):
     logger.info(f"[queryset_to_rcal] ratings {ratings} have min_dates {min_dates}")
 
     for rating in ratings:
-        mapped_date = DAYS_PER_BUCKET * (
-            (rating.date - min_dates[rating.date.year]).days // DAYS_PER_BUCKET
+        mapped_date = bucket_size * (
+            (rating.date - min_dates[rating.date.year]).days // bucket_size
         )
 
         key = (
@@ -129,6 +131,7 @@ def calibrate(ratings, year_ratings, rating_name="overall"):
     tournament = Tournament.objects.get(year=get_current_year())
     ignore_outliers = tournament.rcal_ignore_outliers
     year_threshold = tournament.rcal_year_threshold
+    bucket_size = tournament.rcal_bucket_size
 
     train_ratings = ratings.filter(date__year__gte=year_threshold)
 
@@ -136,8 +139,12 @@ def calibrate(ratings, year_ratings, rating_name="overall"):
         f"[calibrate] starting calibration for {len(train_ratings)} ratings and {len(year_ratings)} year_ratings and rating_name {rating_name}. First 10: {ratings[:10]}"
     )
 
-    train = queryset_to_rcal(train_ratings, rating_name, returnAveraged=True)
-    test = queryset_to_rcal(year_ratings, rating_name, returnAveraged=False)
+    train = queryset_to_rcal(
+        train_ratings, rating_name, bucket_size, returnAveraged=True
+    )
+    test = queryset_to_rcal(
+        year_ratings, rating_name, bucket_size, returnAveraged=False
+    )
 
     # test = queryset_to_rcal(year_ratings, rating_name, returnAveraged=False)
     # train = {key: sum(val) / len(val) for key, val in test.items()}

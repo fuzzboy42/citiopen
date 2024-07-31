@@ -320,6 +320,12 @@ class GetTournament(APIView):
                 request.data["rcal_ignore_outliers"]
             )
 
+        if "rcal_year_threshold" in request.data:
+            tournament.rcal_year_threshold = int(request.data["rcal_year_threshold"])
+
+        if "rcal_bucket_size" in request.data:
+            tournament.rcal_bucket_size = int(request.data["rcal_bucket_size"])
+
         tournament.save()
 
         logger.info(
