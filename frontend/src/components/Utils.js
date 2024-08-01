@@ -559,13 +559,14 @@ export function DraggableBallkidAndIcon({ ballkid, commentTypes = [] }) {
   };
 
   return (
-    <div
+    <Box
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,
       }}
+      className="hover-parent"
     >
-      <div className="sxs">
+      <Box className="sxs">
         <BallkidLink
           id={ballkid.id}
           name={`${ballkid.first_name} ${ballkid.last_name}`}
@@ -575,8 +576,26 @@ export function DraggableBallkidAndIcon({ ballkid, commentTypes = [] }) {
         {commentTypes.map((commentType) => (
           <Box key={commentType}>{commentTypeToComment[commentType]}</Box>
         ))}
-      </div>
-    </div>
+        {/* <Card className="hovercard">
+          <CardActionArea
+            component={RouterLink}
+            to={
+              ballkid.id === getLocalStorage("ballkid_id")
+                ? "/me"
+                : `/ballkid/${ballkid.id}`
+            }
+          >
+            <AspectRatio ratio="1/1">
+              <CardMedia component="img" image={ballkid.image} />
+            </AspectRatio>
+            <CardContent>
+            <Typography>Years Experience: {ballkid.num_years_experience}</Typography>
+            <Typography>Calibrated Rank: {ballkid.rank}</Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card> */}
+      </Box>
+    </Box>
   );
 }
 
