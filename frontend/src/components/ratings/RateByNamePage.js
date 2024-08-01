@@ -24,6 +24,7 @@ function getBallkidsToRender(
   ballkids,
   showUnrated,
   showTeam,
+  showDrafts,
   myTeam,
   tournamentShowTeams
 ) {
@@ -41,21 +42,32 @@ function getBallkidsToRender(
   }
 
   var ballkidsToRender = ballkids;
+  // If showUnrated is not checked, then show all. Otherwise only show ballkids who have not
+  // yet been rated by the checked in captain
   ballkidsToRender = !showUnrated
     ? ballkidsToRender
     : ballkidsToRender.filter(
         (ballkid) => ballkid.num_my_ratings === 0 && ballkid.id !== pk
       );
+
+  // If showTeam is not checked, then show all. Otherwise only show the ballkid's currently
+  // assigned team
   ballkidsToRender = !showTeam
     ? ballkidsToRender
     : ballkidsToRender.filter((ballkid) => ballkid.current_team === myTeam);
+
+  // If showDrafts is not checked, then show all. Otherwise only show the ballkids who have
+  // saved ratings drafts for them
+  ballkidsToRender = !showDrafts
+    ? ballkidsToRender
+    : ballkidsToRender.filter((ballkid) => ballkid.have_draft === true);
 
   return ballkidsToRender;
 }
 
 function renderSwitch(param, setParam, offStr, onStr) {
   return (
-    <Grid item className="sxs" xs={12} md={6} lg={5} xl={4}>
+    <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
       <Typography variant="body1">{offStr}</Typography>
       <Switch checked={param} onClick={(e) => setParam(e.target.checked)} />
       <Typography variant="body1">{onStr}</Typography>
@@ -141,7 +153,7 @@ export default function RateByNamePage(props) {
 
   const [showUnrated, setShowUnrated] = useState(false);
   const [showTeam, setShowTeam] = useState(isChairperson ? false : true);
-  const [showOnlyDrafts, setShowOnlyDrafts] = useState(false);
+  const [showDrafts, setShowDrafts] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
   const [layout, setLayout] = useState(getLocalStorage("layout") ?? "list");
@@ -181,6 +193,7 @@ export default function RateByNamePage(props) {
                   ballkids,
                   showUnrated,
                   showTeam,
+                  showDrafts,
                   myTeam,
                   tournamentShowTeams
                 ),
@@ -215,8 +228,8 @@ export default function RateByNamePage(props) {
         )}
 
         {renderSwitch(
-          showOnlyDrafts,
-          setShowOnlyDrafts,
+          showDrafts,
+          setShowDrafts,
           "Show All Ballkids",
           "Show Draft Ratings Only",
           "showUnrated"
@@ -234,6 +247,7 @@ export default function RateByNamePage(props) {
             ballkids,
             showUnrated,
             showTeam,
+            showDrafts,
             myTeam,
             tournamentShowTeams
           ),
