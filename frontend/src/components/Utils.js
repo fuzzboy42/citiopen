@@ -855,6 +855,18 @@ export function getDay(dateStr) {
   return `${mm}/${dd}/${yyyy}`;
 }
 
+export function calcDistanceToIdeal(scale, offset) {
+  const a = scale;
+  const b = offset;
+
+  if (a === 0 && b === 0) {
+    return null;
+  }
+
+  // distance to ideal is 1/(4.5) int_{.5}^5 (ax + b - x)**2
+  return (1 / 4) * (37 * a ** 2 + a * (22 * b - 74) + 4 * b ** 2 - 22 * b + 37);
+}
+
 export function getLocalStorage(key) {
   const valString = localStorage.getItem(key);
   return JSON.parse(valString);

@@ -9,7 +9,13 @@ import TextField from "@mui/material/TextField";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-import { BallkidAndIcon, HelpIcon, Banners, getAuthHeader } from "../Utils";
+import {
+  BallkidAndIcon,
+  HelpIcon,
+  Banners,
+  getAuthHeader,
+  calcDistanceToIdeal,
+} from "../Utils";
 import { ratingsCaptainLeaderboard } from "../HelpMessages";
 import { CHART_COLORS, DATA_GRID_HEIGHT, MARGINS } from "../Consts";
 import { RaterParamsChart } from "../ballkid/RaterParamsChart";
@@ -132,19 +138,11 @@ export default function CaptainLeaderboard(props) {
       field: "distanceToIdeal",
       headerName: "Distance To Ideal",
       width: 140,
-      valueGetter: (rowData) => {
-        const a = rowData.row.ballkid.scale;
-        const b = rowData.row.ballkid.offset;
-
-        if (a === 0 && b === 0) {
-          return null;
-        }
-
-        // distance to ideal is 1/(4.5) int_{.5}^5 (ax + b - x)**2
-        return (
-          (1 / 4) * (37 * a ** 2 + a * (22 * b - 74) + 4 * b ** 2 - 22 * b + 37)
-        );
-      },
+      valueGetter: (rowData) =>
+        calcDistanceToIdeal(
+          rowData.row.ballkid.scale,
+          rowData.row.ballkid.offset
+        ),
       valueFormatter: (obj) => (!obj.value ? "" : Number(obj.value.toFixed(3))),
     },
   ];

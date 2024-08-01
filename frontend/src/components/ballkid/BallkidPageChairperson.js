@@ -58,6 +58,7 @@ import {
   toPercent,
   getTimeStr,
   Banners,
+  calcDistanceToIdeal,
 } from "../Utils";
 import {
   NUM_RATERS_WARNING_THRESHOLD,
@@ -399,6 +400,12 @@ function renderRatingsCaptainSection(ballkid, ballkidGroup, params) {
           <Typography variant="body1">
             Reviewer offset: {Number(params.rater_offset).toFixed(3)}
           </Typography>
+          <Typography variant="body1">
+            Distance to ideal:{" "}
+            {Number(
+              calcDistanceToIdeal(params.rater_scale, params.rater_offset)
+            ).toFixed(3)}
+          </Typography>
 
           <RaterParamsChart
             captainData={[
@@ -458,7 +465,14 @@ function renderRatingsBallkidSection(ballkid, params) {
               received a total of {params.num_ratee_ratings} rating(s).
             </Alert>
           )}
-
+          <Typography variant="body1">
+            Ballkid calibrated average:{" "}
+            {Number(params.ratee_calibrated_avg).toFixed(3)}
+          </Typography>
+          <Typography variant="body1">
+            Ballkid calibrated standard deviation:{" "}
+            {Number(params.ratee_calibrated_stdev).toFixed(3)}
+          </Typography>
           <Typography variant="body1">
             Ballkid improvement: {Number(params.ratee_improvement).toFixed(3)}
           </Typography>
