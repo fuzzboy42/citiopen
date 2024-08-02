@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useDrag } from "react-dnd";
 import { Link as RouterLink } from "react-router-dom";
+import debounce from "lodash.debounce";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -588,16 +589,16 @@ export function BallkidPopover({
       sx={{
         pointerEvents: "none",
       }}
-      onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-      onMouseLeave={() => setAnchorEl(null)}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      PaperProps={{
-        onMouseEnter: (e) => setAnchorEl(e.currentTarget),
-        onMouseLeave: () => setAnchorEl(null),
-      }}
+      // onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+      // onMouseLeave={() => setAnchorEl(null)}
+      // transformOrigin={{
+      //   vertical: "top",
+      //   horizontal: "left",
+      // }}
+      // PaperProps={{
+      //   onMouseEnter: (e) => setAnchorEl(e.currentTarget),
+      //   onMouseLeave: () => setAnchorEl(null),
+      // }}
     >
       <Card>
         <CardActionArea
@@ -622,9 +623,6 @@ export function BallkidPopover({
               </Box>
             ))}
 
-            <Typography variant="subtitle2">
-              Total Days Checked In: {ballkid.checkin_days}
-            </Typography>
             <Box style={{ maxWidth: 500 }}>
               <CheckinHistoryChart pk={ballkid.id} />
             </Box>
@@ -823,7 +821,19 @@ export function CommentsText({
           ) : (
             ""
           )}
-          {ballkid.last_day === "End" ? (
+          {showLabel ? (
+            <Typography
+              sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
+              bgcolor={
+                ballkid.last_day === "End" || ballkid.last_day === null
+                  ? ""
+                  : "orange"
+              }
+              variant="body2"
+            >
+              {ballkid.last_day === null ? "End" : ballkid.last_day}
+            </Typography>
+          ) : ballkid.last_day === "End" ? (
             ""
           ) : (
             <Typography
