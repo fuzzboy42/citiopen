@@ -42,6 +42,7 @@ import Check from "@mui/icons-material/Check";
 import Help from "@mui/icons-material/Help";
 
 import RatingDialog from "./ratings/RatingDialog";
+import { CheckinHistoryChart } from "./ballkid/CheckinHistoryChart";
 import {
   END_DATE,
   START_DATE,
@@ -522,7 +523,11 @@ export function ConfirmDialog({
   );
 }
 
-export function DraggableBallkidAndIcon({ ballkid, commentTypes = [] }) {
+export function DraggableBallkidAndIcon({
+  ballkid,
+  commentTypes = [],
+  hoverCommentTypes = [],
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -530,36 +535,6 @@ export function DraggableBallkidAndIcon({ ballkid, commentTypes = [] }) {
     item: { ...ballkid },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   }));
-
-  const commentTypeToComment = {
-    checkout: (
-      <CommentsText
-        comments={ballkid.checkout_comments}
-        commentType="checkout"
-      />
-    ),
-    checkout_teams: (
-      <CommentsText
-        comments={ballkid.checkout_comments}
-        commentType="checkout_teams"
-      />
-    ),
-    rank: (
-      <CommentsText
-        comments={[ballkid.rank, ballkid.num_ratings]}
-        commentType="rank"
-      />
-    ),
-    experience: (
-      <CommentsText
-        comments={ballkid.num_years_experience}
-        commentType="experience"
-      />
-    ),
-    last_day: (
-      <CommentsText comments={ballkid.last_day} commentType="last_day" />
-    ),
-  };
 
   return (
     <Box
@@ -581,44 +556,82 @@ export function DraggableBallkidAndIcon({ ballkid, commentTypes = [] }) {
         &thinsp;
         <Icons ballkid={ballkid} margin={0} isTeamsPage={true} />
         {commentTypes.map((commentType) => (
-          <Box key={commentType}>{commentTypeToComment[commentType]}</Box>
+          <Box key={commentType}>
+            <CommentsText ballkid={ballkid} commentType={commentType} />
+          </Box>
         ))}
-        <Popover
-          open={Boolean(anchorEl)}
+        <BallkidPopover
+          ballkid={ballkid}
+          hoverCommentTypes={hoverCommentTypes}
           anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          sx={{
-            pointerEvents: "none",
-          }}
-          onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-          onMouseLeave={() => setAnchorEl(null)}
-        >
-          <Card>
-            <CardActionArea
-              component={RouterLink}
-              to={
-                ballkid.id === getLocalStorage("ballkid_id")
-                  ? "/me"
-                  : `/ballkid/${ballkid.id}`
-              }
-            >
-              <AspectRatio ratio="1/1">
-                <CardMedia component="img" image={ballkid.image} />
-              </AspectRatio>
-              <CardContent>
-                <Typography>
-                  Years Experience: {ballkid.num_years_experience}
-                </Typography>
-                <Typography>Calibrated Rank: {ballkid.rank}</Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Popover>
+          setAnchorEl={setAnchorEl}
+        />
       </Box>
     </Box>
+  );
+}
+
+export function BallkidPopover({
+  ballkid,
+  hoverCommentTypes,
+  anchorEl,
+  setAnchorEl,
+}) {
+  return (
+    <Popover
+      open={Boolean(anchorEl)}
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      sx={{
+        pointerEvents: "none",
+      }}
+      onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+      onMouseLeave={() => setAnchorEl(null)}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      PaperProps={{
+        onMouseEnter: (e) => setAnchorEl(e.currentTarget),
+        onMouseLeave: () => setAnchorEl(null),
+      }}
+    >
+      <Card>
+        <CardActionArea
+          component={RouterLink}
+          to={
+            ballkid.id === getLocalStorage("ballkid_id")
+              ? "/me"
+              : `/ballkid/${ballkid.id}`
+          }
+        >
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {ballkid.first_name} {ballkid.last_name}
+            </Typography>
+            {hoverCommentTypes.map((hoverCommentType) => (
+              <Box className="sxs">
+                <CommentsText
+                  ballkid={ballkid}
+                  commentType={hoverCommentType}
+                  showLabel={true}
+                />
+              </Box>
+            ))}
+
+            <Typography variant="subtitle2">
+              Total Days Checked In: {ballkid.checkin_days}
+            </Typography>
+            <Box style={{ maxWidth: 500 }}>
+              <CheckinHistoryChart pk={ballkid.id} />
+            </Box>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Popover>
   );
 }
 
@@ -703,72 +716,127 @@ export function HelpIcon({ page, message }) {
   );
 }
 
-export function CommentsText({ comments, commentType, layout = "list" }) {
+export function CommentsText({
+  ballkid,
+  commentType,
+  showLabel = false,
+  layout = "list",
+}) {
   switch (commentType) {
     case "checkout_teams":
-      return comments === "End" ? (
-        ""
-      ) : (
-        <Typography
-          sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
-          bgcolor="orange"
-          variant="body2"
-        >
-          {comments}
-        </Typography>
+      return (
+        <Box className="sxs">
+          {showLabel ? (
+            <Typography variant="subtitle2">Today's Checkout Time: </Typography>
+          ) : (
+            ""
+          )}
+          {ballkid.checkout_comments === "End" ? (
+            ""
+          ) : (
+            <Typography
+              sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
+              bgcolor="orange"
+              variant="body2"
+            >
+              {ballkid.checkout_comments}
+            </Typography>
+          )}
+        </Box>
       );
 
     case "checkout":
       return (
-        <Typography
-          sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
-          bgcolor={comments === "End" ? "" : "orange"}
-          variant="body2"
-        >
-          {comments}
-        </Typography>
+        <Box className="sxs">
+          {showLabel ? (
+            <Typography variant="subtitle2">Today's Checkout Time: </Typography>
+          ) : (
+            ""
+          )}
+          {ballkid.checkout_comments === "End" ? (
+            ""
+          ) : (
+            <Typography
+              sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
+              bgcolor={ballkid.checkout_comments === "End" ? "" : "orange"}
+              variant="body2"
+            >
+              {ballkid.checkout_comments}
+            </Typography>
+          )}
+        </Box>
       );
 
     case "experience":
-      return comments === 0 ? (
-        ""
-      ) : (
-        <Typography
-          sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
-          bgcolor={ON_COURT_GREEN}
-          variant="body2"
-        >
-          {comments}
-        </Typography>
+      return (
+        <Box className="sxs">
+          {showLabel ? (
+            <Typography variant="subtitle2">Years Experience: </Typography>
+          ) : (
+            ""
+          )}
+          {ballkid.num_years_experience === 0 ? (
+            ""
+          ) : (
+            <Typography
+              sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
+              bgcolor={ON_COURT_GREEN}
+              variant="body2"
+            >
+              {ballkid.num_years_experience}
+            </Typography>
+          )}
+        </Box>
       );
 
     case "rank":
-      return comments.length !== 2 ? (
-        ""
-      ) : (
-        <Typography
-          sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
-          bgcolor={comments[1] <= NUM_RATINGS_WARNING_THRESHOLD ? "" : "pink"}
-          color={
-            comments[1] <= NUM_RATINGS_WARNING_THRESHOLD ? "gray" : "black"
-          }
-          variant="body2"
-        >
-          {comments[0]}
-        </Typography>
+      return (
+        <Box className="sxs">
+          {showLabel ? (
+            <Typography variant="subtitle2">Calibrated Rank: </Typography>
+          ) : (
+            ""
+          )}
+
+          <Typography
+            sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
+            bgcolor={
+              ballkid.num_ratings <= NUM_RATINGS_WARNING_THRESHOLD ? "" : "pink"
+            }
+            color={
+              ballkid.num_ratings <= NUM_RATINGS_WARNING_THRESHOLD
+                ? "gray"
+                : "black"
+            }
+            variant="body2"
+          >
+            {ballkid.rank}
+          </Typography>
+        </Box>
       );
 
     case "last_day":
-      return comments === "End" ? (
-        ""
-      ) : (
-        <Typography
-          sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
-          bgcolor="orange"
-          variant="body2"
-        >
-          {comments === null ? "" : comments.substring(0, 3)}
-        </Typography>
+      return (
+        <Box className="sxs">
+          {showLabel ? (
+            <Typography variant="subtitle2">Last Day: </Typography>
+          ) : (
+            ""
+          )}
+          {ballkid.last_day === "End" ? (
+            ""
+          ) : (
+            <Typography
+              sx={{ mx: 0.5, px: 0.5, my: layout === "grid" ? 1 : 0 }}
+              bgcolor="orange"
+              variant="body2"
+            >
+              {ballkid.last_day === null
+                ? ""
+                : ballkid.last_day.substring(0, 3)}
+            </Typography>
+          )}
+        </Box>
       );
 
     default:

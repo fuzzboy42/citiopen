@@ -140,10 +140,9 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
             <DraggableBallkidAndIcon
               ballkid={ballkid}
               commentTypes={
-                section === "Self-Cut"
-                  ? ["last_day"]
-                  : ["rank", "experience", "last_day"]
+                section === "Self-Cut" ? ["last_day"] : ["rank", "last_day"]
               }
+              hoverCommentTypes={["experience", "rank", "last_day"]}
             />
 
             <div className="sxs">
@@ -295,7 +294,12 @@ function ActiveSection({ active, setUpdated }) {
                         <Grid key={ballkid.id} item sx={{ px: 1 }}>
                           <DraggableBallkidAndIcon
                             ballkid={ballkid}
-                            commentTypes={["rank", "experience", "last_day"]}
+                            commentTypes={["rank", "last_day"]}
+                            hoverCommentTypes={[
+                              "experience",
+                              "rank",
+                              "last_day",
+                            ]}
                           />
                         </Grid>
                       ))}
