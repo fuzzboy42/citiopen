@@ -203,27 +203,31 @@ export default function RateByNamePage(props) {
       </div>
 
       <Grid container>
-        {renderSwitch(
-          showUnrated,
-          setShowUnrated,
-          "Show All Ballkids",
-          "Show Ballkids to Rate"
-        )}
-
-        {renderSwitch(
-          showTeam,
-          setShowTeam,
-          "Show All Teams",
-          "Show My Team Only"
-        )}
-
-        {renderSwitch(
-          showDrafts,
-          setShowDrafts,
-          "Show All Ballkids",
-          "Show Draft Ratings Only",
-          "showUnrated"
-        )}
+        <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
+          {renderSwitch(
+            showUnrated,
+            setShowUnrated,
+            "Show All Ballkids",
+            "Show Ballkids to Rate"
+          )}
+        </Grid>
+        <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
+          {renderSwitch(
+            showTeam,
+            setShowTeam,
+            "Show All Teams",
+            "Show My Team Only"
+          )}
+        </Grid>
+        <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
+          {renderSwitch(
+            showDrafts,
+            setShowDrafts,
+            "Show All Ballkids",
+            "Show Draft Ratings Only",
+            "showUnrated"
+          )}
+        </Grid>
       </Grid>
 
       <SearchAndFilter

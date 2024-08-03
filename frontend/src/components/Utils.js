@@ -356,7 +356,7 @@ export function HideShowToggle({
   const hideMessage = `${teamStr} are now hidden from ballkids and captains.`;
 
   return (
-    <div className="sxs">
+    <Box className="sxs">
       <Typography variant="body1">Hide</Typography>
       <Switch
         checked={showTeams}
@@ -384,7 +384,7 @@ export function HideShowToggle({
         }}
       />
       <Typography variant="body1">Show</Typography>
-    </div>
+    </Box>
   );
 }
 
@@ -883,11 +883,11 @@ export function CommentsText({
 
 export function renderSwitch(param, setParam, offStr, onStr) {
   return (
-    <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
+    <Box className="sxs">
       <Typography variant="body1">{offStr}</Typography>
       <Switch checked={param} onClick={(e) => setParam(e.target.checked)} />
       <Typography variant="body1">{onStr}</Typography>
-    </Grid>
+    </Box>
   );
 }
 
