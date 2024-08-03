@@ -384,6 +384,30 @@ class Ballkid(models.Model):
             f"[handle_finals_history_team] Finals history {history} created {created} for ballkid {self}"
         )
 
+    def handle_finals_history_position(self, value, show_teams, now=None):
+        # If finals teams are not public, then don't create/update any
+        # finals history for any teams
+        if not show_teams:
+            return
+
+        # If no change, then return early
+        if self.finals_position == value:
+            return
+
+        if now is None:
+            now = datetime.now()
+        current_year = get_current_year()
+
+        # Update or create finals history entry for the current year
+        history, created = FinalsHistory.objects.update_or_create(
+            ballkid=self,
+            year=current_year,
+            defaults={"match_type": self.finals_team, "position": value},
+        )
+        logger.info(
+            f"[handle_finals_history_team] Finals history {history} created {created} for ballkid {self}"
+        )
+
     def handle_finals_history_hideshow(self, value, now=None):
         if now is None:
             now = datetime.now()
@@ -439,6 +463,7 @@ class Ballkid(models.Model):
         logger.info(
             f"Updating ballkid {self.get_name()} field {field} with value {value}"
         )
+        show_teams = Tournament.objects.get(year=get_current_year()).show_finals_teams
 
         if field == "is_checked_in":
             self.handle_checkin_history(value)
@@ -457,6 +482,7 @@ class Ballkid(models.Model):
             self.position = value
 
         elif field == "finals_position":
+            self.handle_finals_history_position(value, show_teams)
             self.finals_position = value
 
         elif field == "preferred_position":
@@ -468,11 +494,7 @@ class Ballkid(models.Model):
             self.current_team = value
 
         elif field == "finals_team":
-            show_teams = Tournament.objects.get(
-                year=get_current_year()
-            ).show_finals_teams
             self.handle_finals_history_team(value, show_teams)
-
             self.finals_team = value
 
         elif field == "is_active":
