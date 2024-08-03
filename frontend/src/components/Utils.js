@@ -908,6 +908,10 @@ export function filterBallkids(ballkids, searchKeyword, filterGroup) {
   );
 }
 
+export function getCurrentYear() {
+  return new Date().getFullYear();
+}
+
 // Converts a time of format
 // [year]-[month]-[day]T[24hour]:[minute]:[seconds]
 // into [12hour][am/pm]
@@ -1053,7 +1057,7 @@ export function getToday(format = "slash", isForRating = false) {
 // Returns date in the format: [week abbrev], [month abbrev] [day]
 //  as a string of the format: [month]/[day]/[year]
 export function getDay(dateStr) {
-  const yyyy = new Date().getFullYear();
+  const yyyy = getCurrentYear();
   const date = new Date(`${dateStr.slice(5)}, ${yyyy}`);
   const dd = String(date.getDate());
   const mm = String(date.getMonth() + 1); //January is 0!

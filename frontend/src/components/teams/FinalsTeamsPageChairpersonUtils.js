@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 import RemoveCircleOutline from "@mui/icons-material/RemoveCircleOutline";
 import SwapVert from "@mui/icons-material/SwapVert";
@@ -219,12 +220,12 @@ export function Header({ showHovercard, setShowHovercard }) {
         setErrorMsg={setErrorMsg}
       />
 
-      <div className="justify" sx={{ mb: 1 }}>
-        <div className="sxs">
+      <Box className="justify" sx={{ mb: 1 }}>
+        <Box className="sxs">
           <Typography variant="h4">Finals Teams</Typography>
           &thinsp;
           <HelpIcon page="Finals Teams" message={finalsTeams} />
-        </div>
+        </Box>
 
         <HideShowToggle
           teamType="finals"
@@ -232,7 +233,8 @@ export function Header({ showHovercard, setShowHovercard }) {
           setSuccessMsg={setSuccessMsg}
           setErrorMsg={setErrorMsg}
         />
-      </div>
+      </Box>
+
       {renderSwitch(
         showHovercard,
         setShowHovercard,

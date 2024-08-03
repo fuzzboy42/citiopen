@@ -9,13 +9,13 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { HelpIcon, Banners, getAuthHeader } from "../Utils";
+import { HelpIcon, Banners, getAuthHeader, getCurrentYear } from "../Utils";
 import { viewRatings } from "../HelpMessages";
 import RatingsGrid from "./RatingsGrid";
 
 export default function RatingsPage(props) {
   const [ratings, setRatings] = useState([]);
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState(getCurrentYear());
 
   const [calibrated, setCalibrated] = useState([]);
   const [showCalibrated, setShowCalibrated] = useState(false);

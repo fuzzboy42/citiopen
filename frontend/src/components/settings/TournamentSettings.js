@@ -29,6 +29,7 @@ import {
   getAuthHeader,
   Banners,
   ConfirmDialog,
+  getCurrentYear,
 } from "../Utils";
 import { tournamentSettings } from "../HelpMessages";
 
@@ -501,7 +502,7 @@ function BucketSize({ tournament, setSuccessMsg, setErrorMsg }) {
 }
 
 function CreateTournament({ setUpdated, setSuccessMsg, setErrorMsg }) {
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState(getCurrentYear());
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
 
