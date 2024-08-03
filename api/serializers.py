@@ -86,6 +86,9 @@ class CaptainHistorySerializer(serializers.ModelSerializer):
 
 
 class FinalsHistorySerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(max_length=60, required=False)
+    last_name = serializers.CharField(max_length=60, required=False)
+
     class Meta:
         model = FinalsHistory
         fields = "__all__"

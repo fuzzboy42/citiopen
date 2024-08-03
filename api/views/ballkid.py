@@ -929,7 +929,13 @@ class GetPastFinals(generics.ListAPIView):
 
     def get_queryset(self):
         year = self.kwargs.get("year")
-        return FinalsHistory.objects.filter(year=year).order_by("match_type", 'position')
+        return (
+            FinalsHistory.objects.filter(year=year)
+            .annotate(
+                first_name=F("ballkid__first_name"), last_name=F("ballkid__last_name")
+            )
+            .order_by("match_type", "position", "last_name", "first_name")
+        )
 
 
 class GetCutHistory(generics.ListAPIView):
