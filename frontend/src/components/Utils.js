@@ -527,19 +527,10 @@ export function ConfirmDialog({
 export function DraggableBallkidAndIcon({
   ballkid,
   commentTypes = [],
+  showHovercard = false,
   hoverCommentTypes = [],
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
-
-  const [delayHandler, setDelayHandler] = useState(null);
-
-  const handleMouseEnter = (e) => {
-    setDelayHandler(
-      setTimeout(() => {
-        setAnchorEl(e.currentTarget);
-      }, 50)
-    );
-  };
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "ballkid",
@@ -547,15 +538,12 @@ export function DraggableBallkidAndIcon({
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   }));
 
-  console.log(ballkid);
-
   return (
     <Box
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,
       }}
-      className="hover-parent"
     >
       <Box
         className="sxs"
@@ -573,12 +561,16 @@ export function DraggableBallkidAndIcon({
             <CommentsText ballkid={ballkid} commentType={commentType} />
           </Box>
         ))}
-        <BallkidPopover
-          ballkid={ballkid}
-          hoverCommentTypes={hoverCommentTypes}
-          anchorEl={anchorEl}
-          setAnchorEl={setAnchorEl}
-        />
+        {showHovercard ? (
+          <BallkidPopover
+            ballkid={ballkid}
+            hoverCommentTypes={hoverCommentTypes}
+            anchorEl={anchorEl}
+            setAnchorEl={setAnchorEl}
+          />
+        ) : (
+          ""
+        )}
       </Box>
     </Box>
   );
@@ -890,6 +882,16 @@ export function CommentsText({
     default:
       break;
   }
+}
+
+export function renderSwitch(param, setParam, offStr, onStr) {
+  return (
+    <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
+      <Typography variant="body1">{offStr}</Typography>
+      <Switch checked={param} onClick={(e) => setParam(e.target.checked)} />
+      <Typography variant="body1">{onStr}</Typography>
+    </Grid>
+  );
 }
 
 export function filterBallkids(ballkids, searchKeyword, filterGroup) {

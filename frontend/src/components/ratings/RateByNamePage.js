@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import Typography from "@mui/material/Typography";
-import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 
@@ -17,6 +16,7 @@ import {
   HelpIcon,
   Banners,
   DraftRatingButton,
+  renderSwitch,
 } from "../Utils";
 import { rateByName, rateByNameNonchairperson } from "../HelpMessages";
 
@@ -63,16 +63,6 @@ function getBallkidsToRender(
     : ballkidsToRender.filter((ballkid) => ballkid.have_draft === true);
 
   return ballkidsToRender;
-}
-
-function renderSwitch(param, setParam, offStr, onStr) {
-  return (
-    <Grid item className="sxs" xs={12} sm={12} md={6} lg={4} xl={3}>
-      <Typography variant="body1">{offStr}</Typography>
-      <Switch checked={param} onClick={(e) => setParam(e.target.checked)} />
-      <Typography variant="body1">{onStr}</Typography>
-    </Grid>
-  );
 }
 
 function BallkidsSection({ ballkids, layout, setUpdated }) {

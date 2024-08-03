@@ -24,11 +24,17 @@ import {
   HelpIcon,
   Banners,
   Alerts,
+  renderSwitch,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
 
-export function CutStatusSection({ section, active, setUpdated }) {
+export function CutStatusSection({
+  section,
+  active,
+  showHovercard,
+  setUpdated,
+}) {
   const [open, setOpen] = useState(false);
 
   const shouldCut = section.includes("Cut") ? true : false;
@@ -119,6 +125,7 @@ export function CutStatusSection({ section, active, setUpdated }) {
                 active.filter((ballkid) => ballkid.cut_status === section),
                 section,
                 position,
+                showHovercard,
                 setUpdated
               )}
             </div>
@@ -129,7 +136,13 @@ export function CutStatusSection({ section, active, setUpdated }) {
   );
 }
 
-export function renderBallkidsInSection(active, section, position, setUpdated) {
+export function renderBallkidsInSection(
+  active,
+  section,
+  position,
+  showHovercard,
+  setUpdated
+) {
   return (
     <div>
       {active.map((ballkid) =>
@@ -142,6 +155,7 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
               commentTypes={
                 section === "Self-Cut" ? ["last_day"] : ["rank", "last_day"]
               }
+              showHovercard={showHovercard}
               hoverCommentTypes={["experience", "rank", "last_day"]}
             />
 
@@ -206,7 +220,7 @@ export function renderBallkidsInSection(active, section, position, setUpdated) {
   );
 }
 
-function ActiveSection({ active, setUpdated }) {
+function ActiveSection({ active, showHovercard, setUpdated }) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterGroup, setFilterGroup] = useState();
   const [{ isOver }, dropRef] = useDrop({
@@ -295,6 +309,7 @@ function ActiveSection({ active, setUpdated }) {
                           <DraggableBallkidAndIcon
                             ballkid={ballkid}
                             commentTypes={["rank", "last_day"]}
+                            showHovercard={showHovercard}
                             hoverCommentTypes={[
                               "experience",
                               "rank",
@@ -359,7 +374,7 @@ export function renderCopyButtons(active, emails, setSuccessMsg) {
   );
 }
 
-export function SelfCutCard({ updated, setUpdated }) {
+export function SelfCutCard({ updated, showHovercard, setUpdated }) {
   const [selfCut, setSelfCut] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -423,6 +438,7 @@ export function SelfCutCard({ updated, setUpdated }) {
                 selfCut,
                 "Self-Cut",
                 position,
+                showHovercard,
                 setUpdated
               )}
             </div>
@@ -437,6 +453,7 @@ export default function CutPageDesktop(props) {
   const [active, setActive] = useState([]);
   const [emails, setEmails] = useState([]);
   const [updated, setUpdated] = useState(false);
+  const [showHovercard, setShowHovercard] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -488,6 +505,13 @@ export default function CutPageDesktop(props) {
             {renderCopyButtons(active, emails, setSuccessMsg)}
           </Box>
 
+          {renderSwitch(
+            showHovercard,
+            setShowHovercard,
+            "Disable Hovercard",
+            "Enable Hovercard"
+          )}
+
           <Grid container spacing={2}>
             {sections.map((section) => (
               <CutStatusSection
@@ -496,11 +520,16 @@ export default function CutPageDesktop(props) {
                 active={active.filter(
                   (ballkid) => ballkid.cut_status === section
                 )}
+                showHovercard={showHovercard}
                 setUpdated={setUpdated}
               />
             ))}
 
-            <SelfCutCard updated={updated} setUpdated={setUpdated} />
+            <SelfCutCard
+              updated={updated}
+              showHovercard={showHovercard}
+              setUpdated={setUpdated}
+            />
           </Grid>
         </Grid>
 
@@ -514,6 +543,7 @@ export default function CutPageDesktop(props) {
         >
           <ActiveSection
             active={active.filter((ballkid) => ballkid.cut_status === "")}
+            showHovercard={showHovercard}
             setUpdated={setUpdated}
           />
         </Grid>
