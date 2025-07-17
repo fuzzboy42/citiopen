@@ -182,7 +182,7 @@ class BulkCreateUsers(APIView):
                 username=f"{first_name.lower()}.{last_name.lower()}",
                 first_name=first_name,
                 last_name=last_name,
-                email=line["email"],
+                email=line["email"].lower(),
                 password=make_password("password"),
             )
             user.save()
