@@ -389,7 +389,9 @@ export const viewRatings = (
     accordingly. The table's data can also be exported.
     <br /> <br />
     Individual ratings can be delete using the Trash icon in the "Delete"
-    column. Be careful with this action as it cannot be undone.
+    column. Be careful with this action as it cannot be undone. Individual
+    ratings can also be excluded using the "X" icon. This means that the rating
+    will be excluded from all of calibration.
   </DialogContentText>
 );
 
