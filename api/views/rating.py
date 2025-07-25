@@ -255,7 +255,7 @@ def save_calibration_parameters(
             ballkid=ballkid,
             year=year,
             defaults={
-                "num_ratee_ratings": num_ratee_ratings,
+                # "num_ratee_ratings": num_ratee_ratings,
                 "num_rater_ratings": num_rater_ratings,
                 "num_raters": num_raters,
                 "ratee_raw_avg": ratee_raw_avg,

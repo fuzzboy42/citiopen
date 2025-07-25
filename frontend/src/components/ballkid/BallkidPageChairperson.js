@@ -68,7 +68,6 @@ import {
   CHECKOUT_OPTIONS,
   LAST_DAY_OPTIONS,
 } from "../Consts";
-import { Divider } from "@mui/material";
 
 function renderHeader(ballkid, setUpdated, isMobile) {
   const overflowMenu =
