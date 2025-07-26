@@ -86,13 +86,13 @@ const chairpersonTabs = [
   { label: "Schedule", url: "/schedule" },
   {
     label: "Ratings",
-    url: "/rate-by-name",
+    url: "/ratings",
     subtabs: [
+      { label: "View Ratings", url: "/ratings" },
+      { label: "View My Ratings", url: "/my-ratings" },
       { label: "Rate By Name", url: "/rate-by-name" },
       { label: "Rate By Current Team", url: "/rate-by-team" },
       { label: "Rate By Past Team", url: "/rate-by-past-team" },
-      { label: "View Ratings", url: "/ratings" },
-      { label: "View My Ratings", url: "/my-ratings" },
     ],
   },
   {
