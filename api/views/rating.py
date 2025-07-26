@@ -61,7 +61,10 @@ def queryset_to_rcal(ratings, bucket_size=DAYS_PER_BUCKET, returnAveraged=True):
             ),
             mapped_date,
         )
-        rcal_dict.setdefault(key, []).append(float(rating.rating))
+        # Ignore empty (including zero) ratings - a rating of zero should not be possible
+        # given that overall rating is required when submitting a rating
+        if rating.rating:
+            rcal_dict.setdefault(key, []).append(float(rating.rating))
 
     logger.info(
         f"[queryset_to_rcal] return dict {rcal_dict} with averaging: {returnAveraged}"
@@ -298,131 +301,6 @@ def save_ratee_params(cp, year_ratings_wo_excluded, year):
 
             logger.info(
                 f"[save_ratee_params] Saved calibration params for {name} with params {params}"
-            )
-
-
-def save_calibration_parameters(
-    cp=None,
-    calibrated=None,
-    year=get_current_year(),
-    distance_to_ideal_threshold=float("inf"),
-):
-    """
-    Save calibration params as a CalibrationParams object.
-
-    Arguments:
-    cp: rcal cp object to represent calibration
-    calibrated: Dict mapping (rating id, ratee name, rater name) to calibrated rating. Used
-    for saving calibrated parameters
-    """
-    logger.info(f"[save_calibration_parameters] saving calibration params")
-
-    # Filter to this year's ratings only, exclude manually excluded ratings
-    year_ratings = Rating.objects.filter(date__year=year, status=RATING_STATUS.COMPLETE)
-
-    # Filter to active ballkids only
-    ballkids = Ballkid.objects.filter(is_active=True)
-
-    # Set of raters with distance to ideal > threshold whose ratings should be excluded
-    excluded_raters = set()
-
-    # First, update the rater's metrics. Note that this NEEDS to go before ratee metrics
-    # due to excluding raters' ratings with too high distance to ideal
-    for ballkid in ballkids:
-        name = ballkid.get_name()
-
-        if cp is not None:
-            # distance to ideal is 1/(4.5) int_{.5}^5 (ax + b - x)**2, where a is scale, b is offset
-            a = cp.reviewer_scales().get(name)
-            b = cp.reviewer_offsets().get(name)
-            if a is None or b is None:
-                distance = None
-            else:
-                distance = (1 / 4) * (
-                    37 * a**2 + a * (22 * b - 74) + 4 * b**2 - 22 * b + 37
-                )
-            if distance and distance > distance_to_ideal_threshold:
-                excluded_raters.add(name)
-
-            params, _ = CalibrationParams.objects.update_or_create(
-                ballkid=ballkid,
-                year=year,
-                defaults={
-                    "ratee_improvement": cp.improvement_rates().get(name),
-                    "ratee_offset": cp.person_offsets().get(name),
-                    "rater_scale": a,
-                    "rater_offset": b,
-                    "rater_distance_to_ideal": distance,
-                },
-            )
-            logger.info(
-                f"[save_calibration_parameters] params for ballkid {ballkid} updated with rcal metrics: {params}"
-            )
-
-    # Update the ratee's metrics, including EXCLUDING excluded raters' ratings
-    for ballkid in ballkids:
-        name = ballkid.get_name()
-
-        rater_ratings = year_ratings.filter(rater=ballkid)
-        ratee_ratings = year_ratings.filter(ratee=ballkid)
-
-        # num_ratee_ratings = ratee_ratings.count()
-        # num_raters = ratee_ratings.values_list("rater").distinct().count()
-        num_rater_ratings = rater_ratings.count()
-        ratee_raw_avg = ratee_ratings.aggregate(val=Avg("rating"))["val"]
-        ratee_raw_stdev = ratee_ratings.aggregate(val=StdDev("rating"))["val"]
-        rater_raw_avg = rater_ratings.aggregate(val=Avg("rating"))["val"]
-        rater_raw_stdev = rater_ratings.aggregate(val=StdDev("rating"))["val"]
-
-        # Update all non-calibration related parameters
-        params, _ = CalibrationParams.objects.update_or_create(
-            ballkid=ballkid,
-            year=year,
-            defaults={
-                # "num_ratee_ratings": num_ratee_ratings,
-                # "num_raters": num_raters,
-                "num_rater_ratings": num_rater_ratings,
-                "ratee_raw_avg": ratee_raw_avg,
-                "ratee_raw_stdev": ratee_raw_stdev,
-                "rater_raw_avg": rater_raw_avg,
-                "rater_raw_stdev": rater_raw_stdev,
-            },
-        )
-        logger.info(
-            f"[save_calibration_parameters] params for ballkid {ballkid} updated with raw metrics: {params}"
-        )
-
-        if calibrated:
-            ratee_calibrated = {
-                key: val
-                for key, val in calibrated.items()
-                if key[1] == name and key[2] not in excluded_raters
-            }
-
-            calibrated_avg = (
-                statistics.mean(ratee_calibrated.values())
-                if len(ratee_calibrated.values()) > 0
-                else None
-            )
-            calibrated_stdev = (
-                statistics.stdev(ratee_calibrated.values())
-                if len(ratee_calibrated.values()) > 1
-                else None
-            )
-            raters = set([key[2] for key in ratee_calibrated.keys()])
-
-            params, _ = CalibrationParams.objects.update_or_create(
-                ballkid=ballkid,
-                year=year,
-                defaults={
-                    "ratee_calibrated_avg": calibrated_avg,
-                    "ratee_calibrated_stdev": calibrated_stdev,
-                    "num_raters": len(raters),
-                    "num_ratee_ratings": len(ratee_calibrated.values()),
-                },
-            )
-            logger.info(
-                f"[save_calibration_parameters] params for ballkid {ballkid} updated with calibrated metrics: {params}"
             )
 
 

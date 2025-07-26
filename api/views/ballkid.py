@@ -557,7 +557,7 @@ class BallkidsSortedList(generics.ListAPIView):
         if group == "captain" or group == "chairperson":
             ballkids = ballkids if not pk else annotate_ratings(ballkids, pk)
 
-        # Rank annotations are used on the finals teams page
+        # Rank annotations are used on the cut and finals teams page
         if group == "chairperson":
             ballkids = annotate_rank(ballkids)
 

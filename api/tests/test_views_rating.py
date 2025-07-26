@@ -32,7 +32,10 @@ class TestViewsRatingHelpers(TestCase):
         self.days_per_bucket = 3
 
     def test_queryset_to_rcal_empty(self):
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         self.assertEqual({}, queryset_to_rcal(ratings))
 
     def test_queryset_to_rcal_overall_zero(self):
@@ -46,7 +49,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=0,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {}
 
         self.assertEqual(rcal_dict, queryset_to_rcal(ratings))
@@ -62,7 +68,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Andrea Iosue", 0): 5,
@@ -81,7 +90,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Captain Iosue", "Andrea Iosue", 0): 5,
@@ -100,7 +112,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", self.days_per_bucket): 3.5,
             ("Captain Iosue", "Andrea Iosue", 0): 5,
@@ -119,7 +134,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 3.5,
             ("Joe Iosue", "Lacy Iosue", 0): 5,
@@ -138,7 +156,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): 4,
         }
@@ -156,7 +177,10 @@ class TestViewsRatingHelpers(TestCase):
             rating=5,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): [3, 5],
         }
@@ -176,173 +200,15 @@ class TestViewsRatingHelpers(TestCase):
             rating=3,
         )
 
-        ratings = Rating.objects.all()
+        ratings = Rating.objects.annotate(
+            ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+            rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        )
         rcal_dict = {
             ("Captain Iosue", "Lacy Iosue", 0): [5, 3],
         }
 
         self.assertEqual(rcal_dict, queryset_to_rcal(ratings, returnAveraged=False))
-
-    def test_queryset_to_rcal_athleticism_empty(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1, rater=self.rater1, date=date.today(), rating=5
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=3,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {}
-
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism")
-        )
-
-    def test_queryset_to_rcal_athleticism_zero(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            athleticism_rating=0,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=3,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {}
-
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism")
-        )
-
-    def test_queryset_to_rcal_athleticism_nonzero(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            athleticism_rating=0.5,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee2,
-            rater=self.rater2,
-            date=date.today(),
-            rating=3,
-            athleticism_rating=2,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 0): 0.5,
-            ("Joe Iosue", "Andrea Iosue", 0): 2,
-        }
-
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism")
-        )
-
-    def test_queryset_to_rcal_athleticism_nonzero_averaged(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            athleticism_rating=1,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=3,
-            athleticism_rating=2,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 0): 1.5,
-        }
-
-        self.assertEqual(
-            rcal_dict, queryset_to_rcal(ratings, rating_name="athleticism")
-        )
-
-    def test_queryset_to_rcal_athleticism_nonzero_nonaveraged(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            athleticism_rating=1,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=3,
-            athleticism_rating=2,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 0): [1, 2],
-        }
-
-        self.assertEqual(
-            rcal_dict,
-            queryset_to_rcal(ratings, rating_name="athleticism", returnAveraged=False),
-        )
-
-    def test_queryset_to_rcal_decision_zero(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            decision_rating=0,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=3,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {}
-
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="decision"))
-
-    def test_queryset_to_rcal_decision_nonzero(self):
-        rating1 = Rating.objects.create(
-            ratee=self.ratee1,
-            rater=self.rater1,
-            date=date.today(),
-            rating=5,
-            decision_rating=0.5,
-        )
-        rating2 = Rating.objects.create(
-            ratee=self.ratee2,
-            rater=self.rater2,
-            date=date.today(),
-            rating=3,
-            decision_rating=2,
-        )
-
-        ratings = Rating.objects.all()
-        rcal_dict = {
-            ("Captain Iosue", "Lacy Iosue", 0): 0.5,
-            ("Joe Iosue", "Andrea Iosue", 0): 2,
-        }
-
-        self.assertEqual(rcal_dict, queryset_to_rcal(ratings, rating_name="decision"))
 
     def test_calibrate_passing(self):
         Rating.objects.create(
@@ -366,10 +232,14 @@ class TestViewsRatingHelpers(TestCase):
             rating=4,
             decision_rating=2,
         )
-        ratings = Rating.objects.all()
-        year_ratings = ratings.filter(date__year=get_current_year())
+        # ratings = Rating.objects.annotate(
+        #     ratee_name=Concat("ratee__first_name", Value(" "), "ratee__last_name"),
+        #     rater_name=Concat("rater__first_name", Value(" "), "rater__last_name"),
+        # )
+        # year_ratings = ratings.filter(date__year=get_current_year())
 
-        cp, excluded, error = calibrate(ratings, year_ratings)
+        # cp, excluded, error = calibrate(ratings, year_ratings)
+        cp, _, _, _ = run_calibration_and_save_params(get_current_year())
         self.assertIsInstance(cp, CalibrationParameters, f"Type: {type(cp)}")
 
     def test_calibrate_excluded(self):
@@ -400,10 +270,11 @@ class TestViewsRatingHelpers(TestCase):
             date=date.today(),
             rating=4,
         )
-        ratings = Rating.objects.all()
-        year_ratings = ratings.filter(date__year=get_current_year())
 
-        cp, excluded, error = calibrate(ratings, year_ratings)
+        cp, excluded, error, year_ratings = run_calibration_and_save_params(
+            get_current_year()
+        )
+
         self.assertIsInstance(cp, CalibrationParameters, f"Type: {type(cp)}")
 
         self.assertEqual(1, len(excluded))
@@ -430,10 +301,10 @@ class TestViewsRatingHelpers(TestCase):
             date=date.today(),
             rating=4,
         )
-        ratings = Rating.objects.all()
-        year_ratings = ratings.filter(date__year=get_current_year())
+        cp, excluded, error, year_ratings = run_calibration_and_save_params(
+            get_current_year()
+        )
 
-        cp, excluded, error = calibrate(ratings, year_ratings)
         self.assertIsNone(cp)
         self.assertIsNotNone(error)
 
@@ -581,10 +452,10 @@ class TestCalibratedRatingsView(APITestCase):
 
         params = CalibrationParams.objects.get(ballkid=self.ratee1)
 
+        self.assertEqual(1, params.ratee_raw_avg)
+        self.assertGreater(1, params.ratee_calibrated_avg)
         self.assertEqual(2, params.num_ratee_ratings)
         self.assertEqual(2, params.num_raters)
-        self.assertEqual(statistics.mean([1, 1, 5]), params.ratee_raw_avg)
-        self.assertGreater(statistics.mean([1, 1, 5]), params.ratee_calibrated_avg)
 
     def test_calibrationparams_rater(self):
         response = self.client.get(
