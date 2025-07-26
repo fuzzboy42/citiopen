@@ -551,12 +551,8 @@ class CalibratedRatings(APIView):
     permission_classes = [IsChairperson]
 
     def get(self, request, year):
-        print("HI")
-
         tournament = Tournament.objects.get(year=year)
-
-        cp_dict = {rating_name: None for rating_name in RATING_CATEGORIES}
-        excluded = {rating_name: set() for rating_name in RATING_CATEGORIES}
+        cp, excluded, failed_categories = None, set(), None
 
         ## STEP 1: Get ratings
 
@@ -585,31 +581,15 @@ class CalibratedRatings(APIView):
             f"[CalibratedRatings] Starting rating calibration for {len(ratings)} ratings"
         )
 
-        # Keep track of which rating categories throw Rcal exceptions
-        failed_categories = {rating_name: None for rating_name in RATING_CATEGORIES}
-
-        # Try calibration for all rating categories
-        # for rating_name in RATING_CATEGORIES:
-        #     (
-        #         cp_dict[rating_name],
-        #         excluded[rating_name],
-        #         failed_categories[rating_name],
-        #     ) = calibrate(ratings, rating_name, year=year)
-        print("before step 2")
         ## STEP 2: Train / calibrate on all years' ratings
-        (
-            cp_dict["overall"],
-            excluded["overall"],
-            failed_categories["overall"],
-        ) = calibrate(ratings, year_ratings, "overall")
+        (cp, excluded, failed_categories) = calibrate(ratings, year_ratings)
 
         logger.warning(
             f"[CalibratedRatings] rating categories with failed rating categories {failed_categories}"
         )
 
         ## STEP 3: Save rater params
-        print("right before")
-        save_rater_params(cp_dict["overall"], year_ratings, year)
+        save_rater_params(cp, year_ratings, year)
 
         ## STEP 4: Auto-exclude ratings
         autoexclude(year_ratings, tournament.rcal_calibration_threshold)
@@ -622,11 +602,7 @@ class CalibratedRatings(APIView):
                 rating.id,
                 rating.ratee.get_name(),
                 rating.rater.get_name(),
-            ): get_postprocessed_rating(
-                cp_dict["overall"],
-                rating.rating,
-                rating.rater.get_name(),
-            )
+            ): get_postprocessed_rating(cp, rating.rating, rating.rater.get_name())
             for rating in year_ratings
         }
         logger.info(
@@ -649,31 +625,11 @@ class CalibratedRatings(APIView):
                 "rating": calibrated[
                     (rating.id, rating.ratee.get_name(), rating.rater.get_name())
                 ],
-                "athleticism_rating": get_postprocessed_rating(
-                    cp_dict["athleticism"],
-                    rating.athleticism_rating,
-                    rating.rater.get_name(),
-                ),
-                "rolling_rating": get_postprocessed_rating(
-                    cp_dict["rolling"],
-                    rating.rolling_rating,
-                    rating.rater.get_name(),
-                ),
-                "awareness_rating": get_postprocessed_rating(
-                    cp_dict["awareness"],
-                    rating.awareness_rating,
-                    rating.rater.get_name(),
-                ),
-                "decision_rating": get_postprocessed_rating(
-                    cp_dict["decision"],
-                    rating.decision_rating,
-                    rating.rater.get_name(),
-                ),
-                "effort_rating": get_postprocessed_rating(
-                    cp_dict["effort"],
-                    rating.effort_rating,
-                    rating.rater.get_name(),
-                ),
+                "athleticism_rating": rating.athleticism_rating,
+                "rolling_rating": rating.rolling_rating,
+                "awareness_rating": rating.awareness_rating,
+                "decision_rating": rating.decision_rating,
+                "effort_rating": rating.effort_rating,
                 "comments": rating.comments,
                 # Annotated values
                 "rater_name": rating.rater.get_name(),
@@ -705,14 +661,14 @@ class CalibratedRatings(APIView):
         # )
 
         # If an rcal warning was thrown for the overall rating category
-        if "overall" in failed_categories and failed_categories["overall"] is not None:
+        if failed_categories is not None:
             logger.warning(
                 f"[CalibratedRatings] overall rating category threw an rcal error"
             )
             s = status.HTTP_203_NON_AUTHORITATIVE_INFORMATION
 
         # If a non-zero number of reviewers had no overlap in the overall rating category
-        elif excluded["overall"]:
+        elif len(excluded) > 0:
             logger.warning(
                 f"[CalibratedRatings] overall rating category had excluded reviewers {excluded['overall']}"
             )
