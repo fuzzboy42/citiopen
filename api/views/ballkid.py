@@ -28,7 +28,7 @@ from api.utils.utils import *
 from api.utils.consts import *
 from api.permissions import *
 from api.utils.teams_generator import TeamsGenerator
-from api.views.rating import save_calibration_parameters
+from api.views.rating import run_calibration_and_save_params
 from accounts.views import UpdateCaptainStatus
 
 from datetime import timedelta
@@ -1185,10 +1185,11 @@ class GetRatingsCaptainLeaderboard(generics.ListAPIView):
     serializer_class = BallkidSerializer
 
     def get_queryset(self):
+        start = datetime.now()
         year = get_current_year()
-        save_calibration_parameters()
+        run_calibration_and_save_params(year)
 
-        return (
+        obj = (
             Ballkid.objects.filter(is_active=True)
             .filter(Q(is_captain=True) | Q(is_chairperson=True))
             .annotate(
@@ -1228,9 +1229,18 @@ class GetRatingsCaptainLeaderboard(generics.ListAPIView):
                     ),
                     0.0,
                 ),
+                distance_to_ideal=Coalesce(
+                    Avg(
+                        "calibrationparams__rater_distance_to_ideal",
+                        filter=Q(calibrationparams__year=year),
+                    ),
+                    0.0,
+                ),
             )
             .order_by("-num_ratings")
         )
+        print(datetime.now() - start)
+        return obj
 
 
 class GetRatingsBallkidLeaderboard(generics.ListAPIView):
@@ -1238,10 +1248,11 @@ class GetRatingsBallkidLeaderboard(generics.ListAPIView):
     serializer_class = BallkidSerializer
 
     def get_queryset(self):
+        start = datetime.now()
         year = get_current_year()
-        save_calibration_parameters()
+        run_calibration_and_save_params(year)
 
-        return (
+        obj = (
             Ballkid.objects.filter(is_active=True)
             .annotate(
                 num_ratings=Coalesce(
@@ -1283,6 +1294,8 @@ class GetRatingsBallkidLeaderboard(generics.ListAPIView):
             )
             .order_by("-calibrated_avg", "-raw_avg")
         )
+        print(datetime.now() - start)
+        return obj
 
 
 class GetCourtLeaderboard(generics.ListAPIView):
