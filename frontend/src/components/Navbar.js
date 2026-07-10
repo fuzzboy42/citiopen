@@ -6,8 +6,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 
-import AccountCircle from "@mui/icons-material/AccountCircle";
-
 import BallcrewLogo from "./BallcrewLogo";
 import MobileNavDrawer from "./MobileNavDrawer";
 import { getLocalStorage, useIsMobile } from "./Utils";
@@ -94,7 +92,6 @@ const chairpersonTabs = [
 ];
 
 const ballkidAccountTab = {
-  icon: <AccountCircle />,
   label: "Account",
   url: "/me",
   subtabs: [
@@ -105,7 +102,6 @@ const ballkidAccountTab = {
 };
 
 const captainAccountTab = {
-  icon: <AccountCircle />,
   label: "Account",
   url: "/me",
   subtabs: [
@@ -117,7 +113,6 @@ const captainAccountTab = {
 };
 
 const chairpersonAccountTab = {
-  icon: <AccountCircle />,
   label: "Account",
   url: "/me",
   subtabs: [
@@ -181,14 +176,17 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
     <div>
       {useIconButton ? (
         <IconButton
-          className="app-navbar-menu-btn"
+          className="app-navbar-account-btn"
+          disableRipple
           onMouseEnter={enterButton}
           onMouseLeave={leaveButton}
           component={Link}
           to={tab.url}
           aria-label={tab.label}
         >
-          {tab.icon}
+          <span className="app-navbar-account-initials" aria-hidden="true">
+            {getUserInitials()}
+          </span>
         </IconButton>
       ) : (
         <Button
@@ -206,13 +204,21 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
         ""
       ) : (
         <Menu
+          className="app-navbar-dropdown"
           anchorEl={anchorEl}
           open={overButton || overMenu}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
           sx={{
             pointerEvents: "none",
           }}
           disableRestoreFocus
+          PaperProps={{
+            elevation: 0,
+            className: "app-navbar-dropdown-paper",
+          }}
           MenuListProps={{
+            className: "app-navbar-dropdown-list",
             onMouseEnter: enterMenu,
             onMouseLeave: leaveMenu,
             style: { pointerEvents: "auto" },
@@ -221,6 +227,11 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
           {tab.subtabs.map((subtab) => (
             <MenuItem
               key={subtab.label}
+              className={
+                subtab.label === "Logout"
+                  ? "app-navbar-dropdown-item logout"
+                  : "app-navbar-dropdown-item"
+              }
               component={Link}
               to={subtab.url}
               onClick={subtab.label !== "Logout" ? handleClose : handleLogout}

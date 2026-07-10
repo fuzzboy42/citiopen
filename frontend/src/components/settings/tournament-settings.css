@@ -1,0 +1,269 @@
+.tournament-settings-shell {
+  --ts-nav: #0d1b3e;
+  --ts-red: #c8102e;
+  --ts-bg0: #f8fafc;
+  --ts-bg1: #fff;
+  --ts-text1: #0d1b3e;
+  --ts-text2: #64748b;
+  --ts-border: #e2e8f0;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  width: 100%;
+  min-height: calc(100vh - var(--navbar-inner-height) - 3px);
+  min-height: calc(100dvh - var(--navbar-inner-height) - 3px);
+  background: var(--ts-bg0);
+  box-sizing: border-box;
+  padding: 0 !important;
+}
+
+.tournament-settings-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  box-sizing: border-box;
+}
+
+.tournament-settings-header {
+  margin-bottom: 20px;
+}
+
+.tournament-settings-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tournament-settings-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ts-text1);
+  line-height: 1.25;
+}
+
+.tournament-settings-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ts-text2);
+  line-height: 1.45;
+}
+
+.tournament-settings-alert {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.tournament-settings-alert.success {
+  background: #ecfdf5;
+  color: #047857;
+  border: 0.5px solid #a7f3d0;
+}
+
+.tournament-settings-alert.error {
+  background: #fff1f2;
+  color: #9f1239;
+  border: 0.5px solid #fecdd3;
+}
+
+.tournament-settings-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tournament-settings-card {
+  background: var(--ts-bg1);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 12px;
+  padding: 18px 18px 20px;
+  box-shadow: 0 1px 2px rgba(13, 27, 62, 0.04);
+}
+
+.tournament-settings-card.danger {
+  border-color: #fecdd3;
+  background: #fffbfb;
+}
+
+.tournament-settings-section-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ts-text1);
+}
+
+.tournament-settings-subsection {
+  margin-bottom: 18px;
+}
+
+.tournament-settings-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.tournament-settings-subsection-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ts-text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tournament-settings-banner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tournament-settings-banner-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: var(--ts-bg0);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 8px;
+}
+
+.tournament-settings-banner-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--ts-text2);
+  line-height: 1.45;
+}
+
+.tournament-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 0.5px solid var(--ts-border);
+}
+
+.tournament-settings-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tournament-settings-row:first-of-type {
+  padding-top: 0;
+}
+
+.tournament-settings-row-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ts-text1);
+  line-height: 1.4;
+}
+
+.tournament-settings-row-control {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tournament-settings-caution-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--ts-red);
+}
+
+.tournament-settings-caution-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tournament-settings-shell .MuiButton-containedPrimary {
+  background-color: var(--ts-nav) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tournament-settings-shell .MuiButton-containedPrimary:hover {
+  background-color: #152a5c !important;
+}
+
+.tournament-settings-shell .MuiButton-contained.MuiButton-sizeSmall {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+}
+
+.tournament-settings-shell .MuiIconButton-root {
+  color: var(--ts-text2);
+}
+
+.tournament-settings-shell .MuiIconButton-root.Mui-disabled {
+  opacity: 0.35;
+}
+
+.tournament-settings-shell .MuiIconButton-colorPrimary {
+  color: var(--ts-nav) !important;
+}
+
+.tournament-settings-shell .MuiInput-root {
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.tournament-settings-shell .MuiFormLabel-root {
+  font-family: inherit;
+  color: var(--ts-text2);
+}
+
+.tournament-settings-shell .MuiTextField-root .MuiInput-underline:after {
+  border-bottom-color: var(--ts-nav);
+}
+
+.tournament-settings-shell .tournament-settings-param-input .MuiInput-root {
+  background: var(--ts-bg0);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.tournament-settings-shell .tournament-settings-param-input .MuiInput-underline:before,
+.tournament-settings-shell .tournament-settings-param-input .MuiInput-underline:after {
+  display: none;
+}
+
+.tournament-settings-create-note {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--ts-text2);
+  line-height: 1.45;
+}
+
+.tournament-settings-create-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+@media (min-width: 600px) {
+  .tournament-settings-page {
+    padding: 28px 24px 48px;
+  }
+
+  .tournament-settings-title {
+    font-size: 24px;
+  }
+}

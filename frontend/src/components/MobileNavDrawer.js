@@ -208,6 +208,7 @@ export default function MobileNavDrawer({ group, setToken }) {
     <>
       <IconButton
         className="app-navbar-menu-btn"
+        disableRipple
         onClick={() => setOpen(true)}
         aria-label="Open menu"
         aria-expanded={open}
