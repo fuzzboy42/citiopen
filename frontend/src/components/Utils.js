@@ -388,19 +388,21 @@ export function HideShowToggle({
   );
 }
 
-export function TabbedSections({ sections }) {
+export function TabbedSections({ sections, className = "" }) {
   const [tabIndex, setTabIndex] = useState(0);
   const [mobileSelection, setMobileSelection] = useState(
     Object.keys(sections)[0]
   );
 
   const isMobile = useIsMobile();
+  const rootClass = className ? className : "";
 
   return isMobile ? (
-    <div>
+    <div className={rootClass}>
       <Select
+        fullWidth
+        className="settings-tab-select"
         value={mobileSelection}
-        sx={{ mb: 1 }}
         onChange={(e) => setMobileSelection(e.target.value)}
       >
         {Object.keys(sections).map((option) => (
@@ -409,24 +411,15 @@ export function TabbedSections({ sections }) {
           </MenuItem>
         ))}
       </Select>
-      <Box sx={{ mx: 1 }}>{sections[mobileSelection]}</Box>
+      <Box className="settings-tab-panel">{sections[mobileSelection]}</Box>
     </div>
   ) : (
-    <Box
-      sx={{
-        flexGrow: 1,
-        bgcolor: "background.paper",
-        display: "flex",
-        height: 400,
-        width: "95%",
-      }}
-    >
+    <Box className={`settings-tabbed-layout ${rootClass}`.trim()}>
       <Tabs
         orientation="vertical"
         variant="scrollable"
         value={tabIndex}
         onChange={(e, newVal) => setTabIndex(newVal)}
-        sx={{ borderRight: 1, borderColor: "divider", minWidth: 250 }}
       >
         {Object.keys(sections).map((label, index) => (
           <Tab key={index} label={label} />
@@ -434,7 +427,11 @@ export function TabbedSections({ sections }) {
       </Tabs>
 
       {Object.keys(sections).map((label, index) => (
-        <Box key={index} hidden={tabIndex !== index} sx={{ mx: 4 }}>
+        <Box
+          key={index}
+          hidden={tabIndex !== index}
+          className="settings-tab-panel-desktop"
+        >
           {tabIndex === index && sections[label]}
         </Box>
       ))}

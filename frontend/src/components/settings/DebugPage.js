@@ -24,6 +24,7 @@ import {
   Banners,
 } from "../Utils";
 import { RatingAndLabel } from "../ratings/RatingDialog";
+import "./settings-pages.css";
 
 function CreateBallkid(props) {
   const [firstName, setFirstName] = useState("");
@@ -1368,10 +1369,22 @@ export default function DebugPage(props) {
   };
 
   return (
-    <div className="page">
+    <div className="page settings-shell">
       <Banners />
 
-      <TabbedSections sections={sections} />
+      <div className="settings-page settings-page--wide">
+        <header className="settings-header">
+          <h1 className="settings-title">Debug</h1>
+          <p className="settings-subtitle">
+            Chairperson tools for seeding data and fixing history. Use only in
+            development or when you know what you are doing.
+          </p>
+        </header>
+
+        <section className="settings-card settings-card--flush">
+          <TabbedSections sections={sections} />
+        </section>
+      </div>
     </div>
   );
 }
