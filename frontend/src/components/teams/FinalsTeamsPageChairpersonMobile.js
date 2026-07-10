@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import { Banners, getAuthHeader } from "../Utils";
+import { getAuthHeader } from "../Utils";
 import { MATCH_TYPES } from "../Consts";
 import { UnassignedMobile } from "./TeamsPageChairpersonMobile";
 import { Header, renderTeams } from "./FinalsTeamsPageChairpersonUtils";
+
+import { TeamsPageShell } from "./TeamsPageLayout";
+import "./teams-pages.css";
 
 export default function FinalsTeamsPageChairpersonMobile(props) {
   const [assigned, setAssigned] = useState([]);
@@ -31,9 +34,7 @@ export default function FinalsTeamsPageChairpersonMobile(props) {
   }, [updated]);
 
   return (
-    <div className="page">
-      <Banners />
-
+    <TeamsPageShell>
       <Header />
       {renderTeams(assigned, teams, setUpdated)}
 
@@ -43,6 +44,6 @@ export default function FinalsTeamsPageChairpersonMobile(props) {
         setUpdated={setUpdated}
         isFinalsPage={true}
       />
-    </div>
+    </TeamsPageShell>
   );
 }

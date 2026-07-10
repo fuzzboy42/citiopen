@@ -180,7 +180,7 @@ function renderBallkidsOnTeam(assigned, showHovercard, setUpdated) {
 
 export function renderTeams(assigned, teams, showHovercard, setUpdated) {
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} className="teams-grid">
       {teams.map((team) => (
         <Team
           key={team}
@@ -220,27 +220,29 @@ export function Header({ showHovercard, setShowHovercard }) {
         setErrorMsg={setErrorMsg}
       />
 
-      <Box className="justify" sx={{ mb: 1 }}>
-        <Box className="sxs">
-          <Typography variant="h4">Finals Teams</Typography>
-          &thinsp;
+      <header className="teams-page-header">
+        <div className="teams-page-title-row">
+          <h1 className="teams-page-title">Finals Teams</h1>
           <HelpIcon page="Finals Teams" message={finalsTeams} />
-        </Box>
+        </div>
+        <div className="teams-page-header-actions">
+          <HideShowToggle
+            teamType="finals"
+            defaultShow={tournament["show_finals_teams"]}
+            setSuccessMsg={setSuccessMsg}
+            setErrorMsg={setErrorMsg}
+          />
+        </div>
+      </header>
 
-        <HideShowToggle
-          teamType="finals"
-          defaultShow={tournament["show_finals_teams"]}
-          setSuccessMsg={setSuccessMsg}
-          setErrorMsg={setErrorMsg}
-        />
-      </Box>
-
-      {renderSwitch(
-        showHovercard,
-        setShowHovercard,
-        "Disable Hovercard",
-        "Enable Hovercard"
-      )}
+      <div className="teams-page-header-actions" style={{ marginBottom: 12 }}>
+        {renderSwitch(
+          showHovercard,
+          setShowHovercard,
+          "Disable Hovercard",
+          "Enable Hovercard"
+        )}
+      </div>
     </div>
   );
 }

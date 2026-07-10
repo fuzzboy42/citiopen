@@ -34,8 +34,6 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
-import AspectRatio from "@mui/joy/AspectRatio";
-
 import GridView from "@mui/icons-material/GridView";
 import Edit from "@mui/icons-material/Edit";
 import List from "@mui/icons-material/List";
@@ -82,9 +80,10 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
   );
 }
 
-export function LayoutButtons({ layout, setLayout }) {
+export function LayoutButtons({ layout, setLayout, className = "" }) {
   return (
     <ToggleButtonGroup
+      className={`list-by-name-layout ${className}`.trim()}
       value={layout}
       size="small"
       exclusive
@@ -237,7 +236,46 @@ export function SearchAndFilter({
   filterGroup,
   setFilterGroup,
   filters = ["rookie", "captain", "chairperson", "back", "net"],
+  useGridItem = true,
+  toolbarClassName = "",
 }) {
+  const inner = (
+    <>
+      <div className="list-by-name-search-wrap">
+        <SearchBox setSearchKeyword={setSearchKeyword} />
+      </div>
+      <div className="list-by-name-filters">
+        <span className="list-by-name-filter-label">Filter</span>
+        <ToggleButtonGroup
+          value={filterGroup}
+          size="small"
+          exclusive
+          onChange={(e, newVal) => setFilterGroup(newVal)}
+        >
+          {filters.map((filterName) => (
+            <ToggleButton
+              key={filterName}
+              value={filterName}
+              style={{ border: 0 }}
+            >
+              <Tooltip title={TOOLTIP_DICT[filterName]}>
+                {ICON_DICT[filterName]}
+              </Tooltip>
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
+    </>
+  );
+
+  if (!useGridItem) {
+    return (
+      <div className={`list-by-name-toolbar ${toolbarClassName}`.trim()}>
+        {inner}
+      </div>
+    );
+  }
+
   return (
     <Grid item xs={12} className="justify">
       <SearchBox setSearchKeyword={setSearchKeyword} />
@@ -675,9 +713,13 @@ export function BallkidCard({ ballkid, renderAdditional }) {
         {layout === "list" ? (
           ""
         ) : (
-          <AspectRatio ratio="1/1">
-            <CardMedia component="img" image={ballkid.image} />
-          </AspectRatio>
+          <SquarePhotoFrame>
+            <CardMedia
+              component="img"
+              image={ballkidImageSrc(ballkid.image)}
+              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </SquarePhotoFrame>
         )}
         <CardContent>
           <div className={layout === "grid" ? "" : "justify"}>
@@ -1121,6 +1163,34 @@ export function getBallkidId() {
   return Number.isFinite(id) ? id : null;
 }
 
+/** 1:1 photo frame without @mui/joy (no extra theme provider at app root). */
+export function SquarePhotoFrame({ children, sx }) {
+  return (
+    <Box
+      sx={{
+        aspectRatio: "1 / 1",
+        overflow: "hidden",
+        width: "100%",
+        ...sx,
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+/** Resolve ballkid image for CRA dev (proxied to Django static). */
+export function ballkidImageSrc(image) {
+  if (!image) {
+    return "";
+  }
+  if (String(image).startsWith("http")) {
+    return image;
+  }
+  const normalized = String(image).replace(/^\.\.\//, "");
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
+}
+
 export function setLocalStorage(key, val) {
   localStorage.setItem(key, JSON.stringify(val));
 }
@@ -1137,15 +1207,16 @@ export function getAuthHeader() {
 }
 
 export function useToken() {
-  const getToken = () => {
-    const tokenString = localStorage.getItem("token");
-    return JSON.parse(tokenString);
-  };
-  const [token, setToken] = useState(getToken());
+  const [token, setToken] = useState(() => getLocalStorage("token"));
 
   const saveToken = (userToken) => {
-    localStorage.setItem("token", JSON.stringify(userToken));
-    setToken(userToken);
+    if (userToken === "" || userToken == null) {
+      localStorage.removeItem("token");
+      setToken(null);
+    } else {
+      localStorage.setItem("token", JSON.stringify(userToken));
+      setToken(userToken);
+    }
   };
 
   return { setToken: saveToken, token };

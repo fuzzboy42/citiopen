@@ -23,8 +23,6 @@ import Tooltip from "@mui/material/Tooltip";
 
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
-import AspectRatio from "@mui/joy/AspectRatio";
-
 import MoreVert from "@mui/icons-material/MoreVert";
 import Dangerous from "@mui/icons-material/Dangerous";
 import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
@@ -48,7 +46,6 @@ import { RaterParamsChart } from "./RaterParamsChart";
 import { BallkidParamsChart } from "./BallkidParamsChart";
 
 import {
-  Icons,
   getAuthHeader,
   getBallkidId,
   getLocalStorage,
@@ -58,8 +55,18 @@ import {
   Alerts,
   toPercent,
   getTimeStr,
-  Banners,
 } from "../Utils";
+import {
+  ProfilePageShell,
+  ProfileLoadingState,
+  ProfileErrorState,
+  ProfileBrandedHero,
+  ProfileTabs,
+  ProfileContent,
+  ProfilePanel,
+  ProfileCard,
+  ProfileInfoRow,
+} from "./BallkidProfileLayout";
 import {
   NUM_RATERS_WARNING_THRESHOLD,
   NUM_RATINGS_WARNING_THRESHOLD,
@@ -69,43 +76,43 @@ import {
   LAST_DAY_OPTIONS,
 } from "../Consts";
 
-function renderHeader(ballkid, setUpdated, isMobile) {
-  const overflowMenu =
-    ballkid.is_cut === "true" || !ballkid.is_active ? (
-      <InactiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
-    ) : (
-      <ActiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
-    );
+const CHAIR_TABS = [
+  { id: "info", label: "Info" },
+  { id: "ratings", label: "Ratings" },
+  { id: "analytics", label: "Analytics" },
+  { id: "history", label: "Finals history" },
+  { id: "cuts", label: "Previous cuts" },
+];
 
-  const headerStatus = ballkid.is_cut ? (
-    <Typography variant="h5" color="error">
-      Cut
-    </Typography>
-  ) : !ballkid.is_active ? (
-    <Typography variant="h5" color="error">
-      Inactive
-    </Typography>
-  ) : (
+function profileHeaderStatus(ballkid, setUpdated, isMobile) {
+  if (ballkid.is_cut) {
+    return (
+      <span className="ballkid-profile-status ballkid-profile-status--cut">
+        Cut
+      </span>
+    );
+  }
+  if (!ballkid.is_active) {
+    return (
+      <span className="ballkid-profile-status ballkid-profile-status--inactive">
+        Inactive
+      </span>
+    );
+  }
+  return (
     <CheckinSection
       ballkid={ballkid}
       setUpdated={setUpdated}
       isMobile={isMobile}
     />
   );
+}
 
-  return (
-    <div className={isMobile ? "" : "justify"}>
-      <div className="sxs">
-        <Typography variant="h4">
-          {ballkid.first_name} {ballkid.last_name}
-        </Typography>
-        &ensp;
-        <Icons ballkid={ballkid} margin={0} />
-        &ensp;
-        {overflowMenu}
-      </div>
-      {headerStatus}
-    </div>
+function profileOverflowMenu(ballkid, setUpdated) {
+  return ballkid.is_cut === "true" || !ballkid.is_active ? (
+    <InactiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
+  ) : (
+    <ActiveOverflowMenu ballkid={ballkid} setUpdated={setUpdated} />
   );
 }
 
@@ -114,16 +121,18 @@ function CheckinSection({ ballkid, setUpdated, isMobile }) {
 
   return (
     <Box
-      textAlign="center"
-      className={isMobile ? "justify" : ""}
-      sx={{ my: isMobile ? 1 : 0 }}
+      textAlign={isMobile ? "center" : "right"}
+      sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: isMobile ? "stretch" : "flex-end" }}
     >
-      <Typography
-        variant="h6"
-        color={ballkid.is_checked_in ? "success.main" : "error"}
+      <span
+        className={
+          ballkid.is_checked_in
+            ? "ballkid-profile-status ballkid-profile-status--in"
+            : "ballkid-profile-status ballkid-profile-status--out"
+        }
       >
-        {ballkid.is_checked_in ? "Checked In" : "Checked Out"}
-      </Typography>
+        {ballkid.is_checked_in ? "Checked in" : "Checked out"}
+      </span>
       <LoadingButton
         variant="outlined"
         loading={loading}
@@ -274,7 +283,7 @@ function renderTeam(ballkid, teams, setUpdated, isMobile) {
           </Typography>
 
           <Box>
-            {teams.map((team) =>
+            {(teams ?? []).map((team) =>
               team === ballkid.current_team
                 ? ""
                 : renderTeamButton(ballkid, team, team, setUpdated)
@@ -282,7 +291,7 @@ function renderTeam(ballkid, teams, setUpdated, isMobile) {
             {renderTeamButton(
               ballkid,
               "New Team",
-              teams.length + 1,
+              (teams ?? []).length + 1,
               setUpdated
             )}
             {ballkid.current_team === 0
@@ -570,18 +579,17 @@ function RatingSection({ ballkid }) {
   }, [ballkid.id]);
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <Typography variant="h6">Ratings:</Typography>
-      </Grid>
-      {ballkidGroup === "ballkid"
-        ? ""
-        : renderRatingsCaptainSection(ballkid, ballkidGroup, params)}
+    <ProfileCard title="Ratings" padded>
+      <Grid container>
+        {ballkidGroup === "ballkid"
+          ? ""
+          : renderRatingsCaptainSection(ballkid, ballkidGroup, params)}
 
-      {ballkidGroup === "chairperson"
-        ? ""
-        : renderRatingsBallkidSection(ballkid, params)}
-    </Grid>
+        {ballkidGroup === "chairperson"
+          ? ""
+          : renderRatingsBallkidSection(ballkid, params)}
+      </Grid>
+    </ProfileCard>
   );
 }
 
@@ -1023,10 +1031,10 @@ export function AggregateMetrics({ pk }) {
   }, [pk, isChairperson]);
 
   return loading ? (
-    <CircularProgress className="center-div" size={30} />
+    <CircularProgress size={30} sx={{ display: "block", m: 2 }} />
   ) : (
-    <Grid container>
-      <Grid item xs={12} sm={11} md={9} lg={7} xl={5}>
+    <Grid container justifyContent="flex-start">
+      <Grid item xs={12}>
         <TableContainer>
           <Table size="small">
             {!isChairperson ? (
@@ -1034,50 +1042,50 @@ export function AggregateMetrics({ pk }) {
             ) : (
               <TableHead>
                 <TableRow>
-                  <TableCell align="center"></TableCell>
-                  <TableCell align="center">Ballkid</TableCell>
-                  <TableCell align="center">Average</TableCell>
+                  <TableCell />
+                  <TableCell>Ballkid</TableCell>
+                  <TableCell>Average</TableCell>
                 </TableRow>
               </TableHead>
             )}
 
             <TableBody>
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Total Time Checked In
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {getDurationStr(getTimeFloat(metrics.checkin_duration))}
                 </TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {getDurationStr(parseFloat(averages.checkin_avg) / 3600)}
                   </TableCell>
                 )}
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Total Days Checked In
                 </TableCell>
-                <TableCell align="center">{metrics.checkin_days}</TableCell>
+                <TableCell>{metrics.checkin_days}</TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {Number(averages.days_avg).toFixed(1)}
                   </TableCell>
                 )}
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Average Time Checked In Per Day
                 </TableCell>
 
-                <TableCell align="center">
+                <TableCell>
                   {getDurationStr(
                     getTimeFloat(metrics.checkin_duration) /
                       metrics.checkin_days
@@ -1086,7 +1094,7 @@ export function AggregateMetrics({ pk }) {
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {getDurationStr(
                       parseFloat(averages.checkin_avg) /
                         3600 /
@@ -1097,26 +1105,26 @@ export function AggregateMetrics({ pk }) {
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Average Check-in Time
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {getTimeStr(parseFloat(checkinTimeMetrics?.ballkid) / 3600)}
                 </TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {getTimeStr(parseFloat(checkinTimeMetrics?.average) / 3600)}
                   </TableCell>
                 )}
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Average Check-out Time
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {getTimeStr(
                     parseFloat(checkinTimeMetrics?.ballkid) / 3600 +
                       getTimeFloat(metrics.checkin_duration) /
@@ -1126,7 +1134,7 @@ export function AggregateMetrics({ pk }) {
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {getTimeStr(
                       parseFloat(checkinTimeMetrics?.average) / 3600 +
                         parseFloat(averages.checkin_avg) /
@@ -1138,26 +1146,26 @@ export function AggregateMetrics({ pk }) {
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   Total Time on Court
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {getDurationStr(getTimeFloat(metrics.court_duration))}
                 </TableCell>
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {getDurationStr(parseFloat(averages.court_avg) / 3600)}
                   </TableCell>
                 )}
               </TableRow>
 
               <TableRow>
-                <TableCell align="center" sx={{ fontWeight: "medium" }}>
+                <TableCell sx={{ fontWeight: "medium" }}>
                   % Time on Court
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {getTimeFloat(metrics.checkin_duration) === 0
                     ? "0%"
                     : toPercent(
@@ -1168,7 +1176,7 @@ export function AggregateMetrics({ pk }) {
                 {!isChairperson ? (
                   ""
                 ) : (
-                  <TableCell align="center">
+                  <TableCell>
                     {toPercent(
                       parseFloat(averages.court_avg) /
                         parseFloat(averages.checkin_avg)
@@ -1194,6 +1202,7 @@ export default function BallkidPageChairperson(props) {
 
   const [successMsg, setSuccessMsg] = useState();
   const [errorMsg, setErrorMsg] = useState();
+  const [tab, setTab] = useState("info");
 
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -1246,7 +1255,9 @@ export default function BallkidPageChairperson(props) {
 
     fetch("/api/calc-num-teams", { headers: getAuthHeader() })
       .then((response) => response.json())
-      .then((data) => setTeams(data["teams"]));
+      .then((data) =>
+        setTeams(Array.isArray(data?.teams) ? data.teams : [])
+      );
 
     fetch(`/api/get-cut-history/${pk}`, { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -1256,203 +1267,199 @@ export default function BallkidPageChairperson(props) {
 
   if (loadState === "no_link") {
     return (
-      <div className="page">
-        <Banners />
-        <Typography sx={{ p: 2 }} color="text.secondary">
-          No ballkid is linked to this login. For local dev, run{" "}
-          <code>python manage.py create_dev_user</code>, then log out and log in
-          again.
-        </Typography>
-      </div>
+      <ProfileErrorState>
+        No ballkid is linked to this login. For local dev, run{" "}
+        <code>python manage.py create_dev_user</code>, then log out and log in
+        again.
+      </ProfileErrorState>
     );
   }
 
   if (loadState === "error") {
     return (
-      <div className="page">
-        <Banners />
-        <Typography sx={{ p: 2 }} color="error">
-          Could not load this profile (check that the Django server is running on
-          port 8000). Log out and back in, or open the ballkid from the roster.
-        </Typography>
-      </div>
+      <ProfileErrorState>
+        Could not load this profile (check that the Django server is running on
+        port 8000). Log out and back in, or open the ballkid from the roster.
+      </ProfileErrorState>
     );
   }
 
   if (loadState === "loading" || ballkid == null) {
-    return (
-      <div className="page">
-        <Banners />
-        <Box className="center-div" sx={{ display: "flex", gap: 2 }}>
-          <CircularProgress size={28} />
-          <Typography>Loading profile…</Typography>
-        </Box>
-      </div>
-    );
+    return <ProfileLoadingState />;
   }
 
-  return (
-    <div className="page">
-      <Banners />
+  const visibleTabs = ballkid.is_active
+    ? CHAIR_TABS
+    : CHAIR_TABS.filter((t) => t.id === "info" || t.id === "cuts");
 
-      <Alerts
-        successMsg={successMsg}
-        errorMsg={errorMsg}
-        setSuccessMsg={setSuccessMsg}
-        setErrorMsg={setErrorMsg}
+  return (
+    <ProfilePageShell>
+      <div className="ballkid-profile-alerts">
+        <Alerts
+          successMsg={successMsg}
+          errorMsg={errorMsg}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+        />
+      </div>
+
+      <ProfileBrandedHero
+        ballkid={ballkid}
+        nameExtra={profileOverflowMenu(ballkid, setUpdated)}
+        status={profileHeaderStatus(ballkid, setUpdated, isMobile)}
       />
 
-      {renderHeader(ballkid, setUpdated, isMobile)}
+      <ProfileTabs tabs={visibleTabs} active={tab} onChange={setTab} />
 
-      <Grid container>
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          lg={2}
-          sx={{ pr: 2, pl: isMobile ? 2 : 0, mb: 1 }}
-        >
-          <AspectRatio ratio="1/1">
-            <Box width="95%" component="img" src={"../" + ballkid.image} />
-          </AspectRatio>
-        </Grid>
+      <ProfileContent>
+        <ProfilePanel id="info" active={tab}>
+          <ProfileCard title="Personal info">
+            <ProfileInfoRow label="Age" value={ballkid.age} />
+            <ProfileInfoRow
+              label="Experience"
+              value={`${ballkid.num_years_experience} years`}
+            />
+            <ProfileInfoRow label="Phone" value={ballkid.phone} />
+            <ProfileInfoRow
+              label="Emergency contact"
+              value={ballkid.emergency_name}
+            />
+            <ProfileInfoRow
+              label="Emergency phone"
+              value={ballkid.emergency_phone}
+            />
+            <ProfileInfoRow label="Preferred position" stack>
+              {renderPreferredPosition(ballkid, setUpdated, isMobile)}
+            </ProfileInfoRow>
+          </ProfileCard>
 
-        <Grid item xs={12} sm={8} md={9} lg={10}>
-          <Typography variant="h6"> Info:</Typography>
-          <Typography variant="body1"> Age: {ballkid.age} </Typography>
-          <Typography variant="body1">
-            Years experience: {ballkid.num_years_experience}
-          </Typography>
-          <Typography variant="body1">Phone number: {ballkid.phone}</Typography>
-          <Typography variant="body1">
-            Emergency contact name: {ballkid.emergency_name}
-          </Typography>
-          <Typography variant="body1">
-            Emergency contact phone number: {ballkid.emergency_phone}
-          </Typography>
-
-          {renderPreferredPosition(ballkid, setUpdated, isMobile)}
-          <br />
-
-          {ballkid.is_cut || !ballkid.is_active ? (
-            ""
-          ) : (
-            <div>
-              <Typography variant="h6"> Current Info: </Typography>
-              {renderPosition(ballkid, setUpdated, isMobile)}
-              {renderTeam(ballkid, teams, setUpdated, isMobile)}
-              <br />
-            </div>
+          {ballkid.is_cut || !ballkid.is_active ? null : (
+            <ProfileCard title="Current tournament">
+              <ProfileInfoRow label="Assignment" stack>
+                {renderPosition(ballkid, setUpdated, isMobile)}
+                {renderTeam(ballkid, teams, setUpdated, isMobile)}
+              </ProfileInfoRow>
+            </ProfileCard>
           )}
 
-          {!ballkid.is_active ? (
-            ""
-          ) : (
-            <div>
-              <Typography variant="h6">Comments</Typography>
-              <Box className="sxs">
-                <Typography variant="body1"># of Tickets Used:</Typography>
-                <Typography variant="body1" sx={{ mx: 1 }}>
-                  {ballkid.num_tickets}
-                </Typography>
-                <IconButton
-                  disabled={ballkid.num_tickets === 0}
-                  size="small"
-                  sx={{ p: 0.5 }}
-                  onClick={(e) => {
-                    fetch("/api/update-ballkid", {
-                      method: "PATCH",
-                      headers: getAuthHeader(),
-                      body: JSON.stringify({
-                        first_name: ballkid.first_name,
-                        last_name: ballkid.last_name,
-                        num_tickets: ballkid.num_tickets - 1,
-                      }),
-                    })
-                      .then((response) => response.json())
-                      .then(() => setUpdated(true));
-                  }}
-                >
-                  <RemoveCircle />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  sx={{ p: 0.5 }}
-                  onClick={(e) => {
-                    fetch("/api/update-ballkid", {
-                      method: "PATCH",
-                      headers: getAuthHeader(),
-                      body: JSON.stringify({
-                        first_name: ballkid.first_name,
-                        last_name: ballkid.last_name,
-                        num_tickets: ballkid.num_tickets + 1,
-                      }),
-                    })
-                      .then((response) => response.json())
-                      .then(() => setUpdated(true));
-                  }}
-                >
-                  <AddCircle />
-                </IconButton>
-              </Box>
-              <DropdownComments
-                ballkid={ballkid}
-                commentType="last_day"
-                setSuccessMsg={setSuccessMsg}
-                setErrorMsg={setErrorMsg}
-              />
-              <DropdownComments
-                ballkid={ballkid}
-                commentType="checkout"
-                setSuccessMsg={setSuccessMsg}
-                setErrorMsg={setErrorMsg}
-              />
-              <Comments
-                ballkid={ballkid}
-                setSuccessMsg={setSuccessMsg}
-                setErrorMsg={setErrorMsg}
-              />
-            </div>
+          {!ballkid.is_active ? null : (
+            <ProfileCard title="Comments & tickets">
+              <ProfileInfoRow label="Tickets used">
+                <Box className="sxs" sx={{ alignItems: "center" }}>
+                  <span>{ballkid.num_tickets}</span>
+                  <IconButton
+                    disabled={ballkid.num_tickets === 0}
+                    size="small"
+                    sx={{ p: 0.5 }}
+                    onClick={() => {
+                      fetch("/api/update-ballkid", {
+                        method: "PATCH",
+                        headers: getAuthHeader(),
+                        body: JSON.stringify({
+                          first_name: ballkid.first_name,
+                          last_name: ballkid.last_name,
+                          num_tickets: ballkid.num_tickets - 1,
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then(() => setUpdated(true));
+                    }}
+                  >
+                    <RemoveCircle />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    sx={{ p: 0.5 }}
+                    onClick={() => {
+                      fetch("/api/update-ballkid", {
+                        method: "PATCH",
+                        headers: getAuthHeader(),
+                        body: JSON.stringify({
+                          first_name: ballkid.first_name,
+                          last_name: ballkid.last_name,
+                          num_tickets: ballkid.num_tickets + 1,
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then(() => setUpdated(true));
+                    }}
+                  >
+                    <AddCircle />
+                  </IconButton>
+                </Box>
+              </ProfileInfoRow>
+              <div className="ballkid-profile-card-body--padded">
+                <DropdownComments
+                  ballkid={ballkid}
+                  commentType="last_day"
+                  setSuccessMsg={setSuccessMsg}
+                  setErrorMsg={setErrorMsg}
+                />
+                <DropdownComments
+                  ballkid={ballkid}
+                  commentType="checkout"
+                  setSuccessMsg={setSuccessMsg}
+                  setErrorMsg={setErrorMsg}
+                />
+                <Comments
+                  ballkid={ballkid}
+                  setSuccessMsg={setSuccessMsg}
+                  setErrorMsg={setErrorMsg}
+                />
+              </div>
+            </ProfileCard>
           )}
-        </Grid>
-      </Grid>
-      <br />
+        </ProfilePanel>
 
-      {!ballkid.is_active ? (
-        ""
-      ) : (
-        <div>
-          <RatingSection ballkid={ballkid} />
+        {ballkid.is_active ? (
+          <>
+            <ProfilePanel id="ratings" active={tab}>
+              <RatingSection ballkid={ballkid} />
+            </ProfilePanel>
 
-          <Typography variant="h6" sx={MARGINS}>
-            Analytics:
-          </Typography>
+            <ProfilePanel id="analytics" active={tab}>
+              <ProfileCard title="Season stats">
+                <div className="ballkid-profile-card-body--padded ballkid-profile-season-stats">
+                  <AggregateMetrics pk={pk} />
+                </div>
+              </ProfileCard>
+              <ProfileCard title="Check-in history">
+                <div className="ballkid-profile-chart-wrap">
+                  <CheckinHistoryChart pk={pk} />
+                </div>
+              </ProfileCard>
+              <ProfileCard title="Court time">
+                <div className="ballkid-profile-chart-wrap">
+                  <CourtHistoryChart pk={pk} />
+                </div>
+              </ProfileCard>
+              <ProfileCard title="Time under each captain">
+                <div className="ballkid-profile-chart-wrap">
+                  <CaptainHistoryChart pk={pk} />
+                </div>
+              </ProfileCard>
+            </ProfilePanel>
 
-          <AggregateMetrics pk={pk} />
+            <ProfilePanel id="history" active={tab}>
+              <ProfileCard title="Finals history" padded>
+                <FinalsHistoryTable pk={pk} />
+              </ProfileCard>
+            </ProfilePanel>
+          </>
+        ) : null}
 
-          <Grid container>
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CheckinHistoryChart pk={pk} />
-            </Grid>
-
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CourtHistoryChart pk={pk} />
-            </Grid>
-
-            <Grid item xs={12} lg={5.5} sx={{ m: 2 }}>
-              <CaptainHistoryChart pk={pk} />
-            </Grid>
-
-            {/* <MatchHistoryChart histories={matches} /> */}
-          </Grid>
-        </div>
-      )}
-
-      <Grid container>
-        <FinalsHistoryTable pk={pk} />
-        {renderBallkidCutHistory(cuts)}
-      </Grid>
-    </div>
+        <ProfilePanel id="cuts" active={tab}>
+          <ProfileCard title="Previous years' cuts">
+            {cuts?.length ? (
+              renderBallkidCutHistory(cuts)
+            ) : (
+              <div className="ballkid-profile-empty">
+                No cut history to show.
+              </div>
+            )}
+          </ProfileCard>
+        </ProfilePanel>
+      </ProfileContent>
+    </ProfilePageShell>
   );
 }

@@ -6,10 +6,11 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 
-import { getAuthHeader, BallkidAndIcon, HelpIcon, Banners } from "../Utils";
+import { getAuthHeader, BallkidAndIcon, HelpIcon } from "../Utils";
 import { MATCH_TYPES, POSITIONS } from "../Consts";
-import { Box } from "@mui/material";
 import { finalsTeamsNonchairperson } from "../HelpMessages";
+import { TeamsPageShell } from "./TeamsPageLayout";
+import "./teams-pages.css";
 
 function Team({ team, assigned }) {
   return (
@@ -86,26 +87,25 @@ export default function FinalsTeamsPage(props) {
   }, []);
 
   return (
-    <div className="page">
-      <Banners />
-
-      <Box className="sxs" sx={{ mb: 1 }}>
-        <Typography variant="h4">Finals Teams</Typography>
-        &thinsp;
-        <HelpIcon page="Finals Teams" message={finalsTeamsNonchairperson} />
-      </Box>
+    <TeamsPageShell>
+      <header className="teams-page-header">
+        <div className="teams-page-title-row">
+          <h1 className="teams-page-title">Finals Teams</h1>
+          <HelpIcon page="Finals Teams" message={finalsTeamsNonchairperson} />
+        </div>
+      </header>
 
       {assigned.length > 0 && showFinalsTeams ? (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className="teams-grid">
           {teams.map((team) => (
             <Team key={team} team={team} assigned={assigned} />
           ))}
         </Grid>
       ) : (
-        <Typography variant="body1">
+        <p className="teams-empty">
           There are currently no finals teams assigned.
-        </Typography>
+        </p>
       )}
-    </div>
+    </TeamsPageShell>
   );
 }

@@ -12,7 +12,6 @@ import {
   filterBallkids,
   ConfirmDialog,
   DraggableBallkidAndIcon,
-  Banners,
 } from "../Utils";
 import { MARGINS, POSITIONS } from "../Consts";
 import {
@@ -21,6 +20,8 @@ import {
   renderCheckoutUnassignedButton,
   ActionsButtons,
 } from "./TeamsPageChairpersonUtils";
+import { TeamsPageShell } from "./TeamsPageLayout";
+import "./teams-pages.css";
 
 export function UnassignedDesktop({
   unassigned,
@@ -58,9 +59,10 @@ export function UnassignedDesktop({
   return (
     <Box
       component={Paper}
+      className="teams-panel"
       ref={dropRef}
-      elevation={isOver ? 10 : 1}
-      sx={{ pl: { xs: 0, sm: 3 }, ml: { xs: 0, sm: 3 }, pb: 2 }}
+      elevation={isOver ? 4 : 0}
+      sx={{ pl: { xs: 0, sm: 0 }, ml: { xs: 0, sm: 0 }, pb: 2 }}
     >
       <ConfirmDialog
         message={`You are about to check out all ${
@@ -75,23 +77,20 @@ export function UnassignedDesktop({
         setUpdated={setUpdated}
       />
 
-      <div className="justify">
-        <div className="sxs">
-          <Typography variant="h5" sx={MARGINS}>
-            Unassigned
-          </Typography>
-          &ensp;
-          <Typography variant="h6" sx={MARGINS}>
+      <div className="teams-section-header">
+        <h2 className="teams-section-title">
+          Unassigned
+          <span className="teams-section-count">
             ({filterBallkids(unassigned, searchKeyword, filterGroup).length})
-          </Typography>
-        </div>
+          </span>
+        </h2>
 
         {unassigned.length === 0 || isFinalsPage
           ? ""
           : renderCheckoutUnassignedButton(setOpen)}
       </div>
 
-      <div>
+      <div className="teams-toolbar-card">
         <SearchAndFilter
           setSearchKeyword={setSearchKeyword}
           filterGroup={filterGroup}
@@ -102,6 +101,7 @@ export function UnassignedDesktop({
               : ["rookie", "supervet", "captain", "chairperson"]
           }
         />
+      </div>
         {POSITIONS.map((position) => {
           const ballkids = filterBallkids(
             unassigned,
@@ -170,7 +170,6 @@ export function UnassignedDesktop({
             </div>
           );
         })}
-      </div>
     </Box>
   );
 }
@@ -211,17 +210,15 @@ export default function TeamsPageChairpersonDesktop(props) {
   }, [updated]);
 
   return (
-    <div className="page">
-      <Banners />
-
-      <Grid container className="justify-top">
+    <TeamsPageShell wide>
+      <Grid container className="justify-top teams-chairperson-layout">
         <Grid
           item
           sm={6}
           md={7}
           lg={8}
           xl={9}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
+          className="teams-chairperson-main"
         >
           <Header />
           <ActionsButtons
@@ -242,11 +239,11 @@ export default function TeamsPageChairpersonDesktop(props) {
           md={5}
           lg={4}
           xl={3}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
+          className="teams-chairperson-side"
         >
           <UnassignedDesktop unassigned={unassigned} setUpdated={setUpdated} />
         </Grid>
       </Grid>
-    </div>
+    </TeamsPageShell>
   );
 }

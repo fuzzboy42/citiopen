@@ -330,7 +330,7 @@ export function Teams({ assigned, teams, nextShifts, setUpdated }) {
   const isMobile = useIsMobile();
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} className="teams-grid">
       {teams.map((team) => (
         <Team
           key={team}
@@ -382,20 +382,20 @@ export function Header() {
         setErrorMsg={setErrorMsg}
       />
 
-      <Box className="justify" sx={{ mb: 1 }}>
-        <Box className="sxs">
-          <Typography variant="h4">Current Teams</Typography>
-          &thinsp;
+      <header className="teams-page-header">
+        <div className="teams-page-title-row">
+          <h1 className="teams-page-title">Current Teams</h1>
           <HelpIcon page="Teams" message={teams} />
-        </Box>
-
-        <HideShowToggle
-          teamType=""
-          defaultShow={tournament["show_teams"]}
-          setSuccessMsg={setSuccessMsg}
-          setErrorMsg={setErrorMsg}
-        />
-      </Box>
+        </div>
+        <div className="teams-page-header-actions">
+          <HideShowToggle
+            teamType=""
+            defaultShow={tournament["show_teams"]}
+            setSuccessMsg={setSuccessMsg}
+            setErrorMsg={setErrorMsg}
+          />
+        </div>
+      </header>
     </div>
   );
 }
@@ -504,7 +504,7 @@ export function ActionsButtons({ numAssigned, setUpdated }) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   return (
-    <div>
+    <div className="teams-actions-row">
       <CreateTeamsDialog
         open={teamsOpen}
         setOpen={setTeamsOpen}

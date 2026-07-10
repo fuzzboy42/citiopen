@@ -16,7 +16,6 @@ import {
   filterBallkids,
   ConfirmDialog,
   DraggableBallkidAndIcon,
-  Banners,
 } from "../Utils";
 import { MARGINS } from "../Consts";
 import {
@@ -25,6 +24,8 @@ import {
   renderCheckoutUnassignedButton,
   ActionsButtons,
 } from "./TeamsPageChairpersonUtils";
+import { TeamsPageShell } from "./TeamsPageLayout";
+import "./teams-pages.css";
 
 function renderAssignButton(
   ballkid,
@@ -88,16 +89,13 @@ export function UnassignedMobile({
         setUpdated={setUpdated}
       />
 
-      <div className="justify">
-        <div className="sxs">
-          <Typography variant="h5" sx={MARGINS}>
-            Unassigned
-          </Typography>
-          &ensp;
-          <Typography variant="h6" sx={MARGINS}>
+      <div className="teams-section-header">
+        <h2 className="teams-section-title">
+          Unassigned
+          <span className="teams-section-count">
             ({filterBallkids(unassigned, searchKeyword, filterGroup).length})
-          </Typography>
-        </div>
+          </span>
+        </h2>
 
         {unassigned.length === 0 || isFinalsPage
           ? ""
@@ -105,13 +103,14 @@ export function UnassignedMobile({
       </div>
 
       {unassigned.length === 0 ? (
-        <Typography variant="body1">
+        <p className="teams-empty">
           There are currently no {isFinalsPage ? "" : "checked in "}ballkids who
           are unassigned.
-        </Typography>
+        </p>
       ) : (
         <div>
-          <SearchAndFilter
+          <div className="teams-toolbar-card">
+            <SearchAndFilter
             setSearchKeyword={setSearchKeyword}
             filterGroup={filterGroup}
             setFilterGroup={setFilterGroup}
@@ -128,8 +127,9 @@ export function UnassignedMobile({
                   ]
             }
           />
+          </div>
 
-          <TableContainer component={Paper} elevation={1}>
+          <TableContainer component={Paper} elevation={0}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -220,9 +220,7 @@ export default function TeamsPageChairpersonMobile(props) {
   }, [updated]);
 
   return (
-    <div className="page">
-      <Banners />
-
+    <TeamsPageShell>
       <Header />
       <ActionsButtons numAssigned={assigned.length} setUpdated={setUpdated} />
       <Teams
@@ -236,6 +234,6 @@ export default function TeamsPageChairpersonMobile(props) {
         teams={teams}
         setUpdated={setUpdated}
       />
-    </div>
+    </TeamsPageShell>
   );
 }

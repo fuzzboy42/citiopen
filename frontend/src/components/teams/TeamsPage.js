@@ -12,11 +12,11 @@ import {
   isCurrentHour,
   BallkidAndIcon,
   HelpIcon,
-  Banners,
 } from "../Utils";
 import { ON_COURT_GREEN, POSITIONS } from "../Consts";
-import { Box } from "@mui/material";
 import { teamsNonchairperson } from "../HelpMessages";
+import { TeamsPageShell } from "./TeamsPageLayout";
+import "./teams-pages.css";
 
 function Team({ team, assigned, nextShifts }) {
   const isCurrentlyOn =
@@ -104,17 +104,16 @@ export default function TeamsPage(props) {
   }, []);
 
   return (
-    <div className="page">
-      <Banners />
-
-      <Box className="sxs" sx={{ mb: 1 }}>
-        <Typography variant="h4">Current Teams</Typography>
-        &thinsp;
-        <HelpIcon page="Teams" message={teamsNonchairperson} />
-      </Box>
+    <TeamsPageShell>
+      <header className="teams-page-header">
+        <div className="teams-page-title-row">
+          <h1 className="teams-page-title">Current Teams</h1>
+          <HelpIcon page="Teams" message={teamsNonchairperson} />
+        </div>
+      </header>
 
       {assigned.length > 0 && showTeams ? (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className="teams-grid">
           {teams.map((team) => (
             <Team
               key={team}
@@ -127,10 +126,10 @@ export default function TeamsPage(props) {
           ))}
         </Grid>
       ) : (
-        <Typography variant="body1">
+        <p className="teams-empty">
           There are currently no teams assigned.
-        </Typography>
+        </p>
       )}
-    </div>
+    </TeamsPageShell>
   );
 }

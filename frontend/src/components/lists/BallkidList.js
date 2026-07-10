@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from "react";
-
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   LayoutButtons,
@@ -15,6 +11,7 @@ import {
   Banners,
 } from "../Utils";
 import { list, listNonchairperson } from "../HelpMessages";
+import "./ballkid-list.css";
 
 export default function BallkidList(props) {
   const [ballkids, setBallkids] = useState([]);
@@ -34,62 +31,62 @@ export default function BallkidList(props) {
       );
   }, []);
 
+  const filtered = useMemo(
+    () => filterBallkids(ballkids, searchKeyword, filterGroup),
+    [ballkids, searchKeyword, filterGroup]
+  );
+
   return (
-    <div className="page">
+    <div className="page list-by-name-shell">
       <Banners />
 
-      <div className="justify">
-        <Box className="sxs" sx={{ mb: 1 }}>
-          <Typography variant="h4">List by Name</Typography>
-          &ensp;
-          <Typography variant="h6">
-            ({filterBallkids(ballkids, searchKeyword, filterGroup).length})
-          </Typography>
-          &thinsp;
-          <HelpIcon
-            page="List By Name"
-            message={group === "chairperson" ? list : listNonchairperson}
-          />
-        </Box>
+      <div className="list-by-name-page">
+        <header className="list-by-name-header">
+          <div className="list-by-name-title-row">
+            <h1 className="list-by-name-title">List by Name</h1>
+            <span className="list-by-name-count">{filtered.length}</span>
+            <HelpIcon
+              page="List By Name"
+              message={group === "chairperson" ? list : listNonchairperson}
+            />
+          </div>
+          {ballkids.length > 0 ? (
+            <LayoutButtons layout={layout} setLayout={setLayout} />
+          ) : null}
+        </header>
 
-        <LayoutButtons layout={layout} setLayout={setLayout} />
-      </div>
+        {ballkids.length === 0 ? (
+          <p className="list-by-name-empty">There are no ballkids to show.</p>
+        ) : (
+          <>
+            <div className="list-by-name-toolbar-card">
+              <SearchAndFilter
+                useGridItem={false}
+                setSearchKeyword={setSearchKeyword}
+                filterGroup={filterGroup}
+                setFilterGroup={setFilterGroup}
+                filters={group === "ballkid" ? filters : ["rookie", ...filters]}
+              />
+            </div>
 
-      {ballkids.length === 0 ? (
-        <Typography>There are no ballkids to show.</Typography>
-      ) : (
-        <Grid container spacing={layout === "grid" ? 2 : 1}>
-          <SearchAndFilter
-            setSearchKeyword={setSearchKeyword}
-            filterGroup={filterGroup}
-            setFilterGroup={setFilterGroup}
-            filters={group === "ballkid" ? filters : ["rookie", ...filters]}
-          />
-
-          {filterBallkids(ballkids, searchKeyword, filterGroup).map(
-            (ballkid) => (
-              <Grid
-                item
-                key={ballkid.id}
-                xs={layout === "grid" ? 6 : 12}
-                sm={layout === "grid" ? 4 : 12}
-                md={layout === "grid" ? 3 : 12}
-                lg={layout === "grid" ? 2 : 12}
-                xl={layout === "grid" ? 1 : 12}
-              >
+            <div
+              className={`list-by-name-cards layout-${layout}`}
+            >
+              {filtered.map((ballkid) => (
                 <BallkidCard
+                  key={ballkid.id}
                   ballkid={ballkid}
                   renderAdditional={
-                    <Typography variant="body2" color="text.secondary">
+                    <span className="list-by-name-position">
                       {ballkid.preferred_position}
-                    </Typography>
+                    </span>
                   }
                 />
-              </Grid>
-            )
-          )}
-        </Grid>
-      )}
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
