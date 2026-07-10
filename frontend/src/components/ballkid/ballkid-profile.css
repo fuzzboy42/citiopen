@@ -112,6 +112,78 @@
   min-width: 0;
 }
 
+.ballkid-profile-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ballkid-profile-hero-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.ballkid-profile-hero-menu {
+  flex-shrink: 0;
+  margin: -6px -8px 0 0;
+  line-height: 0;
+}
+
+.ballkid-profile-hero-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.ballkid-profile-hero-meta-pills .ballkid-profile-hero-pills {
+  margin-top: 0;
+}
+
+.ballkid-profile-checkin-toolbar {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ballkid-profile-hero-status {
+  margin-top: 0;
+  display: contents;
+}
+
+.ballkid-profile-hero-actions {
+  margin-top: 0;
+}
+
+.ballkid-profile-shell .ballkid-profile-checkin-btn {
+  min-width: 108px !important;
+  min-height: 34px !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.ballkid-profile-shell .ballkid-profile-checkin-btn--in {
+  background: var(--bp-success) !important;
+}
+
+.ballkid-profile-shell .ballkid-profile-checkin-btn--in:hover {
+  background: #166534 !important;
+}
+
+.ballkid-profile-shell .ballkid-profile-checkin-btn--out {
+  background: var(--bp-danger) !important;
+}
+
+.ballkid-profile-shell .ballkid-profile-checkin-btn--out:hover {
+  background: #b91c1c !important;
+}
+
 .ballkid-profile-hero-name-row {
   display: flex;
   flex-wrap: wrap;
@@ -177,12 +249,22 @@
   background: #eff6ff;
   color: #1d4ed8;
   border-color: #bfdbfe;
+  border-radius: 20px;
+  cursor: default;
 }
 
 .ballkid-profile-pill--back {
   background: #f0fdf4;
   color: #15803d;
   border-color: #bbf7d0;
+  border-radius: 20px;
+  cursor: default;
+}
+
+.ballkid-profile-hero-meta-pills .ballkid-profile-pill {
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 4px 11px;
 }
 
 .ballkid-profile-pill--rookie {
@@ -191,20 +273,8 @@
   border-color: #fed7aa;
 }
 
-.ballkid-profile-hero-status {
-  margin-top: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.ballkid-profile-hero-actions {
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
+.ballkid-profile-hero-meta-pills:empty {
+  display: none;
 }
 
 .ballkid-profile-status {

@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 import {
-  LayoutButtons,
   SearchAndFilter,
   filterBallkids,
   getAuthHeader,
   getLocalStorage,
   BallkidCard,
-  HelpIcon,
-  Banners,
 } from "../Utils";
 import { list, listNonchairperson } from "../HelpMessages";
-import "./ballkid-list.css";
+import {
+  ListPageShell,
+  ListPageHeader,
+  ListToolbarCard,
+  ListEmpty,
+} from "./ListPageLayout";
 
 export default function BallkidList(props) {
   const [ballkids, setBallkids] = useState([]);
@@ -37,41 +39,32 @@ export default function BallkidList(props) {
   );
 
   return (
-    <div className="page list-by-name-shell">
-      <Banners />
+    <ListPageShell>
+      <ListPageHeader
+        title="List by Name"
+        count={filtered.length}
+        helpPage="List By Name"
+        helpMessage={group === "chairperson" ? list : listNonchairperson}
+        layout={layout}
+        setLayout={setLayout}
+        showLayout={ballkids.length > 0}
+      />
 
-      <div className="list-by-name-page">
-        <header className="list-by-name-header">
-          <div className="list-by-name-title-row">
-            <h1 className="list-by-name-title">List by Name</h1>
-            <span className="list-by-name-count">{filtered.length}</span>
-            <HelpIcon
-              page="List By Name"
-              message={group === "chairperson" ? list : listNonchairperson}
+      {ballkids.length === 0 ? (
+        <ListEmpty>There are no ballkids to show.</ListEmpty>
+      ) : (
+        <>
+          <ListToolbarCard>
+            <SearchAndFilter
+              useGridItem={false}
+              setSearchKeyword={setSearchKeyword}
+              filterGroup={filterGroup}
+              setFilterGroup={setFilterGroup}
+              filters={group === "ballkid" ? filters : ["rookie", ...filters]}
             />
-          </div>
-          {ballkids.length > 0 ? (
-            <LayoutButtons layout={layout} setLayout={setLayout} />
-          ) : null}
-        </header>
+          </ListToolbarCard>
 
-        {ballkids.length === 0 ? (
-          <p className="list-by-name-empty">There are no ballkids to show.</p>
-        ) : (
-          <>
-            <div className="list-by-name-toolbar-card">
-              <SearchAndFilter
-                useGridItem={false}
-                setSearchKeyword={setSearchKeyword}
-                filterGroup={filterGroup}
-                setFilterGroup={setFilterGroup}
-                filters={group === "ballkid" ? filters : ["rookie", ...filters]}
-              />
-            </div>
-
-            <div
-              className={`list-by-name-cards layout-${layout}`}
-            >
+          <div className={`list-by-name-cards layout-${layout}`}>
               {filtered.map((ballkid) => (
                 <BallkidCard
                   key={ballkid.id}
@@ -86,7 +79,6 @@ export default function BallkidList(props) {
             </div>
           </>
         )}
-      </div>
-    </div>
+    </ListPageShell>
   );
 }

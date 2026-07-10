@@ -36,14 +36,11 @@ export const checkin = (
     designations (e.g. rookie, captain, chairperson, back, or net). To view
     pictures, view the list in Grid mode (as opposed to List mode).
     <br /> <br />
-    On desktop, a ballkid's last day and check-out time for today can be updated
-    and saved from the check-in page. All values default to "End" but need to be
-    confirmed by clicking on the check mark before their last day / check-out
-    time will be saved as such. Once saved, last day / check-out time comments
-    can be updated from the check-in page by double clicking on the dropdown,
-    updating the value, and saving by clicking the checkmark again. These values
-    can be updated on the individual ballkid page as well. Check-out time
-    comments will display for checked in ballkids in the "Checked In" section of
+    On desktop, a ballkid&apos;s last day and check-out time for today can be set
+    from the check-in page. Dropdowns default to &quot;End&quot; but are not stored
+    until you click <strong>Save</strong> (shown after you change a value). You can
+    also edit these on the individual ballkid page. Check-out time comments will
+    display for checked in ballkids in the "Checked In" section of
     the check-in page, as well as on the teams page. Ballkids with "End" saved
     will display "End," ballkids with no saved check-out time will not display
     anything, and ballkids with a check-out time saved will show that time

@@ -21,13 +21,12 @@ import {
   SearchAndFilter,
   ConfirmDialog,
   DraggableBallkidAndIcon,
-  HelpIcon,
-  Banners,
   Alerts,
   renderSwitch,
 } from "../Utils";
 import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
+import { ListPageShell, ListPageHeader } from "./ListPageLayout";
 
 export function CutStatusSection({
   section,
@@ -495,9 +494,7 @@ export default function CutPageDesktop(props) {
   }, [updated]);
 
   return (
-    <div className="page">
-      <Banners />
-
+    <ListPageShell>
       <Alerts
         successMsg={successMsg}
         errorMsg={errorMsg}
@@ -505,7 +502,26 @@ export default function CutPageDesktop(props) {
         setErrorMsg={setErrorMsg}
       />
 
-      <Grid container className="justify-top">
+      <ListPageHeader
+        title="Cut Page"
+        count={active.length}
+        helpPage="Cut"
+        helpMessage={cut}
+        showLayout={false}
+        trailing={
+          <Box className="sxs" sx={{ flexWrap: "wrap", gap: 1 }}>
+            {renderCopyButtons(active, emails, setSuccessMsg)}
+            {renderSwitch(
+              showHovercard,
+              setShowHovercard,
+              "Disable Hovercard",
+              "Enable Hovercard"
+            )}
+          </Box>
+        }
+      />
+
+      <Grid container className="justify-top list-by-name-cut-layout">
         <Grid
           item
           sm={6}
@@ -514,23 +530,6 @@ export default function CutPageDesktop(props) {
           xl={8}
           style={{ maxHeight: "85vh", overflow: "auto" }}
         >
-          <Box className="justify-top">
-            <Box className="sxs" sx={{ mb: 1 }}>
-              <Typography variant="h4">Cut Page</Typography>
-              &thinsp;
-              <HelpIcon page="Cut" message={cut} />
-            </Box>
-
-            {renderCopyButtons(active, emails, setSuccessMsg)}
-          </Box>
-
-          {renderSwitch(
-            showHovercard,
-            setShowHovercard,
-            "Disable Hovercard",
-            "Enable Hovercard"
-          )}
-
           <Grid container spacing={2}>
             {sections.map((section) => (
               <CutStatusSection
@@ -567,6 +566,6 @@ export default function CutPageDesktop(props) {
           />
         </Grid>
       </Grid>
-    </div>
+    </ListPageShell>
   );
 }

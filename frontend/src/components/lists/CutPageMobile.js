@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -10,24 +9,28 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
 
 import {
   filterBallkids,
   getAuthHeader,
   SearchAndFilter,
   DraggableBallkidAndIcon,
-  HelpIcon,
   Alerts,
-  Banners,
 } from "../Utils";
 import {
   SelfCutCard,
   renderCopyButtons,
   CutStatusSection,
 } from "./CutPageDesktop";
-import { CUT_STATUSES, MARGINS } from "../Consts";
+import { CUT_STATUSES } from "../Consts";
 import { cut } from "../HelpMessages";
+import {
+  ListPageShell,
+  ListPageHeader,
+  ListToolbarCard,
+  ListSection,
+  ListEmpty,
+} from "./ListPageLayout";
 
 function renderAssignCutButton(ballkid, section, setUpdated) {
   var color;
@@ -74,22 +77,27 @@ function renderAssignCutButton(ballkid, section, setUpdated) {
   );
 }
 
-function ActiveSection({ active, sections, setUpdated }) {
+function ActiveSection({ active, sections, setUpdated, hideHeader }) {
+  const uncategorized = active.filter((ballkid) => ballkid.cut_status === "");
+
   return (
     <div>
-      <div className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Active Ballkids
-        </Typography>
-        &ensp;
-        <Typography variant="h6" sx={MARGINS}>
-          ({active.filter((ballkid) => ballkid.cut_status === "").length})
-        </Typography>
-      </div>
+      {!hideHeader ? (
+        <div className="list-by-name-section-header">
+          <div className="list-by-name-section-title-row">
+            <h2 className="list-by-name-section-title">Active Ballkids</h2>
+            <span className="list-by-name-section-count">
+              {uncategorized.length}
+            </span>
+          </div>
+        </div>
+      ) : null}
       {active.length === 0 ? (
-        <Typography>
+        <ListEmpty>
           There are currently no active ballkids left to categorize.
-        </Typography>
+        </ListEmpty>
+      ) : uncategorized.length === 0 ? (
+        <ListEmpty>All active ballkids have been categorized.</ListEmpty>
       ) : (
         <TableContainer component={Paper} elevation={1}>
           <Table>
@@ -101,10 +109,7 @@ function ActiveSection({ active, sections, setUpdated }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {active.map((ballkid) =>
-                ballkid.cut_status !== "" ? (
-                  ""
-                ) : (
+              {uncategorized.map((ballkid) => (
                   <TableRow key={ballkid.id}>
                     <TableCell component="th" scope="row">
                       <DraggableBallkidAndIcon
@@ -119,8 +124,7 @@ function ActiveSection({ active, sections, setUpdated }) {
                       )}
                     </TableCell>
                   </TableRow>
-                )
-              )}
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -157,10 +161,13 @@ export default function CutPageMobile() {
       .then(() => setUpdated(false));
   }, [updated]);
 
-  return (
-    <div className="page">
-      <Banners />
+  const filteredActive = filterBallkids(active, searchKeyword, filterGroup);
+  const uncategorizedCount = filteredActive.filter(
+    (ballkid) => ballkid.cut_status === ""
+  ).length;
 
+  return (
+    <ListPageShell>
       <Alerts
         successMsg={successMsg}
         errorMsg={errorMsg}
@@ -168,16 +175,16 @@ export default function CutPageMobile() {
         setErrorMsg={setErrorMsg}
       />
 
-      <Box className="justify">
-        <Box className="sxs" sx={{ mb: 1 }}>
-          <Typography variant="h4">Cut Page</Typography>
-          &thinsp;
-          <HelpIcon page="Cut" message={cut} />
-        </Box>
-        {renderCopyButtons(active, emails, setSuccessMsg)}
-      </Box>
+      <ListPageHeader
+        title="Cut Page"
+        count={active.length}
+        helpPage="Cut"
+        helpMessage={cut}
+        showLayout={false}
+        trailing={renderCopyButtons(active, emails, setSuccessMsg)}
+      />
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className="list-by-name-cut-grid">
         {sections.map((section) => (
           <CutStatusSection
             key={section}
@@ -190,18 +197,24 @@ export default function CutPageMobile() {
         <SelfCutCard updated={updated} setUpdated={setUpdated} />
       </Grid>
 
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
-        filters={["rookie", "supervet", "captain", "back", "net"]}
-      />
+      <ListToolbarCard>
+        <SearchAndFilter
+          useGridItem={false}
+          setSearchKeyword={setSearchKeyword}
+          filterGroup={filterGroup}
+          setFilterGroup={setFilterGroup}
+          filters={["rookie", "supervet", "captain", "back", "net"]}
+        />
+      </ListToolbarCard>
 
-      <ActiveSection
-        active={filterBallkids(active, searchKeyword, filterGroup)}
-        sections={sections}
-        setUpdated={setUpdated}
-      />
-    </div>
+      <ListSection title="Active Ballkids" count={uncategorizedCount}>
+        <ActiveSection
+          active={filteredActive}
+          sections={sections}
+          setUpdated={setUpdated}
+          hideHeader
+        />
+      </ListSection>
+    </ListPageShell>
   );
 }

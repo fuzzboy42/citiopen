@@ -84,7 +84,7 @@ const CHAIR_TABS = [
   { id: "cuts", label: "Previous cuts" },
 ];
 
-function profileHeaderStatus(ballkid, setUpdated, isMobile) {
+function profileHeaderStatus(ballkid, setUpdated, setErrorMsg, setSuccessMsg) {
   if (ballkid.is_cut) {
     return (
       <span className="ballkid-profile-status ballkid-profile-status--cut">
@@ -103,7 +103,8 @@ function profileHeaderStatus(ballkid, setUpdated, isMobile) {
     <CheckinSection
       ballkid={ballkid}
       setUpdated={setUpdated}
-      isMobile={isMobile}
+      setErrorMsg={setErrorMsg}
+      setSuccessMsg={setSuccessMsg}
     />
   );
 }
@@ -116,48 +117,71 @@ function profileOverflowMenu(ballkid, setUpdated) {
   );
 }
 
-function CheckinSection({ ballkid, setUpdated, isMobile }) {
+function CheckinSection({ ballkid, setUpdated, setErrorMsg, setSuccessMsg }) {
   const [loading, setLoading] = useState(false);
+  const checkedIn = ballkid.is_checked_in;
+
+  const toggleCheckin = () => {
+    setLoading(true);
+    setErrorMsg("");
+    fetch("/api/update-ballkid", {
+      method: "PATCH",
+      headers: getAuthHeader(),
+      body: JSON.stringify({
+        first_name: ballkid.first_name,
+        last_name: ballkid.last_name,
+        is_checked_in: !checkedIn,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((body) => {
+            throw new Error(body || String(response.status));
+          });
+        }
+        return response.json();
+      })
+      .then(() => {
+        setSuccessMsg(
+          checkedIn ? "Checked out successfully." : "Checked in successfully."
+        );
+        setUpdated(true);
+      })
+      .catch(() => {
+        setErrorMsg(
+          "Could not update check-in. For local dev, run: python manage.py create_dev_user"
+        );
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
-    <Box
-      textAlign={isMobile ? "center" : "right"}
-      sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: isMobile ? "stretch" : "flex-end" }}
-    >
+    <div className="ballkid-profile-checkin-toolbar">
       <span
         className={
-          ballkid.is_checked_in
+          checkedIn
             ? "ballkid-profile-status ballkid-profile-status--in"
             : "ballkid-profile-status ballkid-profile-status--out"
         }
       >
-        {ballkid.is_checked_in ? "Checked in" : "Checked out"}
+        {checkedIn ? "Checked in" : "Checked out"}
       </span>
       <LoadingButton
-        variant="outlined"
+        type="button"
+        size="small"
+        className={`ballkid-profile-checkin-btn${
+          checkedIn
+            ? " ballkid-profile-checkin-btn--out"
+            : " ballkid-profile-checkin-btn--in"
+        }`}
+        variant="contained"
         loading={loading}
-        color={ballkid.is_checked_in ? "error" : "success"}
-        onClick={(e) => {
-          setLoading(true);
-          fetch("/api/update-ballkid", {
-            method: "PATCH",
-            headers: getAuthHeader(),
-            body: JSON.stringify({
-              first_name: ballkid.first_name,
-              last_name: ballkid.last_name,
-              is_checked_in: ballkid.is_checked_in ? false : true,
-            }),
-          })
-            .then((response) => response.json())
-            .then(() => {
-              setUpdated(true);
-              setLoading(false);
-            });
-        }}
+        color={checkedIn ? "error" : "success"}
+        onClick={toggleCheckin}
       >
-        {ballkid.is_checked_in ? "Check Out" : "Check In"}
+        {checkedIn ? "Check out" : "Check in"}
       </LoadingButton>
-    </Box>
+    </div>
   );
 }
 
@@ -1306,7 +1330,12 @@ export default function BallkidPageChairperson(props) {
       <ProfileBrandedHero
         ballkid={ballkid}
         nameExtra={profileOverflowMenu(ballkid, setUpdated)}
-        status={profileHeaderStatus(ballkid, setUpdated, isMobile)}
+        status={profileHeaderStatus(
+          ballkid,
+          setUpdated,
+          setErrorMsg,
+          setSuccessMsg
+        )}
       />
 
       <ProfileTabs tabs={visibleTabs} active={tab} onChange={setTab} />

@@ -23,13 +23,12 @@ import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
 
 import {
   getAuthHeader,
-  Banners,
   useIsMobile,
-  HelpIcon,
   BallkidLink,
 } from "../Utils";
 import { ticketsPage } from "../HelpMessages";
 import { TICKET_LIMIT, TICKET_SESSIONS } from "../Consts";
+import { ListPageShell, ListPageHeader } from "./ListPageLayout";
 
 function Ticket({ ticket, ticketRepr, setUpdated }) {
   const ticketDict = {
@@ -327,16 +326,16 @@ export default function TicketsPageDesktop(props) {
   }, [updated]);
 
   return (
-    <div className="page">
-      <Banners />
-
-      <Box className="sxs" sx={{ mb: 1 }}>
-        <Typography variant="h4">Tournament Tickets</Typography>
-        &thinsp;
-        <HelpIcon page="Tournament Tickets" message={ticketsPage} />
-      </Box>
+    <ListPageShell>
+      <ListPageHeader
+        title="Tournament Tickets"
+        count={tickets.length}
+        helpPage="Tournament Tickets"
+        helpMessage={ticketsPage}
+        showLayout={false}
+      />
 
       <Sessions tickets={tickets} setUpdated={setUpdated} />
-    </div>
+    </ListPageShell>
   );
 }

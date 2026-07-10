@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
 
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 import {
-  LayoutButtons,
   getAuthHeader,
   getLocalStorage,
   SearchAndFilter,
   filterBallkids,
   BallkidCard,
-  HelpIcon,
-  Banners,
 } from "../Utils";
-import { MARGINS } from "../Consts";
 import { inactive } from "../HelpMessages";
+import {
+  ListPageShell,
+  ListPageHeader,
+  ListToolbarCard,
+  ListSection,
+  ListCards,
+  ListEmpty,
+} from "./ListPageLayout";
 
 function renderUnarchiveButton(ballkid, setUpdated) {
   return (
@@ -76,35 +78,28 @@ function renderUncutButton(ballkid, setUpdated) {
 }
 
 function renderBallkids(ballkids, section, layout, setUpdated) {
-  return ballkids.length === 0 ? (
-    <Typography variant="body1">
-      There are currently no {section} ballkids.
-    </Typography>
-  ) : (
-    <Grid container spacing={layout === "grid" ? 2 : 1}>
+  if (ballkids.length === 0) {
+    return (
+      <ListEmpty>There are currently no {section} ballkids.</ListEmpty>
+    );
+  }
+
+  return (
+    <ListCards layout={layout}>
       {ballkids.map((ballkid) => (
-        <Grid
-          item
+        <BallkidCard
           key={ballkid.id}
-          xs={layout === "grid" ? 6 : 12}
-          sm={layout === "grid" ? 4 : 12}
-          md={layout === "grid" ? 3 : 12}
-          lg={layout === "grid" ? 2 : 12}
-          xl={layout === "grid" ? 1 : 12}
-        >
-          <BallkidCard
-            ballkid={ballkid}
-            renderAdditional={
-              <Box textAlign="center" sx={{ mt: layout === "grid" ? 1 : 0 }}>
-                {section === "cut"
-                  ? renderUncutButton(ballkid, setUpdated)
-                  : renderUnarchiveButton(ballkid, setUpdated)}
-              </Box>
-            }
-          />
-        </Grid>
+          ballkid={ballkid}
+          renderAdditional={
+            <Box className="list-by-name-card-actions" textAlign="center">
+              {section === "cut"
+                ? renderUncutButton(ballkid, setUpdated)
+                : renderUnarchiveButton(ballkid, setUpdated)}
+            </Box>
+          }
+        />
       ))}
-    </Grid>
+    </ListCards>
   );
 }
 
@@ -131,59 +126,45 @@ export default function InactiveBallkidList(props) {
       .then(() => setUpdated(false));
   }, [updated]);
 
+  const filteredCut = filterBallkids(cut, searchKeyword, filterGroup);
+  const filteredArchived = filterBallkids(archived, searchKeyword, filterGroup);
+  const total = archived.length + cut.length;
+  const totalVisible = filteredCut.length + filteredArchived.length;
+
   return (
-    <div className="page">
-      <Banners />
-
-      <div className="justify">
-        <Box className="sxs" sx={{ mb: 1 }}>
-          <Typography variant="h4">Inactive</Typography>
-          &thinsp;
-          <HelpIcon page="Inactive" message={inactive} />
-        </Box>
-
-        <LayoutButtons layout={layout} setLayout={setLayout} />
-      </div>
-
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
+    <ListPageShell>
+      <ListPageHeader
+        title="Inactive"
+        count={totalVisible}
+        helpPage="Inactive"
+        helpMessage={inactive}
+        layout={layout}
+        setLayout={setLayout}
+        showLayout={total > 0}
       />
 
-      <Grid item className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Cut Ballkids
-        </Typography>
-        &ensp;
-        <Typography variant="h6" sx={MARGINS}>
-          ({filterBallkids(cut, searchKeyword, filterGroup).length})
-        </Typography>
-      </Grid>
+      {total === 0 ? (
+        <ListEmpty>There are no inactive ballkids to show.</ListEmpty>
+      ) : (
+        <>
+          <ListToolbarCard>
+            <SearchAndFilter
+              useGridItem={false}
+              setSearchKeyword={setSearchKeyword}
+              filterGroup={filterGroup}
+              setFilterGroup={setFilterGroup}
+            />
+          </ListToolbarCard>
 
-      {renderBallkids(
-        filterBallkids(cut, searchKeyword, filterGroup),
-        "cut",
-        layout,
-        setUpdated
+          <ListSection title="Cut Ballkids" count={filteredCut.length}>
+            {renderBallkids(filteredCut, "cut", layout, setUpdated)}
+          </ListSection>
+
+          <ListSection title="Archived Ballkids" count={filteredArchived.length}>
+            {renderBallkids(filteredArchived, "archived", layout, setUpdated)}
+          </ListSection>
+        </>
       )}
-
-      <Grid item className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Archived Ballkids
-        </Typography>
-        &ensp;
-        <Typography variant="h6" sx={MARGINS}>
-          ({filterBallkids(archived, searchKeyword, filterGroup).length})
-        </Typography>
-      </Grid>
-
-      {renderBallkids(
-        filterBallkids(archived, searchKeyword, filterGroup),
-        "archived",
-        layout,
-        setUpdated
-      )}
-    </div>
+    </ListPageShell>
   );
 }

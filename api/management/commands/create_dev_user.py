@@ -3,6 +3,8 @@ from django.core.management.base import BaseCommand
 from rest_framework.authtoken.models import Token
 
 from api.models.ballkid import Ballkid
+from api.models.schedule import Tournament
+from api.utils.utils import get_current_year
 
 
 class Command(BaseCommand):
@@ -84,6 +86,14 @@ class Command(BaseCommand):
         ballkid.is_captain = group_name == "captain"
         ballkid.is_active = True
         ballkid.save()
+
+        Tournament.objects.get_or_create(
+            year=get_current_year(),
+            defaults={
+                "show_teams": False,
+                "show_finals_teams": False,
+            },
+        )
 
         token, _ = Token.objects.get_or_create(user=user)
 

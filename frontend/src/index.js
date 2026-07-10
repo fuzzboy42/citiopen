@@ -16,6 +16,30 @@ const theme = createTheme({
       '"Segoe UI"',
       "sans-serif",
     ].join(","),
+    button: {
+      textTransform: "none",
+      fontWeight: 500,
+      letterSpacing: "-0.01em",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          letterSpacing: "-0.01em",
+        },
+      },
+    },
+    MuiLoadingButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          letterSpacing: "-0.01em",
+          fontWeight: 500,
+        },
+      },
+    },
   },
 });
 

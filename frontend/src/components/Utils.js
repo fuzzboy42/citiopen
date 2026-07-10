@@ -697,19 +697,65 @@ export function BallkidLink({ id, name }) {
   );
 }
 
-export function BallkidCard({ ballkid, renderAdditional }) {
+export function BallkidCard({
+  ballkid,
+  renderAdditional,
+  actionsOutsideLink = false,
+}) {
   const layout = getLocalStorage("layout") ?? "list";
+  const profileTo =
+    ballkid.id === getLocalStorage("ballkid_id")
+      ? "/me"
+      : `/ballkid/${ballkid.id}`;
+
+  const nameRow = (
+    <div className={layout === "grid" ? "justify" : "sxs"}>
+      <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
+        {ballkid.first_name} {ballkid.last_name}
+      </Typography>
+      &thinsp;
+      <Icons ballkid={ballkid} margin={0} />
+    </div>
+  );
+
+  if (actionsOutsideLink) {
+    return (
+      <Card>
+        {layout === "list" ? (
+          ""
+        ) : (
+          <CardActionArea component={RouterLink} to={profileTo}>
+            <SquarePhotoFrame>
+              <CardMedia
+                component="img"
+                image={ballkidImageSrc(ballkid.image)}
+                sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </SquarePhotoFrame>
+          </CardActionArea>
+        )}
+        <CardContent>
+          <div className={layout === "grid" ? "" : "justify"}>
+            <CardActionArea
+              component={RouterLink}
+              to={profileTo}
+              sx={{
+                flex: layout === "list" ? "0 1 auto" : undefined,
+                alignSelf: layout === "list" ? "center" : undefined,
+              }}
+            >
+              {nameRow}
+            </CardActionArea>
+            {renderAdditional}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
-      <CardActionArea
-        component={RouterLink}
-        to={
-          ballkid.id === getLocalStorage("ballkid_id")
-            ? "/me"
-            : `/ballkid/${ballkid.id}`
-        }
-      >
+      <CardActionArea component={RouterLink} to={profileTo}>
         {layout === "list" ? (
           ""
         ) : (
@@ -723,13 +769,7 @@ export function BallkidCard({ ballkid, renderAdditional }) {
         )}
         <CardContent>
           <div className={layout === "grid" ? "" : "justify"}>
-            <div className={layout === "grid" ? "justify" : "sxs"}>
-              <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
-                {ballkid.first_name} {ballkid.last_name}
-              </Typography>
-              &thinsp;
-              <Icons ballkid={ballkid} margin={0} />
-            </div>
+            {nameRow}
             {renderAdditional}
           </div>
         </CardContent>

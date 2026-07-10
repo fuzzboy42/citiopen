@@ -59,6 +59,7 @@ export function ProfilePositionPills({ preferred, current }) {
           <span
             key={pos}
             className={`ballkid-profile-pill ${variant}`}
+            title={`Position: ${pos}`}
           >
             {pos}
           </span>
@@ -166,21 +167,31 @@ export function ProfileBrandedHero({
           image={ballkid.image}
         />
         <div className="ballkid-profile-hero-body">
-          <div className="ballkid-profile-hero-name-row">
-            <h1 className="ballkid-profile-hero-name">{name}</h1>
-            <ProfileRolePills ballkid={ballkid} />
-            {nameExtra}
+          <div className="ballkid-profile-hero-top">
+            <div className="ballkid-profile-hero-title-block">
+              <div className="ballkid-profile-hero-name-row">
+                <h1 className="ballkid-profile-hero-name">{name}</h1>
+                <ProfileRolePills ballkid={ballkid} />
+              </div>
+            </div>
+            {nameExtra ? (
+              <div className="ballkid-profile-hero-menu">{nameExtra}</div>
+            ) : null}
           </div>
-          <ProfilePositionPills
-            preferred={ballkid.preferred_position}
-            current={showCurrentPosition ? ballkid.position : null}
-          />
-          {status ? (
-            <div className="ballkid-profile-hero-status">{status}</div>
-          ) : null}
-          {actions ? (
-            <div className="ballkid-profile-hero-actions">{actions}</div>
-          ) : null}
+          <div className="ballkid-profile-hero-meta">
+            <div className="ballkid-profile-hero-meta-pills">
+              <ProfilePositionPills
+                preferred={ballkid.preferred_position}
+                current={showCurrentPosition ? ballkid.position : null}
+              />
+            </div>
+            {status ? (
+              <div className="ballkid-profile-hero-status">{status}</div>
+            ) : null}
+            {actions ? (
+              <div className="ballkid-profile-hero-actions">{actions}</div>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

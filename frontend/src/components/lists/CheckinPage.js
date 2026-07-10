@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from "react";
 
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
-import Done from "@mui/icons-material/Done";
-
 import {
-  LayoutButtons,
   getAuthHeader,
   getLocalStorage,
   SearchAndFilter,
   filterBallkids,
   ConfirmDialog,
   BallkidCard,
-  HelpIcon,
   useIsMobile,
-  Banners,
   CommentsText,
 } from "../Utils";
-import { CHECKOUT_OPTIONS, LAST_DAY_OPTIONS, MARGINS } from "../Consts";
+import { CHECKOUT_OPTIONS, LAST_DAY_OPTIONS } from "../Consts";
 import { checkin } from "../HelpMessages";
-import { IconButton, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
+import {
+  ListPageShell,
+  ListPageHeader,
+  ListToolbarCard,
+  ListSection,
+  ListCards,
+  ListEmpty,
+} from "./ListPageLayout";
 
 function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
   const checkinString = isCheckedIn ? "Check Out" : "Check In";
@@ -36,15 +37,15 @@ function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
 
   return (
     <LoadingButton
+      className="list-by-name-checkin-cta"
       variant="outlined"
       loading={loading}
       color={color}
       size="small"
-      onMouseDown={(e) => e.stopPropagation()}
+      onMouseDown={isolatePointer}
       onClick={(e) => {
         setLoading(true);
-        e.stopPropagation();
-        e.preventDefault();
+        isolatePointer(e);
         fetch("/api/update-ballkid", {
           method: "PATCH",
           headers: getAuthHeader(),
@@ -66,199 +67,214 @@ function CheckinButton({ ballkid, isCheckedIn, setUpdated }) {
   );
 }
 
-function CheckoutComments({ ballkid, layout, setUpdated }) {
-  const [comments, setComments] = useState(ballkid.checkout_comments ?? "End");
-  const [disabled, setDisabled] = useState(
-    ballkid.checkout_comments !== "" && ballkid.checkout_comments !== null
-  );
+function isolatePointer(e) {
+  e.stopPropagation();
+}
 
+function fieldIsPersisted(raw) {
+  return raw !== "" && raw !== null && raw !== undefined;
+}
+
+function CheckinSelectField({
+  label,
+  rawValue,
+  options,
+  minWidth = 128,
+  ballkid,
+  apiField,
+  setUpdated,
+}) {
+  const serverDisplay = rawValue ?? "End";
+  const [value, setValue] = useState(serverDisplay);
+  const [savedValue, setSavedValue] = useState(() =>
+    fieldIsPersisted(rawValue) ? serverDisplay : null
+  );
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const next = rawValue ?? "End";
+    setValue(next);
+    if (fieldIsPersisted(rawValue)) {
+      setSavedValue(next);
+    }
+  }, [rawValue, ballkid.id]);
+
+  const isDirty = savedValue === null || value !== savedValue;
+
+  const persist = () => {
+    setLoading(true);
+    fetch("/api/update-ballkid", {
+      method: "PATCH",
+      headers: getAuthHeader(),
+      body: JSON.stringify({
+        first_name: ballkid.first_name,
+        last_name: ballkid.last_name,
+        [apiField]: value,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Save failed");
+        }
+        return response.json();
+      })
+      .then(() => {
+        setSavedValue(value);
+        setUpdated(true);
+      })
+      .catch(() => {
+        window.alert(`Could not save ${label.toLowerCase()}. Please try again.`);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div
+      className="list-by-name-checkin-field"
+      onMouseDown={isolatePointer}
+    >
+      <span className="list-by-name-checkin-field-label">{label}</span>
+      <div className="list-by-name-checkin-field-row">
+        <TextField
+          select
+          size="small"
+          variant="outlined"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onMouseDown={isolatePointer}
+          className="list-by-name-checkin-select"
+          sx={{ minWidth, flex: "1 1 auto" }}
+          SelectProps={{
+            MenuProps: {
+              PaperProps: { className: "list-by-name-checkin-menu-paper" },
+            },
+          }}
+        >
+          {options.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+        {isDirty ? (
+          <LoadingButton
+            type="button"
+            size="small"
+            variant="contained"
+            className="list-by-name-checkin-save-btn"
+            loading={loading}
+            onMouseDown={isolatePointer}
+            onClick={(e) => {
+              e.preventDefault();
+              isolatePointer(e);
+              persist();
+            }}
+          >
+            Save
+          </LoadingButton>
+        ) : (
+          <Button
+            type="button"
+            size="small"
+            variant="contained"
+            disabled
+            className="list-by-name-checkin-saved-btn"
+            onMouseDown={isolatePointer}
+          >
+            Saved
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CheckoutComments({ ballkid, layout, setUpdated }) {
   return useIsMobile() ? (
     ""
   ) : ballkid.is_checked_in ? (
     <CommentsText ballkid={ballkid} commentType="checkout" layout={layout} />
   ) : (
-    <Box
-      className="sxs"
-      sx={{ mr: layout === "grid" ? 0 : 3, mt: layout === "grid" ? 1 : 0 }}
-    >
-      <Typography>Check-out Time:</Typography>
-      &thinsp;
-      <TextField
-        select
-        value={comments}
-        disabled={disabled}
-        variant="standard"
-        sx={{ mx: 0.5 }}
-        style={{ minWidth: 75 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
-        onChange={(e) => setComments(e.target.value)}
-        onDoubleClick={() => setDisabled(false)}
-      >
-        {CHECKOUT_OPTIONS.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
-      </TextField>
-      <IconButton
-        variant="outlined"
-        size="small"
-        color="primary"
-        disabled={disabled}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          setDisabled(true);
-          e.stopPropagation();
-          e.preventDefault();
-
-          fetch("/api/update-ballkid", {
-            method: "PATCH",
-            headers: getAuthHeader(),
-            body: JSON.stringify({
-              first_name: ballkid.first_name,
-              last_name: ballkid.last_name,
-              checkout_comments: comments,
-            }),
-          })
-            .then((response) => response.json())
-            .then(() => setUpdated(true));
-        }}
-      >
-        <Done />
-      </IconButton>
-    </Box>
+    <CheckinSelectField
+      label="Check-out time"
+      rawValue={ballkid.checkout_comments}
+      options={CHECKOUT_OPTIONS}
+      minWidth={108}
+      ballkid={ballkid}
+      apiField="checkout_comments"
+      setUpdated={setUpdated}
+    />
   );
 }
 
 function LastDayComments({ ballkid, layout, setUpdated }) {
-  const [comments, setComments] = useState(ballkid.last_day ?? "End");
-  const [disabled, setDisabled] = useState(
-    ballkid.last_day !== "" && ballkid.last_day !== null
-  );
-
   return useIsMobile() || ballkid.is_checked_in ? (
     ""
   ) : (
-    <Box
-      className="sxs"
-      sx={{ mr: layout === "grid" ? 0 : 3, mt: layout === "grid" ? 1 : 0 }}
-    >
-      <Typography>Last Day:</Typography>
-      &thinsp;
-      <TextField
-        select
-        value={comments}
-        disabled={disabled}
-        variant="standard"
-        sx={{ mx: 0.5 }}
-        style={{ minWidth: 115 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
-        onChange={(e) => setComments(e.target.value)}
-        onDoubleClick={() => setDisabled(false)}
-      >
-        {LAST_DAY_OPTIONS.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
-      </TextField>
-      <IconButton
-        variant="outlined"
-        size="small"
-        color="primary"
-        disabled={disabled}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          setDisabled(true);
-          e.stopPropagation();
-          e.preventDefault();
-
-          fetch("/api/update-ballkid", {
-            method: "PATCH",
-            headers: getAuthHeader(),
-            body: JSON.stringify({
-              first_name: ballkid.first_name,
-              last_name: ballkid.last_name,
-              last_day: comments,
-            }),
-          })
-            .then((response) => response.json())
-            .then(() => setUpdated(true));
-        }}
-      >
-        <Done />
-      </IconButton>
-    </Box>
+    <CheckinSelectField
+      label="Last day"
+      rawValue={ballkid.last_day}
+      options={LAST_DAY_OPTIONS}
+      minWidth={132}
+      ballkid={ballkid}
+      apiField="last_day"
+      setUpdated={setUpdated}
+    />
   );
 }
 
 function renderBallkids(ballkids, isCheckedIn, layout, setUpdated) {
-  return ballkids.length === 0 ? (
-    <Typography variant="body1">
-      {isCheckedIn
-        ? "There are currently no ballkids checked in."
-        : "There are currently no ballkids checked out."}
-    </Typography>
-  ) : (
-    <Grid container spacing={layout === "grid" ? 2 : 1}>
+  if (ballkids.length === 0) {
+    return (
+      <ListEmpty>
+        {isCheckedIn
+          ? "There are currently no ballkids checked in."
+          : "There are currently no ballkids checked out."}
+      </ListEmpty>
+    );
+  }
+
+  return (
+    <ListCards layout={layout}>
       {ballkids.map((ballkid) => (
-        <Grid
-          item
+        <BallkidCard
           key={ballkid.id}
-          xs={layout === "grid" ? 6 : 12}
-          sm={layout === "grid" ? 4 : 12}
-          md={layout === "grid" ? 3 : 12}
-          lg={layout === "grid" ? 2 : 12}
-          xl={layout === "grid" ? 1 : 12}
-        >
-          <BallkidCard
-            ballkid={ballkid}
-            renderAdditional={
-              <Box
-                className={layout === "grid" ? "" : "sxs"}
-                textAlign="center"
-                sx={{ mt: layout === "grid" ? 1 : 0 }}
-              >
-                {layout === "grid" ? (
-                  <CheckinButton
-                    ballkid={ballkid}
-                    isCheckedIn={isCheckedIn}
-                    setUpdated={setUpdated}
-                  />
-                ) : (
-                  ""
-                )}
-                <LastDayComments
+          ballkid={ballkid}
+          actionsOutsideLink
+          renderAdditional={
+            <Box
+              className={`list-by-name-card-actions list-by-name-checkin-actions layout-${layout}`}
+              onMouseDown={isolatePointer}
+            >
+              {layout === "grid" ? (
+                <CheckinButton
                   ballkid={ballkid}
-                  layout={layout}
+                  isCheckedIn={isCheckedIn}
                   setUpdated={setUpdated}
                 />
-                <CheckoutComments
+              ) : null}
+              <LastDayComments
+                ballkid={ballkid}
+                layout={layout}
+                setUpdated={setUpdated}
+              />
+              <CheckoutComments
+                ballkid={ballkid}
+                layout={layout}
+                setUpdated={setUpdated}
+              />
+              {layout === "list" ? (
+                <CheckinButton
                   ballkid={ballkid}
-                  layout={layout}
+                  isCheckedIn={isCheckedIn}
                   setUpdated={setUpdated}
                 />
-                {layout === "grid" ? (
-                  ""
-                ) : (
-                  <CheckinButton
-                    ballkid={ballkid}
-                    isCheckedIn={isCheckedIn}
-                    setUpdated={setUpdated}
-                  />
-                )}
-              </Box>
-            }
-          />
-        </Grid>
+              ) : null}
+            </Box>
+          }
+        />
       ))}
-    </Grid>
+    </ListCards>
   );
 }
 
@@ -292,10 +308,12 @@ export default function CheckinPage(props) {
       .then(() => setUpdated(false));
   }, [updated]);
 
-  return (
-    <div className="page">
-      <Banners />
+  const filteredIn = filterBallkids(checkedIn, searchKeyword, filterGroup);
+  const filteredOut = filterBallkids(checkedOut, searchKeyword, filterGroup);
+  const totalVisible = filteredIn.length + filteredOut.length;
 
+  return (
+    <ListPageShell>
       <ConfirmDialog
         message={`You are about to check out all ${
           checkedIn.length
@@ -309,66 +327,52 @@ export default function CheckinPage(props) {
         setUpdated={setUpdated}
       />
 
-      <div className="justify">
-        <Box className="sxs" sx={{ mb: 1 }}>
-          <Typography variant="h4">Check-in</Typography>
-          &thinsp;
-          <HelpIcon page="Check-in" message={checkin} />
-        </Box>
-        <LayoutButtons layout={layout} setLayout={setLayout} />
-      </div>
-
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
+      <ListPageHeader
+        title="Check-in"
+        count={totalVisible}
+        helpPage="Check-in"
+        helpMessage={checkin}
+        layout={layout}
+        setLayout={setLayout}
+        showLayout={checkedIn.length + checkedOut.length > 0}
       />
 
-      <Grid container justifyContent="space-between">
-        <Grid item className="sxs">
-          <Typography variant="h5" sx={MARGINS}>
-            Checked In
-          </Typography>
-          &ensp;
-          <Typography variant="h6" sx={MARGINS}>
-            ({filterBallkids(checkedIn, searchKeyword, filterGroup).length})
-          </Typography>
-        </Grid>
+      {checkedIn.length + checkedOut.length === 0 ? (
+        <ListEmpty>There are no ballkids to show.</ListEmpty>
+      ) : (
+        <>
+          <ListToolbarCard>
+            <SearchAndFilter
+              useGridItem={false}
+              setSearchKeyword={setSearchKeyword}
+              filterGroup={filterGroup}
+              setFilterGroup={setFilterGroup}
+            />
+          </ListToolbarCard>
 
-        {checkedIn.length > 0 && (
-          <Grid item sx={MARGINS}>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => setOpen(true)}
-            >
-              Check Out All
-            </Button>
-          </Grid>
-        )}
-      </Grid>
+          <ListSection
+            title="Checked In"
+            count={filteredIn.length}
+            actions={
+              checkedIn.length > 0 ? (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => setOpen(true)}
+                >
+                  Check Out All
+                </Button>
+              ) : null
+            }
+          >
+            {renderBallkids(filteredIn, true, layout, setUpdated)}
+          </ListSection>
 
-      {renderBallkids(
-        filterBallkids(checkedIn, searchKeyword, filterGroup),
-        true,
-        layout,
-        setUpdated
+          <ListSection title="Checked Out" count={filteredOut.length}>
+            {renderBallkids(filteredOut, false, layout, setUpdated)}
+          </ListSection>
+        </>
       )}
-
-      <Grid item className="sxs" sx={MARGINS}>
-        <Typography variant="h5">Checked Out</Typography>
-        &ensp;
-        <Typography variant="h6">
-          ({filterBallkids(checkedOut, searchKeyword, filterGroup).length})
-        </Typography>
-      </Grid>
-
-      {renderBallkids(
-        filterBallkids(checkedOut, searchKeyword, filterGroup),
-        false,
-        layout,
-        setUpdated
-      )}
-    </div>
+    </ListPageShell>
   );
 }
