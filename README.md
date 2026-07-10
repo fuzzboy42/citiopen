@@ -407,39 +407,83 @@ Body: { "username": "first.last", "password": "..." }
 
 ## Local Development
 
-### Backend
+### Prerequisites
+
+- **Python** 3.11+ or 3.12 (see `.python-version`)
+- **Node.js** 18+ and **npm** (for the React frontend)
+
+### Quick start (recommended)
+
+From the repo root:
 
 ```bash
-# Install dependencies
+chmod +x scripts/setup-dev.sh scripts/dev.sh
+./scripts/setup-dev.sh   # once: .venv, pip, npm, migrate, .env, dev user
+./scripts/dev.sh         # Django on :8000 + React on :3000 (API proxied to backend)
+```
+
+| Service | URL |
+|---|---|
+| App (login UI) | [http://localhost:3000](http://localhost:3000) |
+| Django API | [http://127.0.0.1:8000](http://127.0.0.1:8000) |
+
+### Dev login
+
+`setup-dev.sh` runs `create_dev_user`, which creates a chairperson account with full access:
+
+| | |
+|---|---|
+| **Username** | `dev.chair` |
+| **Password** | `devpassword` |
+| **Role** | chairperson |
+
+Use the login page at `/login`. After signing in, try **Schedule** at `/schedule` (updated schedule UI at all screen sizes). On narrow viewports, open the **hamburger menu** for navigation; on desktop, use the top nav tabs.
+
+If login fails (e.g. you skipped setup or reset the DB), recreate the user:
+
+```bash
+.venv/bin/python manage.py create_dev_user
+```
+
+Create another dev account (captain, ballkid, etc.):
+
+```bash
+.venv/bin/python manage.py create_dev_user \
+  --username jane.doe \
+  --password mypassword123 \
+  --group captain \
+  --first-name Jane \
+  --last-name Doe
+```
+
+### Details
+
+**Python deps:** `requirements.txt` uses `psycopg2-binary` and current wheels so you do not need Postgres client libraries on macOS.
+
+**Database:** By default `.env` uses **SQLite** (`db.sqlite3` in the project root). No local Postgres required. To use Postgres instead, set `DATABASE_URL` in `.env` (see `.env.example`).
+
+**Environment:** `setup-dev.sh` copies `.env.example` → `.env` if missing. `DEBUG=True` is for local dev only; production (Fly.io) should set `DEBUG=False` and a real `DATABASE_URL`.
+
+### Manual setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-
-# Set environment variables (see citiopen/settings.py for required vars)
 cp .env.example .env
-
-# Run migrations
 python manage.py migrate
 
-# Start dev server
-python manage.py runserver
+cd frontend && npm install && npm start
 ```
 
-### Frontend
+In another terminal: `python manage.py runserver`
+
+The frontend dev server proxies API requests to `http://localhost:8000` (`frontend/package.json`).
+
+To build the frontend for production and move it into Django static files:
 
 ```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start dev server (proxies API calls to localhost:8000)
-npm start
-```
-
-The frontend proxy is configured in `package.json` to forward API requests to `http://localhost:8000`.
-
-To build the frontend for production and move it to the Django static directory:
-```bash
-npm run relocate
+cd frontend && npm run relocate
 ```
 
 ---

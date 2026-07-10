@@ -1,30 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Icon from "@mui/material/Icon";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemButton from "@mui/material/ListItemButton";
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
 
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import SportsTennis from "@mui/icons-material/SportsTennis";
-import Close from "@mui/icons-material/Close";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import MenuIcon from "@mui/icons-material/Menu";
 
+import BallcrewLogo from "./BallcrewLogo";
+import MobileNavDrawer from "./MobileNavDrawer";
 import { getLocalStorage, useIsMobile } from "./Utils";
+import "./navbar.css";
 
 const ballkidTabs = [
   { label: "By Name", url: "/list" },
@@ -70,7 +57,6 @@ const chairpersonTabs = [
       { label: "Check-In", url: "/checkin" },
       { label: "By Name", url: "/list" },
       { label: "Cut", url: "/cut" },
-      // { label: "Tickets", url: "/tickets" },
       { label: "Inactive", url: "/inactive" },
     ],
   },
@@ -113,8 +99,6 @@ const ballkidAccountTab = {
   url: "/me",
   subtabs: [
     { label: "My Profile", url: "/me" },
-    // { label: "Game", url: "/game" },
-    // { label: "Account Settings", url: "/settings" },
     { label: "Feedback", url: "/feedback" },
     { label: "Logout", url: "/login" },
   ],
@@ -126,7 +110,6 @@ const captainAccountTab = {
   url: "/me",
   subtabs: [
     { label: "My Profile", url: "/me" },
-    // { label: "Game", url: "/game" },
     { label: "Account Settings", url: "/settings" },
     { label: "Feedback", url: "/feedback" },
     { label: "Logout", url: "/login" },
@@ -139,7 +122,6 @@ const chairpersonAccountTab = {
   url: "/me",
   subtabs: [
     { label: "My Profile", url: "/me" },
-    // { label: "Game", url: "/game" },
     { label: "Account Settings", url: "/settings" },
     { label: "Tournament Settings", url: "/tournament-settings" },
     { label: "Debug", url: "/debug" },
@@ -147,6 +129,18 @@ const chairpersonAccountTab = {
     { label: "Logout", url: "/login" },
   ],
 };
+
+function getUserInitials() {
+  const username = getLocalStorage("username") || "";
+  if (!username) {
+    return "";
+  }
+  const parts = String(username).split(".").filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
+  }
+  return String(username).slice(0, 2).toUpperCase();
+}
 
 function DesktopNavbarItem({ tab, useIconButton, setToken }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -170,8 +164,6 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
   };
 
   const leaveButton = () => {
-    // Set a timeout so that the menu doesn't close before the user has time to
-    // move their mouse over it
     setTimeout(() => {
       setOverButton(false);
     }, 50);
@@ -189,17 +181,18 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
     <div>
       {useIconButton ? (
         <IconButton
-          color="inherit"
+          className="app-navbar-menu-btn"
           onMouseEnter={enterButton}
           onMouseLeave={leaveButton}
           component={Link}
           to={tab.url}
+          aria-label={tab.label}
         >
           {tab.icon}
         </IconButton>
       ) : (
         <Button
-          color="inherit"
+          className="app-navbar-tab-btn"
           onMouseEnter={enterButton}
           onMouseLeave={leaveButton}
           component={Link}
@@ -241,101 +234,6 @@ function DesktopNavbarItem({ tab, useIconButton, setToken }) {
   );
 }
 
-function MobileSubtab({ tab, setOpen, setToken }) {
-  const [subtabOpen, setSubtabOpen] = useState(false);
-
-  return (
-    <div>
-      {!tab.subtabs ? (
-        <ListItemButton
-          component={Link}
-          to={tab.url}
-          onClick={() => setOpen(false)}
-        >
-          <ListItemText primary={tab.label} />
-        </ListItemButton>
-      ) : (
-        <ListItemButton onClick={() => setSubtabOpen(!subtabOpen)}>
-          <ListItemText primary={tab.label} />
-          {subtabOpen ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-      )}
-      {!tab.subtabs ? (
-        ""
-      ) : (
-        <Collapse in={subtabOpen}>
-          <List component="div" disablePadding>
-            {tab.subtabs.map((subtab) => (
-              <ListItemButton
-                key={subtab.label}
-                component={Link}
-                to={subtab.url}
-                sx={{ pl: 4 }}
-                onClick={
-                  subtab.label !== "Logout"
-                    ? () => setOpen(false)
-                    : () => {
-                        setToken("");
-                        localStorage.clear();
-                      }
-                }
-              >
-                <ListItemText primary={subtab.label} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-      )}
-    </div>
-  );
-}
-
-function MobileNavbar({ tabs, accountTab, setToken }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div>
-      <IconButton onClick={() => setOpen(true)}>
-        <MenuIcon sx={{ color: "white" }} />
-      </IconButton>
-
-      <Drawer
-        anchor="right"
-        open={open}
-        onClose={() => setOpen(false)}
-        PaperProps={{
-          sx: { width: "70%" },
-        }}
-      >
-        <Box sx={{ p: 1 }}>
-          <IconButton onClick={() => setOpen(false)}>
-            <Close />
-          </IconButton>
-
-          <Divider sx={{ my: 1 }} />
-
-          {tabs.map((tab) => (
-            <MobileSubtab
-              key={tab.label}
-              tab={tab}
-              setOpen={setOpen}
-              setToken={setToken}
-            />
-          ))}
-
-          <Divider sx={{ my: 1 }} />
-
-          <MobileSubtab
-            tab={accountTab}
-            setOpen={setOpen}
-            setToken={setToken}
-          />
-        </Box>
-      </Drawer>
-    </div>
-  );
-}
-
 export default function Navbar({ isLoggedIn, setToken }) {
   const group = getLocalStorage("group");
   const isMobile = useIsMobile();
@@ -357,63 +255,53 @@ export default function Navbar({ isLoggedIn, setToken }) {
       break;
     default:
       break;
-    // console.log("Unrecognized group: " + group);
   }
 
+  const homeUrl = isLoggedIn ? "/list" : "/login";
+
   return (
-    <AppBar position="sticky">
-      {/* {!isLoggedIn ? "" : <Banners />} */}
-      <Toolbar>
-        <div className="justify" style={{ height: "100%" }}>
-          <div className="sxs">
-            <Box
-              className="sxs"
-              component={Link}
-              to="/list"
-              sx={{ textDecoration: "none", color: "white" }}
-            >
-              <Icon>
-                <SportsTennis />
-              </Icon>
-              <Typography variant="h6" sx={{ mx: 2 }}>
-                Mubadala Citi Open Ballcrew
-              </Typography>
-            </Box>
+    <header className="app-navbar">
+      <div className="app-navbar-inner">
+        <div className="app-navbar-left">
+          <Link className="app-navbar-brand" to={homeUrl}>
+            <BallcrewLogo size={isMobile ? 32 : 36} />
+            <span className="app-navbar-title">Mubadala Citi Open Ballcrew</span>
+          </Link>
 
-            {!isLoggedIn || isMobile ? (
-              ""
-            ) : (
-              <div className="sxs">
-                {tabs.map((tab) => (
-                  <DesktopNavbarItem
-                    key={tab.label}
-                    tab={tab}
-                    useIconButton={false}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          {isLoggedIn && !isMobile ? (
+            <nav className="app-navbar-desktop-tabs" aria-label="Main">
+              {tabs.map((tab) => (
+                <DesktopNavbarItem
+                  key={tab.label}
+                  tab={tab}
+                  useIconButton={false}
+                />
+              ))}
+            </nav>
+          ) : null}
+        </div>
 
+        <div className="app-navbar-right">
           {!isLoggedIn ? (
-            <Button color="inherit" component={Link} to="/login">
+            <Button className="app-navbar-login" component={Link} to="/login">
               Login
             </Button>
-          ) : isMobile ? (
-            <MobileNavbar
-              tabs={tabs}
-              accountTab={accountTab}
-              setToken={setToken}
-            />
           ) : (
-            <DesktopNavbarItem
-              tab={accountTab}
-              useIconButton={true}
-              setToken={setToken}
-            />
+            <>
+              {isMobile ? (
+                <MobileNavDrawer group={group} setToken={setToken} />
+              ) : (
+                <DesktopNavbarItem
+                  tab={accountTab}
+                  useIconButton={true}
+                  setToken={setToken}
+                />
+              )}
+            </>
           )}
         </div>
-      </Toolbar>
-    </AppBar>
+      </div>
+      <div className="app-navbar-accent" aria-hidden="true" />
+    </header>
   );
 }

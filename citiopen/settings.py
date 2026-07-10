@@ -107,22 +107,14 @@ WSGI_APPLICATION = "citiopen.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DEBUG should be set to False in production and True locally
-if DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "citiopen",
-            "USER": "iosue",
-            "PASSWORD": "password",
-            "HOST": "localhost",
-            "PORT": "",
-        }
-    }
-else:
-    DATABASES = {
-        "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
-    }
+# Use DATABASE_URL everywhere. Default is SQLite so local dev does not require Postgres.
+# For Postgres locally: DATABASE_URL=postgres://user:pass@localhost:5432/citiopen
+DATABASES = {
+    "default": env.dj_db_url(
+        "DATABASE_URL",
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    ),
+}
 
 if os.environ.get("GITHUB_WORKFLOW"):
     DATABASES = {

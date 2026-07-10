@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { ScheduleTable } from "./ScheduleTable";
+import ScheduleMobileView from "./ScheduleMobileView";
 import {
   getAuthHeader,
   getToday,
@@ -149,22 +150,62 @@ export default function SchedulePageChairperson(props) {
       .then(() => setUpdated(false));
   }, [date, updated]);
 
+  const chairpersonActions =
+    shifts.length === 0 ? null : (
+      <>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setEditing(!editing)}
+        >
+          {editing ? "Save Schedule" : "Edit Schedule"}
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          size="small"
+          onClick={() => setOpen(true)}
+        >
+          Delete Schedule
+        </Button>
+      </>
+    );
+
+  const deleteDialog = (
+    <ConfirmDialog
+      message={`You are about to delete the schedule for ${date}. This action cannot be
+        undone.`}
+      url={`/api/delete-schedule?date=${date}`}
+      body={{
+        date: date,
+      }}
+      open={open}
+      setOpen={setOpen}
+      setUpdated={setUpdated}
+      method="DELETE"
+    />
+  );
+
+  if (!editing) {
+    return (
+      <>
+        <Banners />
+        {deleteDialog}
+        <ScheduleMobileView
+          shifts={shifts}
+          date={date}
+          setDate={setDate}
+          chairpersonActions={chairpersonActions}
+          emptyContent={<CreateSchedule date={date} setUpdated={setUpdated} />}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="page">
       <Banners />
-
-      <ConfirmDialog
-        message={`You are about to delete the schedule for ${date}. This action cannot be
-        undone.`}
-        url={`/api/delete-schedule?date=${date}`}
-        body={{
-          date: date,
-        }}
-        open={open}
-        setOpen={setOpen}
-        setUpdated={setUpdated}
-        method="DELETE"
-      />
+      {deleteDialog}
 
       <div className="sxs" sx={{ mb: 2 }}>
         <Typography variant="h4">Schedule</Typography>
