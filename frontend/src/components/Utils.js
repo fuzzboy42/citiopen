@@ -1088,7 +1088,37 @@ export function calcDistanceToIdeal(scale, offset) {
 
 export function getLocalStorage(key) {
   const valString = localStorage.getItem(key);
-  return JSON.parse(valString);
+  if (valString === null) {
+    return null;
+  }
+  try {
+    return JSON.parse(valString);
+  } catch {
+    return null;
+  }
+}
+
+/** Persist login response before navigation so /me and API calls see ballkid_id. */
+export function setSessionFromLogin(setToken, username, data) {
+  setToken(data?.token ?? "");
+  const rawId = data?.ballkid_id;
+  const ballkidId =
+    rawId !== null && rawId !== undefined && rawId !== ""
+      ? Number(rawId)
+      : null;
+  setLocalStorage("username", (username ?? "").toLowerCase());
+  setLocalStorage("ballkid_id", Number.isFinite(ballkidId) ? ballkidId : null);
+  setLocalStorage("group", data?.group ?? "");
+}
+
+/** Logged-in user's ballkid primary key, or null if missing / invalid. */
+export function getBallkidId() {
+  const raw = getLocalStorage("ballkid_id");
+  if (raw === null || raw === undefined || raw === "") {
+    return null;
+  }
+  const id = typeof raw === "number" ? raw : parseInt(String(raw), 10);
+  return Number.isFinite(id) ? id : null;
 }
 
 export function setLocalStorage(key, val) {

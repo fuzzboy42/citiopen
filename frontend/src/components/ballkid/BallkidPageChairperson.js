@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams, Link as RouterLink, useLocation } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -50,6 +50,7 @@ import { BallkidParamsChart } from "./BallkidParamsChart";
 import {
   Icons,
   getAuthHeader,
+  getBallkidId,
   getLocalStorage,
   useIsMobile,
   getTimeFloat,
@@ -1187,6 +1188,7 @@ export default function BallkidPageChairperson(props) {
   const [ballkid, setBallkid] = useState(null);
   const [updated, setUpdated] = useState(false);
   const [teams, setTeams] = useState([]);
+  const [loadState, setLoadState] = useState("loading");
 
   const [cuts, setCuts] = useState([]);
 
@@ -1194,15 +1196,53 @@ export default function BallkidPageChairperson(props) {
   const [errorMsg, setErrorMsg] = useState();
 
   const isMobile = useIsMobile();
-  var { pk } = useParams();
-  pk = parseInt(pk ?? getLocalStorage("ballkid_id"));
+  const location = useLocation();
+  const { pk: pkParam } = useParams();
+  const myBallkidId = getBallkidId();
+  const onMeRoute =
+    location.pathname === "/me" || location.pathname.endsWith("/me");
+  const pk = onMeRoute
+    ? myBallkidId
+    : pkParam
+    ? parseInt(pkParam, 10)
+    : myBallkidId;
+
+  const loadAttempt = useRef(0);
 
   useEffect(() => {
-    fetch(`/api/get-ballkid/${pk}/${getLocalStorage("ballkid_id")}`, {
+    if (myBallkidId === null || !Number.isFinite(pk)) {
+      setLoadState("no_link");
+      setBallkid(null);
+      return;
+    }
+
+    const attempt = ++loadAttempt.current;
+    setLoadState("loading");
+    setBallkid(null);
+
+    fetch(`/api/get-ballkid/${pk}/${myBallkidId}`, {
       headers: getAuthHeader(),
     })
-      .then((response) => response.json())
-      .then((data) => setBallkid(data));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(String(response.status));
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (attempt !== loadAttempt.current) {
+          return;
+        }
+        setBallkid(data);
+        setLoadState("ready");
+      })
+      .catch(() => {
+        if (attempt !== loadAttempt.current) {
+          return;
+        }
+        setBallkid(null);
+        setLoadState("error");
+      });
 
     fetch("/api/calc-num-teams", { headers: getAuthHeader() })
       .then((response) => response.json())
@@ -1212,11 +1252,46 @@ export default function BallkidPageChairperson(props) {
       .then((response) => response.json())
       .then((data) => setCuts(data))
       .then(() => setUpdated(false));
-  }, [updated, pk]);
+  }, [updated, pk, myBallkidId]);
 
-  return ballkid == null ? (
-    ""
-  ) : (
+  if (loadState === "no_link") {
+    return (
+      <div className="page">
+        <Banners />
+        <Typography sx={{ p: 2 }} color="text.secondary">
+          No ballkid is linked to this login. For local dev, run{" "}
+          <code>python manage.py create_dev_user</code>, then log out and log in
+          again.
+        </Typography>
+      </div>
+    );
+  }
+
+  if (loadState === "error") {
+    return (
+      <div className="page">
+        <Banners />
+        <Typography sx={{ p: 2 }} color="error">
+          Could not load this profile (check that the Django server is running on
+          port 8000). Log out and back in, or open the ballkid from the roster.
+        </Typography>
+      </div>
+    );
+  }
+
+  if (loadState === "loading" || ballkid == null) {
+    return (
+      <div className="page">
+        <Banners />
+        <Box className="center-div" sx={{ display: "flex", gap: 2 }}>
+          <CircularProgress size={28} />
+          <Typography>Loading profile…</Typography>
+        </Box>
+      </div>
+    );
+  }
+
+  return (
     <div className="page">
       <Banners />
 

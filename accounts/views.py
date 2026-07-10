@@ -38,7 +38,7 @@ class GetTokenView(ObtainAuthToken):
             {
                 "token": token.key,
                 "group": user.groups.first().name if user.groups.first() else "",
-                "ballkid_id": ballkid.id if ballkid is not None else "",
+                "ballkid_id": ballkid.id if ballkid is not None else None,
             },
             status=status.HTTP_200_OK,
         )

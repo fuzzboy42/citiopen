@@ -9,9 +9,12 @@ import Button from "@mui/material/Button";
 import Shortcut from "@mui/icons-material/Shortcut";
 import AspectRatio from "@mui/joy/AspectRatio";
 
+import CircularProgress from "@mui/material/CircularProgress";
+
+import "../settings/settings-pages.css";
 import {
   getAuthHeader,
-  getLocalStorage,
+  getBallkidId,
   useIsMobile,
   Icons,
   Banners,
@@ -70,36 +73,112 @@ function RatingSection({ ballkid }) {
 export default function MyProfile(props) {
   const [ballkid, setBallkid] = useState(null);
   const [showTeams, setShowTeams] = useState(false);
+  const [loadState, setLoadState] = useState("loading");
 
   const [cuts, setCuts] = useState([]);
 
   const [updated, setUpdated] = useState(false);
 
   const isMobile = useIsMobile();
-  const pk = getLocalStorage("ballkid_id");
+  const pk = getBallkidId();
 
   useEffect(() => {
-    fetch("/api/get-ballkid/" + pk, { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) => setBallkid(data))
-      .then(() => setUpdated(false));
+    if (pk === null) {
+      setLoadState("no_id");
+      setBallkid(null);
+      return;
+    }
 
-    fetch("/api/get-cut-history/" + pk, { headers: getAuthHeader() })
-      .then((response) => response.json())
-      .then((data) => setCuts(data));
+    setLoadState("loading");
+    let cancelled = false;
 
-    fetch("/api/get-tournament", {
-      method: "GET",
-      headers: getAuthHeader(),
-    })
-      .then((response) => response.json())
-      .then((data) => setShowTeams(data["show_teams"]))
-      .then(() => setUpdated(false));
+    Promise.all([
+      fetch("/api/get-ballkid/" + pk, { headers: getAuthHeader() }).then(
+        (response) => (response.ok ? response.json() : Promise.reject(response))
+      ),
+      fetch("/api/get-cut-history/" + pk, { headers: getAuthHeader() }).then(
+        (response) => (response.ok ? response.json() : [])
+      ),
+      fetch("/api/get-tournament", {
+        method: "GET",
+        headers: getAuthHeader(),
+      }).then((response) =>
+        response.ok ? response.json() : { show_teams: false }
+      ),
+    ])
+      .then(([ballkidData, cutsData, tournamentData]) => {
+        if (cancelled) {
+          return;
+        }
+        setBallkid(ballkidData);
+        setCuts(cutsData);
+        setShowTeams(tournamentData.show_teams);
+        setLoadState("ready");
+        setUpdated(false);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setBallkid(null);
+          setLoadState("error");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [updated, pk]);
 
-  return ballkid == null ? (
-    ""
-  ) : (
+  if (loadState === "no_id") {
+    return (
+      <div className="page settings-shell">
+        <Banners />
+        <div className="settings-page">
+          <header className="settings-header">
+            <h1 className="settings-title">My Profile</h1>
+          </header>
+          <section className="settings-card">
+            <Typography color="text.secondary">
+              Your account is not linked to a ballkid record. Log out and back
+              in after a chairperson links your user, or run{" "}
+              <code>create_dev_user</code> for local dev.
+            </Typography>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadState === "loading") {
+    return (
+      <div className="page">
+        <Banners />
+        <Box className="center-div" sx={{ display: "flex", gap: 2 }}>
+          <CircularProgress size={28} />
+          <Typography>Loading profile…</Typography>
+        </Box>
+      </div>
+    );
+  }
+
+  if (loadState === "error" || ballkid == null) {
+    return (
+      <div className="page settings-shell">
+        <Banners />
+        <div className="settings-page">
+          <header className="settings-header">
+            <h1 className="settings-title">My Profile</h1>
+          </header>
+          <section className="settings-card">
+            <Typography color="error">
+              Could not load your profile. Try refreshing or logging in again.
+            </Typography>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="page">
       <Banners />
 

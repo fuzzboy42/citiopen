@@ -72,11 +72,13 @@ class Command(BaseCommand):
         group = Group.objects.get(name=group_name)
         user.groups.set([group])
 
-        ballkid, _ = Ballkid.objects.get_or_create(
-            first_name=first_name,
-            last_name=last_name,
-            defaults={"is_active": True},
-        )
+        ballkid = Ballkid.objects.filter(user=user).first()
+        if ballkid is None:
+            ballkid, _ = Ballkid.objects.get_or_create(
+                first_name=first_name,
+                last_name=last_name,
+                defaults={"is_active": True},
+            )
         ballkid.user = user
         ballkid.is_chairperson = group_name == "chairperson"
         ballkid.is_captain = group_name == "captain"
