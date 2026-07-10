@@ -85,9 +85,9 @@ export default function LoginPage(props) {
 
         <section className="login-card">
           <div className="login-accent-bar" aria-hidden="true" />
-          <h1 className="login-card-title">Log in</h1>
+          <h1 className="login-card-title">Log In</h1>
           <p className="login-card-subtitle">
-            Sign in with your ballcrew username and password.
+            Sign In with your ballcrew username and password.
           </p>
 
           {successMsg ? (
@@ -136,7 +136,7 @@ export default function LoginPage(props) {
               className="login-submit"
               disabled={!canSubmit}
             >
-              {submitting ? "Signing in…" : "Sign in"}
+              {submitting ? "Signing In…" : "Sign In"}
             </button>
           </form>
 
