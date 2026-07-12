@@ -21,6 +21,7 @@ import {
   SelfCutCard,
   renderCopyButtons,
   CutStatusSection,
+  getCutStatusMeta,
 } from "./CutPageDesktop";
 import { CUT_STATUSES } from "../Consts";
 import { cut } from "../HelpMessages";
@@ -33,31 +34,23 @@ import {
 } from "./ListPageLayout";
 
 function renderAssignCutButton(ballkid, section, setUpdated) {
-  var color;
-  switch (section) {
-    case "Definitely Keep":
-      color = "success";
-      break;
-    case "Possibly Keep":
-      color = "primary";
-      break;
-    case "Possibly Cut":
-      color = "warning";
-      break;
-    case "Definitely Cut":
-      color = "error";
-      break;
-    default:
-      console.log("Unrecognized cut status: " + section);
-  }
+  const meta = getCutStatusMeta(section);
 
   return (
     <Button
       key={section}
-      sx={{ m: 0.2 }}
       size="small"
-      color={color}
       variant="outlined"
+      sx={{
+        m: 0.3,
+        color: meta.color,
+        borderColor: meta.border,
+        background: meta.bg,
+        "&:hover": {
+          borderColor: meta.color,
+          background: meta.bg,
+        },
+      }}
       onClick={(e) => {
         fetch("/api/update-ballkid", {
           method: "PATCH",
@@ -117,11 +110,17 @@ function ActiveSection({ active, sections, setUpdated, hideHeader }) {
                         commentTypes={["rank", "experience", "last_day"]}
                       />
                     </TableCell>
-                    <TableCell>{ballkid.preferred_position}</TableCell>
+                    <TableCell>
+                      <span className="list-by-name-position">
+                        {ballkid.preferred_position}
+                      </span>
+                    </TableCell>
                     <TableCell align="right">
-                      {sections.map((section) =>
-                        renderAssignCutButton(ballkid, section, setUpdated)
-                      )}
+                      <div className="cut-mark-as-group">
+                        {sections.map((section) =>
+                          renderAssignCutButton(ballkid, section, setUpdated)
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
               ))}

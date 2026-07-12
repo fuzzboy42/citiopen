@@ -14,6 +14,10 @@ import Tooltip from "@mui/material/Tooltip";
 
 import RemoveCircleOutline from "@mui/icons-material/RemoveCircleOutline";
 import Dangerous from "@mui/icons-material/Dangerous";
+import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
+import ThumbUpOutlined from "@mui/icons-material/ThumbUpOutlined";
+import WarningAmberOutlined from "@mui/icons-material/WarningAmberOutlined";
+import PersonOffOutlined from "@mui/icons-material/PersonOffOutlined";
 
 import {
   filterBallkids,
@@ -28,6 +32,45 @@ import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
 import { ListPageShell, ListPageHeader } from "./ListPageLayout";
 
+// Color + icon treatment per cut status, shared by the desktop and mobile
+// cut page views so both stay visually consistent.
+export const CUT_STATUS_META = {
+  "Definitely Keep": {
+    color: "#15803d",
+    bg: "#f0fdf4",
+    border: "#bbf7d0",
+    icon: <CheckCircleOutline fontSize="small" />,
+  },
+  "Possibly Keep": {
+    color: "#1d4ed8",
+    bg: "#eff6ff",
+    border: "#bfdbfe",
+    icon: <ThumbUpOutlined fontSize="small" />,
+  },
+  "Possibly Cut": {
+    color: "#b45309",
+    bg: "#fffbeb",
+    border: "#fde68a",
+    icon: <WarningAmberOutlined fontSize="small" />,
+  },
+  "Definitely Cut": {
+    color: "#c8102e",
+    bg: "#fef2f2",
+    border: "#fecaca",
+    icon: <Dangerous fontSize="small" />,
+  },
+  "Self-Cut": {
+    color: "#475569",
+    bg: "#f1f5f9",
+    border: "#e2e8f0",
+    icon: <PersonOffOutlined fontSize="small" />,
+  },
+};
+
+export function getCutStatusMeta(section) {
+  return CUT_STATUS_META[section] || CUT_STATUS_META["Self-Cut"];
+}
+
 export function CutStatusSection({
   section,
   active,
@@ -40,6 +83,7 @@ export function CutStatusSection({
   const cutAllStr = section.includes("Cut") ? "Cut All" : "Keep All";
   const cutAllColor = section.includes("Cut") ? "error" : "success";
   const cutAllVariant = section.includes("Cut") ? "contained" : "outlined";
+  const meta = getCutStatusMeta(section);
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ballkid",
@@ -74,11 +118,29 @@ export function CutStatusSection({
         setUpdated={setUpdated}
       />
 
-      <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
+      <Card
+        sx={{
+          mb: 2,
+          borderTop: `3px solid ${meta.color}`,
+          background: isOver ? meta.bg : undefined,
+        }}
+        elevation={isOver ? 10 : 1}
+      >
         <CardContent>
           <div className="justify">
-            <div className="sxs">
-              <Typography variant="h6">{section}</Typography>
+            <div className="sxs" style={{ gap: 8 }}>
+              <span
+                className="cut-status-icon"
+                style={{ background: meta.bg, color: meta.color }}
+              >
+                {meta.icon}
+              </span>
+              <Typography
+                variant="h6"
+                sx={{ color: meta.color, fontWeight: 700 }}
+              >
+                {section}
+              </Typography>
               &ensp;
               <Typography variant="subtitle1">({active.length})</Typography>
             </div>
@@ -246,7 +308,13 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
       component={Paper}
       ref={dropRef}
       elevation={isOver ? 10 : 1}
-      sx={{ pl: { xs: 0, sm: 3 }, ml: { xs: 0, sm: 3 }, pb: 2 }}
+      className="cut-active-panel"
+      sx={{
+        pl: { xs: 0, sm: 3 },
+        ml: { xs: 0, sm: 3 },
+        pb: 2,
+        background: isOver ? "#eef2ff" : undefined,
+      }}
     >
       <div className="sxs">
         <Typography variant="h5" sx={MARGINS}>
@@ -418,11 +486,28 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
         setUpdated={setUpdated}
       />
 
-      <Card sx={{ mb: 2 }} elevation={isOver ? 10 : 1}>
+      <Card
+        sx={{ mb: 2, borderTop: `3px solid ${getCutStatusMeta("Self-Cut").color}` }}
+        elevation={isOver ? 10 : 1}
+      >
         <CardContent>
           <div className="justify">
-            <div className="sxs">
-              <Typography variant="h6">Self-Cut</Typography>
+            <div className="sxs" style={{ gap: 8 }}>
+              <span
+                className="cut-status-icon"
+                style={{
+                  background: getCutStatusMeta("Self-Cut").bg,
+                  color: getCutStatusMeta("Self-Cut").color,
+                }}
+              >
+                {getCutStatusMeta("Self-Cut").icon}
+              </span>
+              <Typography
+                variant="h6"
+                sx={{ color: getCutStatusMeta("Self-Cut").color, fontWeight: 700 }}
+              >
+                Self-Cut
+              </Typography>
               &ensp;
               <Typography variant="subtitle1">({selfCut.length})</Typography>
             </div>
