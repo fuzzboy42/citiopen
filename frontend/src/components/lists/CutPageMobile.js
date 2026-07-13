@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
 import TableBody from "@mui/material/TableBody";
@@ -37,20 +36,11 @@ function renderAssignCutButton(ballkid, section, setUpdated) {
   const meta = getCutStatusMeta(section);
 
   return (
-    <Button
+    <button
       key={section}
-      size="small"
-      variant="outlined"
-      sx={{
-        m: 0.3,
-        color: meta.color,
-        borderColor: meta.border,
-        background: meta.bg,
-        "&:hover": {
-          borderColor: meta.color,
-          background: meta.bg,
-        },
-      }}
+      type="button"
+      className="cut-pill-btn small"
+      style={{ "--pill-color": meta.color }}
       onClick={(e) => {
         fetch("/api/update-ballkid", {
           method: "PATCH",
@@ -66,7 +56,7 @@ function renderAssignCutButton(ballkid, section, setUpdated) {
       }}
     >
       {section}
-    </Button>
+    </button>
   );
 }
 

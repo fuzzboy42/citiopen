@@ -490,11 +490,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 4px;
-}
-
-.list-by-name-shell .cut-mark-as-group .MuiButton-root {
-  font-weight: 600 !important;
+  gap: 6px;
 }
 
 .list-by-name-shell .MuiTableBody-root .MuiTableRow-root:hover {
@@ -503,6 +499,62 @@
 
 .list-by-name-shell .MuiTableBody-root .MuiTableCell-root {
   border-bottom-color: var(--list-border);
+}
+
+/* Quiet custom action pill (Cut All / Keep All / Mark As) — flat outline by
+   default, fills solid only on hover, same restrained treatment as the
+   toggle buttons on the schedule page. Color is passed in via --pill-color. */
+.list-by-name-shell .cut-pill-btn {
+  --pill-color: var(--list-text2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 0.5px solid var(--pill-color);
+  background: var(--list-bg1);
+  color: var(--pill-color);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.list-by-name-shell .cut-pill-btn:hover {
+  background: var(--pill-color);
+  color: #fff;
+}
+
+.list-by-name-shell .cut-pill-btn.small {
+  height: 27px;
+  padding: 0 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 7px;
+}
+
+/* Flatten remaining MUI chrome — no ripples, no elevation shadow, thin
+   hairline borders only — to match the flat, custom look used elsewhere
+   in the app rather than default Material Design surfaces. */
+.list-by-name-shell .MuiTouchRipple-root {
+  display: none !important;
+}
+
+.list-by-name-shell .MuiButton-contained,
+.list-by-name-shell .MuiButton-outlined,
+.list-by-name-shell .MuiButton-contained:hover,
+.list-by-name-shell .MuiButton-outlined:hover {
+  box-shadow: none !important;
+}
+
+.list-by-name-shell .list-by-name-cut-grid .MuiCard-root,
+.list-by-name-shell .cut-active-panel.MuiPaper-root,
+.list-by-name-shell .MuiTableContainer-root {
+  box-shadow: 0 1px 2px rgba(13, 27, 62, 0.04) !important;
 }
 
 .list-by-name-shell .MuiTableContainer-root {

@@ -81,8 +81,6 @@ export function CutStatusSection({
 
   const shouldCut = section.includes("Cut") ? true : false;
   const cutAllStr = section.includes("Cut") ? "Cut All" : "Keep All";
-  const cutAllColor = section.includes("Cut") ? "error" : "success";
-  const cutAllVariant = section.includes("Cut") ? "contained" : "outlined";
   const meta = getCutStatusMeta(section);
 
   const [{ isOver }, dropRef] = useDrop({
@@ -135,19 +133,16 @@ export function CutStatusSection({
               >
                 {meta.icon}
               </span>
-              <Typography
-                variant="h6"
-                sx={{ color: meta.color, fontWeight: 700 }}
-              >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {section}
               </Typography>
               &ensp;
               <Typography variant="subtitle1">({active.length})</Typography>
             </div>
-            <Button
-              size="small"
-              color={cutAllColor}
-              variant={cutAllVariant}
+            <button
+              type="button"
+              className="cut-pill-btn"
+              style={{ "--pill-color": meta.color }}
               onClick={(e) => {
                 shouldCut
                   ? setOpen(true)
@@ -164,7 +159,7 @@ export function CutStatusSection({
               }}
             >
               {cutAllStr}
-            </Button>
+            </button>
           </div>
 
           {POSITIONS.map((position) => (
@@ -502,24 +497,21 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
               >
                 {getCutStatusMeta("Self-Cut").icon}
               </span>
-              <Typography
-                variant="h6"
-                sx={{ color: getCutStatusMeta("Self-Cut").color, fontWeight: 700 }}
-              >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Self-Cut
               </Typography>
               &ensp;
               <Typography variant="subtitle1">({selfCut.length})</Typography>
             </div>
 
-            <Button
-              size="small"
-              color="error"
-              variant="contained"
+            <button
+              type="button"
+              className="cut-pill-btn"
+              style={{ "--pill-color": getCutStatusMeta("Self-Cut").color }}
               onClick={(e) => setOpen(true)}
             >
               Cut All
-            </Button>
+            </button>
           </div>
 
           {POSITIONS.map((position) => (
