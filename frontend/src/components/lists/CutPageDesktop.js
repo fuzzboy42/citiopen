@@ -3,10 +3,8 @@ import { useDrop } from "react-dnd";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
@@ -30,7 +28,7 @@ import {
 } from "../Utils";
 import { CUT_STATUSES, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
-import { ListPageShell, ListPageHeader } from "./ListPageLayout";
+import { ListPageShell, ListPageHeader, ListToolbarCard } from "./ListPageLayout";
 
 // Color + icon treatment per cut status, shared by the desktop and mobile
 // cut page views so both stay visually consistent.
@@ -101,7 +99,7 @@ export function CutStatusSection({
   });
 
   return (
-    <Grid item xs={12} sm={12} md={6} lg={6} xl={3} ref={dropRef}>
+    <div className="cut-status-card-wrap" ref={dropRef}>
       <ConfirmDialog
         message={`You are about to cut all ${active.length} ballkid${
           active.length > 1 ? "s" : ""
@@ -185,7 +183,7 @@ export function CutStatusSection({
           ))}
         </CardContent>
       </Card>
-    </Grid>
+    </div>
   );
 }
 
@@ -302,23 +300,23 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
       elevation={isOver ? 10 : 1}
       className="cut-active-panel"
       sx={{
-        pl: { xs: 0, sm: 3 },
-        ml: { xs: 0, sm: 3 },
-        pb: 2,
         background: isOver ? "#eef2ff" : undefined,
       }}
     >
-      <div className="sxs">
+      <div className="cut-panel-header">
         <span className="cut-panel-title">Active Ballkids</span>
         <span className="cut-panel-count">({active.length})</span>
       </div>
 
-      <SearchAndFilter
-        setSearchKeyword={setSearchKeyword}
-        filterGroup={filterGroup}
-        setFilterGroup={setFilterGroup}
-        filters={["rookie", "supervet", "captain", "back", "net"]}
-      />
+      <ListToolbarCard>
+        <SearchAndFilter
+          useGridItem={false}
+          setSearchKeyword={setSearchKeyword}
+          filterGroup={filterGroup}
+          setFilterGroup={setFilterGroup}
+          filters={["rookie", "supervet", "captain", "back", "net"]}
+        />
+      </ListToolbarCard>
 
       {POSITIONS.map((position) => {
         const filtered = filterBallkids(
@@ -336,9 +334,9 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
             </div>
 
             {active.length === 0 ? (
-              <Typography>
+              <p className="cut-empty-note">
                 There are currently no active ballkids left to categorize.
-              </Typography>
+              </p>
             ) : (
               <Grid container>
                 {[filtered.slice(0, half), filtered.slice(half)].map((sliced) =>
@@ -385,44 +383,42 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
 
 export function renderCopyButtons(active, emails, setSuccessMsg) {
   return (
-    <Box>
-      <Box sx={{ my: 0.2 }}>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => {
-            const names = active
-              .filter(
-                (ballkid) =>
-                  ballkid.cut_status === "Definitely Keep" ||
-                  ballkid.cut_status === "Possibly Keep" ||
-                  ballkid.cut_status === ""
-              )
-              .map((ballkid) => `${ballkid.first_name} ${ballkid.last_name}`)
-              .join("\n");
-            navigator.clipboard.writeText(names);
-            setSuccessMsg("Successfully copied non-cut ballkid names!");
-          }}
-        >
-          Copy all keep ballkid names
-        </Button>
-      </Box>
+    <div className="cut-copy-actions">
+      <button
+        type="button"
+        className="cut-pill-btn"
+        style={{ "--pill-color": "var(--list-nav)" }}
+        onClick={() => {
+          const names = active
+            .filter(
+              (ballkid) =>
+                ballkid.cut_status === "Definitely Keep" ||
+                ballkid.cut_status === "Possibly Keep" ||
+                ballkid.cut_status === ""
+            )
+            .map((ballkid) => `${ballkid.first_name} ${ballkid.last_name}`)
+            .join("\n");
+          navigator.clipboard.writeText(names);
+          setSuccessMsg("Successfully copied non-cut ballkid names!");
+        }}
+      >
+        Copy keep names
+      </button>
 
-      <Box sx={{ my: 0.2 }} style={{ float: "right" }}>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => {
-            navigator.clipboard.writeText(emails);
-            setSuccessMsg(
-              "Successfully copied all currently active, non-cut ballkid emails!"
-            );
-          }}
-        >
-          Copy all ballkid emails
-        </Button>
-      </Box>
-    </Box>
+      <button
+        type="button"
+        className="cut-pill-btn"
+        style={{ "--pill-color": "var(--list-nav)" }}
+        onClick={() => {
+          navigator.clipboard.writeText(emails);
+          setSuccessMsg(
+            "Successfully copied all currently active, non-cut ballkid emails!"
+          );
+        }}
+      >
+        Copy keep emails
+      </button>
+    </div>
   );
 }
 
@@ -454,7 +450,7 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
   });
 
   return (
-    <Grid item xs={12} sm={12} md={6} lg={6} xl={3} ref={dropRef}>
+    <div className="cut-status-card-wrap cut-self-cut-span" ref={dropRef}>
       <ConfirmDialog
         message={`You are about to cut all ${selfCut.length} ballkid${
           selfCut.length > 1 ? "s" : ""
@@ -525,7 +521,7 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
           ))}
         </CardContent>
       </Card>
-    </Grid>
+    </div>
   );
 }
 
@@ -571,28 +567,24 @@ export default function CutPageDesktop(props) {
         helpMessage={cut}
         showLayout={false}
         trailing={
-          <Box className="sxs" sx={{ flexWrap: "wrap", gap: 1 }}>
+          <div className="cut-header-toolbar">
             {renderCopyButtons(active, emails, setSuccessMsg)}
-            {renderSwitch(
-              showHovercard,
-              setShowHovercard,
-              "Disable Hovercard",
-              "Enable Hovercard"
-            )}
-          </Box>
+            <div className="cut-header-divider" />
+            <div className="cut-hovercard-toggle">
+              {renderSwitch(
+                showHovercard,
+                setShowHovercard,
+                "",
+                "Hovercards"
+              )}
+            </div>
+          </div>
         }
       />
 
-      <Grid container className="justify-top list-by-name-cut-layout">
-        <Grid
-          item
-          sm={6}
-          md={7}
-          lg={7}
-          xl={8}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
-        >
-          <Grid container spacing={2}>
+      <div className="cut-page-layout">
+        <div className="cut-status-col">
+          <div className="cut-status-grid">
             {sections.map((section) => (
               <CutStatusSection
                 key={section}
@@ -610,24 +602,17 @@ export default function CutPageDesktop(props) {
               showHovercard={showHovercard}
               setUpdated={setUpdated}
             />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
-        <Grid
-          item
-          sm={6}
-          md={5}
-          lg={5}
-          xl={4}
-          style={{ maxHeight: "85vh", overflow: "auto" }}
-        >
+        <div className="cut-active-col">
           <ActiveSection
             active={active.filter((ballkid) => ballkid.cut_status === "")}
             showHovercard={showHovercard}
             setUpdated={setUpdated}
           />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </ListPageShell>
   );
 }

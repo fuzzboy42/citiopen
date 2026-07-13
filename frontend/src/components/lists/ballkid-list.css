@@ -483,6 +483,7 @@
   border: 0.5px solid var(--list-border) !important;
   background: var(--list-bg1) !important;
   padding-top: 16px !important;
+  padding-bottom: 16px !important;
   transition: background 0.15s ease;
 }
 
@@ -686,4 +687,122 @@
   font-size: 13px;
   color: var(--list-text2);
   margin-left: 6px;
+}
+
+/* Cut page top-level layout — plain CSS grid instead of MUI's Grid
+   (which sizes breakpoints off the viewport, not the actual container,
+   and was causing the status-card grid to disagree with its real width). */
+.list-by-name-shell .cut-page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 4px;
+}
+
+.list-by-name-shell .cut-status-col,
+.list-by-name-shell .cut-active-col {
+  max-height: 85vh;
+  overflow: auto;
+}
+
+.list-by-name-shell .cut-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.list-by-name-shell .cut-status-card-wrap {
+  min-width: 0;
+}
+
+.list-by-name-shell .cut-self-cut-span {
+  grid-column: 1 / -1;
+}
+
+.list-by-name-shell .cut-panel-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 16px 16px 0;
+}
+
+.list-by-name-shell .cut-active-panel .list-by-name-toolbar-card {
+  margin: 12px 16px 8px;
+}
+
+.list-by-name-shell .cut-active-panel > div[class*="sxs"],
+.list-by-name-shell .cut-active-panel > div:not(.cut-panel-header):not(.list-by-name-toolbar-card) {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.list-by-name-shell .cut-empty-note {
+  font-size: 13px;
+  color: var(--list-text2);
+  margin: 4px 0 8px;
+}
+
+@media (max-width: 1100px) {
+  .list-by-name-shell .cut-page-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .list-by-name-shell .cut-status-col,
+  .list-by-name-shell .cut-active-col {
+    max-height: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .list-by-name-shell .cut-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cut page header toolbar: copy actions + hovercard toggle in one tidy
+   right-aligned row instead of a floated, stacked mess. */
+.list-by-name-shell .cut-header-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-by-name-shell .cut-copy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.list-by-name-shell .cut-header-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--list-border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .list-by-name-shell .cut-header-divider {
+    display: none;
+  }
+}
+
+/* Hovercard toggle — shrink and mute the shared renderSwitch output so it
+   reads as a quiet secondary control, not a full-size labeled form field. */
+.list-by-name-shell .cut-hovercard-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.list-by-name-shell .cut-hovercard-toggle .MuiTypography-root {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--list-text2);
+}
+
+.list-by-name-shell .cut-hovercard-toggle .MuiSwitch-root {
+  transform: scale(0.82);
+  margin-left: -4px;
 }
