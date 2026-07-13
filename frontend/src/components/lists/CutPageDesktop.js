@@ -28,7 +28,7 @@ import {
   Alerts,
   renderSwitch,
 } from "../Utils";
-import { CUT_STATUSES, MARGINS, POSITIONS } from "../Consts";
+import { CUT_STATUSES, POSITIONS } from "../Consts";
 import { cut } from "../HelpMessages";
 import { ListPageShell, ListPageHeader } from "./ListPageLayout";
 
@@ -124,20 +124,17 @@ export function CutStatusSection({
         }}
         elevation={isOver ? 10 : 1}
       >
-        <CardContent>
-          <div className="justify">
-            <div className="sxs" style={{ gap: 8 }}>
+        <CardContent className="cut-card-body">
+          <div className="cut-card-header">
+            <div className="sxs" style={{ gap: 8, minWidth: 0 }}>
               <span
                 className="cut-status-icon"
                 style={{ background: meta.bg, color: meta.color }}
               >
                 {meta.icon}
               </span>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                {section}
-              </Typography>
-              &ensp;
-              <Typography variant="subtitle1">({active.length})</Typography>
+              <span className="cut-card-title">{section}</span>
+              <span className="cut-card-count">({active.length})</span>
             </div>
             <button
               type="button"
@@ -166,8 +163,8 @@ export function CutStatusSection({
             <div key={position}>
               <Divider sx={{ mt: 1, mb: 1 }} />
               <div className="sxs">
-                <Typography variant="subtitle1">{position}s</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                <span className="cut-position-label">{position}s</span>
+                <span className="cut-position-count">
                   (
                   {
                     active.filter((ballkid) =>
@@ -175,7 +172,7 @@ export function CutStatusSection({
                     ).length
                   }
                   )
-                </Typography>
+                </span>
               </div>
               {renderBallkidsInSection(
                 active.filter((ballkid) => ballkid.cut_status === section),
@@ -312,13 +309,8 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
       }}
     >
       <div className="sxs">
-        <Typography variant="h5" sx={MARGINS}>
-          Active Ballkids
-        </Typography>
-        &ensp;
-        <Typography variant="h6" sx={MARGINS}>
-          ({active.length})
-        </Typography>
+        <span className="cut-panel-title">Active Ballkids</span>
+        <span className="cut-panel-count">({active.length})</span>
       </div>
 
       <SearchAndFilter
@@ -339,12 +331,8 @@ function ActiveSection({ active, showHovercard, setUpdated }) {
         return (
           <div key={position}>
             <div className="sxs">
-              <Typography variant="h6" sx={MARGINS}>
-                {position}s
-              </Typography>
-              <Typography variant="subtitle1" sx={{ ...MARGINS, ml: 1 }}>
-                ({filtered.length})
-              </Typography>
+              <span className="cut-position-label large">{position}s</span>
+              <span className="cut-position-count">({filtered.length})</span>
             </div>
 
             {active.length === 0 ? (
@@ -485,9 +473,9 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
         sx={{ mb: 2, borderTop: `3px solid ${getCutStatusMeta("Self-Cut").color}` }}
         elevation={isOver ? 10 : 1}
       >
-        <CardContent>
-          <div className="justify">
-            <div className="sxs" style={{ gap: 8 }}>
+        <CardContent className="cut-card-body">
+          <div className="cut-card-header">
+            <div className="sxs" style={{ gap: 8, minWidth: 0 }}>
               <span
                 className="cut-status-icon"
                 style={{
@@ -497,11 +485,8 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
               >
                 {getCutStatusMeta("Self-Cut").icon}
               </span>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Self-Cut
-              </Typography>
-              &ensp;
-              <Typography variant="subtitle1">({selfCut.length})</Typography>
+              <span className="cut-card-title">Self-Cut</span>
+              <span className="cut-card-count">({selfCut.length})</span>
             </div>
 
             <button
@@ -518,8 +503,8 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
             <div key={position}>
               <Divider sx={{ mt: 1, mb: 1 }} />
               <div className="sxs">
-                <Typography variant="subtitle1">{position}s</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                <span className="cut-position-label">{position}s</span>
+                <span className="cut-position-count">
                   (
                   {
                     selfCut.filter((ballkid) =>
@@ -527,7 +512,7 @@ export function SelfCutCard({ updated, showHovercard, setUpdated }) {
                     ).length
                   }
                   )
-                </Typography>
+                </span>
               </div>
               {renderBallkidsInSection(
                 selfCut,

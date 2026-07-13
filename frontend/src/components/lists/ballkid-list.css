@@ -619,3 +619,71 @@
 .list-by-name-shell .list-by-name-card-actions .MuiIconButton-root {
   border-radius: 8px;
 }
+
+.list-by-name-shell .cut-card-body {
+  padding: 14px 16px !important;
+}
+
+/* Card header row: icon + title + count on the left, action pill on the
+   right. flex-wrap is the actual fix for the clipped-button bug — if the
+   row ever runs out of room, the button drops to its own line instead of
+   being clipped by the card's rounded-corner overflow:hidden. */
+.list-by-name-shell .cut-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  row-gap: 8px;
+  column-gap: 10px;
+  width: 100%;
+}
+
+.list-by-name-shell .cut-card-header .cut-pill-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.list-by-name-shell .cut-card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--list-text1);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.list-by-name-shell .cut-card-count {
+  font-size: 12.5px;
+  color: var(--list-text2);
+  white-space: nowrap;
+}
+
+.list-by-name-shell .cut-position-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--list-text2);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.list-by-name-shell .cut-position-label.large {
+  font-size: 13.5px;
+}
+
+.list-by-name-shell .cut-position-count {
+  font-size: 12px;
+  color: var(--list-text3, var(--list-text2));
+  margin-left: 5px;
+}
+
+.list-by-name-shell .cut-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--list-text1);
+  letter-spacing: -0.01em;
+}
+
+.list-by-name-shell .cut-panel-count {
+  font-size: 13px;
+  color: var(--list-text2);
+  margin-left: 6px;
+}
