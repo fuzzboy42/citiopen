@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useDrag } from "react-dnd";
 import { Link as RouterLink } from "react-router-dom";
@@ -9,7 +9,6 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Link from "@mui/material/Link";
-import Icon from "@mui/material/Icon";
 import IconButton from "@mui/material/IconButton";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
@@ -57,7 +56,10 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
   const group = getLocalStorage("group");
 
   return (
-    <Box sx={{ display: "inline-flex", alignItems: "center", mb: margin, lineHeight: 1 }}>
+    <Box
+      component="span"
+      sx={{ display: "inline-flex", alignItems: "center", mb: margin }}
+    >
       {ballkid.is_chairperson && ICON_DICT["chairperson"]}
       {ballkid.is_captain && ICON_DICT["captain"]}
       {group !== "ballkid" &&
@@ -566,6 +568,19 @@ export function DraggableBallkidAndIcon({
   hoverCommentTypes = [],
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
+  const closeTimeoutRef = useRef(null);
+
+  const cancelClose = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimeoutRef.current = setTimeout(() => setAnchorEl(null), 150);
+  };
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "ballkid",
@@ -582,8 +597,11 @@ export function DraggableBallkidAndIcon({
     >
       <Box
         className="sxs"
-        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-        onMouseLeave={() => setAnchorEl(null)}
+        onMouseEnter={(e) => {
+          cancelClose();
+          setAnchorEl(e.currentTarget);
+        }}
+        onMouseLeave={scheduleClose}
       >
         <BallkidLink
           id={ballkid.id}
@@ -602,6 +620,8 @@ export function DraggableBallkidAndIcon({
             hoverCommentTypes={hoverCommentTypes}
             anchorEl={anchorEl}
             setAnchorEl={setAnchorEl}
+            onPopoverEnter={cancelClose}
+            onPopoverLeave={scheduleClose}
           />
         ) : (
           ""
@@ -616,6 +636,8 @@ export function BallkidPopover({
   hoverCommentTypes,
   anchorEl,
   setAnchorEl,
+  onPopoverEnter = () => {},
+  onPopoverLeave = () => {},
 }) {
   return (
     <Popover
@@ -628,18 +650,20 @@ export function BallkidPopover({
       sx={{
         pointerEvents: "none",
       }}
-      // onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-      // onMouseLeave={() => setAnchorEl(null)}
-      // transformOrigin={{
-      //   vertical: "top",
-      //   horizontal: "left",
-      // }}
-      // PaperProps={{
-      //   onMouseEnter: (e) => setAnchorEl(e.currentTarget),
-      //   onMouseLeave: () => setAnchorEl(null),
-      // }}
+      PaperProps={{
+        onMouseEnter: onPopoverEnter,
+        onMouseLeave: onPopoverLeave,
+        sx: {
+          pointerEvents: "auto",
+          maxHeight: "70vh",
+          overflowY: "auto",
+          borderRadius: "10px",
+          border: "0.5px solid rgba(13, 27, 62, 0.12)",
+          boxShadow: "0 12px 32px rgba(13, 27, 62, 0.18)",
+        },
+      }}
     >
-      <Card>
+      <Card elevation={0}>
         <CardActionArea
           component={RouterLink}
           to={
@@ -877,9 +901,18 @@ export function CommentsText({
           )}
 
           <Typography
-            sx={{ mx: 0.5, px: 0.5, my: 0.1 }}
+            sx={{
+              mx: 0.5,
+              px: 0.75,
+              py: 0.1,
+              my: 0.1,
+              borderRadius: "4px",
+              fontWeight: 500,
+            }}
             bgcolor={
-              ballkid.num_ratings <= NUM_RATINGS_WARNING_THRESHOLD ? "" : "pink"
+              ballkid.num_ratings <= NUM_RATINGS_WARNING_THRESHOLD
+                ? "#f1f5f9"
+                : "pink"
             }
             color={
               ballkid.num_ratings <= NUM_RATINGS_WARNING_THRESHOLD
