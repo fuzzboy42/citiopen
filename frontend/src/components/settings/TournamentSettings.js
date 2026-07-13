@@ -144,17 +144,21 @@ function Banner({
 
   return disabled ? (
     newBanner ? (
-      <IconButton
-        size="small"
+      <button
+        type="button"
+        className="tournament-settings-add-banner"
         onClick={() => {
           setDisabled(false);
           setTimeout(() => bannerInput.current.focus(), 100);
         }}
       >
         <Tooltip title="Add Banner">
-          <AddCircle />
+          <span className="tournament-settings-add-banner-inner">
+            <AddCircle fontSize="small" />
+            <span>Add banner</span>
+          </span>
         </Tooltip>
-      </IconButton>
+      </button>
     ) : (
       <Box className="tournament-settings-banner-row">
         <Typography className="tournament-settings-banner-text">
@@ -751,16 +755,18 @@ export default function TournamentSettings(props) {
                   <span className="tournament-settings-row-label">
                     Visibility of {teamType}teams to captains and ballkids
                   </span>
-                  <HideShowToggle
-                    teamType={teamType.trim()}
-                    defaultShow={
-                      teamType === ""
-                        ? tournament.show_teams
-                        : tournament.show_finals_teams
-                    }
-                    setSuccessMsg={setSuccessMsg}
-                    setErrorMsg={setErrorMsg}
-                  />
+                  <div className="tournament-settings-toggle">
+                    <HideShowToggle
+                      teamType={teamType.trim()}
+                      defaultShow={
+                        teamType === ""
+                          ? tournament.show_teams
+                          : tournament.show_finals_teams
+                      }
+                      setSuccessMsg={setSuccessMsg}
+                      setErrorMsg={setErrorMsg}
+                    />
+                  </div>
                 </div>
               ))}
             </section>
