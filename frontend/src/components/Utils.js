@@ -57,7 +57,7 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
   const group = getLocalStorage("group");
 
   return (
-    <Icon sx={{ mb: margin }}>
+    <Box sx={{ display: "inline-flex", alignItems: "center", mb: margin, lineHeight: 1 }}>
       {ballkid.is_chairperson && ICON_DICT["chairperson"]}
       {ballkid.is_captain && ICON_DICT["captain"]}
       {group !== "ballkid" &&
@@ -76,7 +76,7 @@ export function Icons({ ballkid, margin, isTeamsPage = false }) {
       {ballkid.num_years_experience > SUPERVET_THRESHOLD &&
         isTeamsPage &&
         ICON_DICT["supervet"]}
-    </Icon>
+    </Box>
   );
 }
 
