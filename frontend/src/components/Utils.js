@@ -55,6 +55,17 @@ import { Popover } from "@mui/material";
 export function Icons({ ballkid, margin, isTeamsPage = false }) {
   const group = getLocalStorage("group");
 
+  if (ballkid.is_chairperson) {
+    return (
+      <Box
+        component="span"
+        sx={{ display: "inline-flex", alignItems: "center", mb: margin }}
+      >
+        {ICON_DICT["chairperson"]}
+      </Box>
+    );
+  }
+
   return (
     <Box
       component="span"
